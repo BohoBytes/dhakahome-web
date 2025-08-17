@@ -1,0 +1,81 @@
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/assets/fonts/Poppins-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 14px; /* Set base font size to 14px instead of default 16px */
+  }
+
+  /* Ensure consistent rendering across browsers */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-size: 1rem; /* This will now be 14px */
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center font-medium transition;
+  }
+  .btn-primary {
+    @apply btn rounded-full bg-primary text-white px-6 py-3 shadow-sm hover:opacity-95;
+  }
+  .btn-outline {
+    @apply btn rounded-full border border-textprimary/25 px-6 py-3 text-textprimary hover:border-textprimary/40;
+  }
+  .nav-pill {
+    @apply hidden md:flex items-center gap-2 rounded-full bg-white/90 shadow-sm border border-black/5 px-3 py-2;
+  }
+  .nav-link {
+    @apply text-sm px-3 py-1.5 rounded-full text-textprimary/80 hover:text-textprimary;
+  }
+  .nav-link-active {
+    @apply nav-link bg-secondary text-textprimary;
+  }
+  .chip-label {
+    @apply text-[12px] leading-none text-subtext mb-1;
+  }
+  .chip-input {
+    @apply border rounded-lg px-3 py-2 w-full bg-white;
+  }
+  .search-card {
+    @apply bg-white rounded-[18px] border border-black/10 shadow-[0_6px_24px_rgba(0,0,0,0.08)] p-4 md:p-5;
+  }
+  .card-hover {
+    @apply transition hover:shadow-[0_8px_28px_rgba(0,0,0,0.08)] hover:border-primary/40;
+  }
+}

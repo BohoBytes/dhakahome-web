@@ -1,0 +1,53 @@
+{{define "layouts/base.html"}}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DhakaHome</title>
+    <link rel="stylesheet" href="/assets/tailwind.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  </head>
+  <body class="min-h-screen bg-bg text-textprimary font-sans">
+    <!-- Page -->
+    <main>{{ template "content" . }}</main>
+
+    <!-- Footer (as per your comp) -->
+    <footer class="mt-20 bg-[#0f0f0f] text-white">
+      <div class="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-3 gap-10">
+        <div class="space-y-3">
+          <img src="/assets/logo.svg" class="h-10 invert" alt="logo" />
+          <p class="text-sm text-white/70">one stop housing solution</p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-3">Bangladesh Office</h4>
+          <p class="text-sm text-white/80">
+            House 9, (8th Floor), Road 2, Sector 3,<br />Uttara, Dhaka-1230
+          </p>
+          <p class="text-sm mt-2 text-white/80">
+            01877-721-579 (Sales)<br />01742-839-596 (Rent)
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-3">US Office</h4>
+          <p class="text-sm text-white/80">
+            2920 S. Rainbow Blvd. Ste 170,<br />Las Vegas, NV 89146
+          </p>
+          <p class="text-sm mt-2 text-white/80">702-202-8214</p>
+        </div>
+      </div>
+      <div class="border-t border-white/10">
+        <div
+          class="mx-auto max-w-6xl px-4 py-6 text-xs text-white/60 flex justify-between"
+        >
+          <span>© Dhaka Home</span>
+          <div class="flex items-center gap-4">
+            <a href="#" class="hover:text-white">Facebook</a>
+            <a href="#" class="hover:text-white">YouTube</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+{{end}}

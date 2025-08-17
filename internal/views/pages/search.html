@@ -1,0 +1,25 @@
+{{define "content"}}
+<h1 class="text-2xl font-semibold mb-4">Search</h1>
+<form
+  hx-get="/search-partial"
+  hx-target="#results"
+  hx-push-url="true"
+  class="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4"
+>
+  <input name="q" value="{{index .Query "q"}}" placeholder="Area or keyword"
+  class="border rounded px-3 py-2" />
+  <select name="type" class="border rounded px-3 py-2">
+    <option value="">Any Type</option>
+    <option>Apartment</option>
+    <option>Commercial</option>
+    <option>Land</option>
+  </select>
+  <select name="sort" class="border rounded px-3 py-2">
+    <option value="">Sort</option>
+    <option value="price_asc">Price ↑</option>
+    <option value="price_desc">Price ↓</option>
+  </select>
+  <button class="rounded bg-black text-white px-4 py-2">Apply</button>
+</form>
+<div id="results">{{ template "partials/results.html" . }}</div>
+{{end}} {{define "pages/search.html"}}{{template "layouts/base.html" .}}{{end}}

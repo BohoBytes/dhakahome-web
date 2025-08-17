@@ -1,0 +1,29 @@
+{{define "content"}}
+<article class="grid gap-4">
+  <img src="{{index .P.Images 0}}" class="w-full h-72 object-cover rounded" />
+  <h1 class="text-3xl font-bold">{{.P.Title}}</h1>
+  <div class="text-gray-600">{{.P.Address}}</div>
+  <div class="text-xl font-semibold">
+    {{printf "%.0f" .P.Price}} {{.P.Currency}}
+  </div>
+
+  <form action="/lead" method="post" class="grid sm:grid-cols-3 gap-3 mt-4">
+    <input
+      name="name"
+      placeholder="Your name"
+      class="border rounded px-3 py-2"
+    />
+    <input name="phone" placeholder="Phone" class="border rounded px-3 py-2" />
+    <input
+      name="email"
+      placeholder="Email"
+      class="border rounded px-3 py-2 sm:col-span-2"
+    />
+    <input type="hidden" name="propertyId" value="{{.P.ID}}" />
+    <button class="rounded bg-black text-white px-4 py-2 sm:col-span-1">
+      Request info
+    </button>
+  </form>
+</article>
+{{end}} {{define "pages/property.html"}}{{template "layouts/base.html"
+.}}{{end}}

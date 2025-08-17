@@ -1,0 +1,329 @@
+{{define "partials/search-box.html"}}
+<!-- Search Panel overlay, pinned to the bottom of the hero -->
+<div class="absolute left-0 right-0" style="bottom: -6.5rem">
+  <div class="mx-auto px-4">
+    <form>
+      <div
+        class="figma-search-container"
+        style="
+          width: 88%;
+          max-width: 1000px;
+          height: 135px;
+          position: relative;
+          background: white;
+          box-shadow: 0px 5px 8.3px rgba(0, 0, 0, 0.32);
+          overflow: hidden;
+          border-radius: 10px;
+          outline: 3px #ff4c4a solid;
+          outline-offset: -3px;
+          backdrop-filter: blur(15.7px);
+          background-image: url(/assets/search-bg.png);
+          background-size: cover;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+        "
+      >
+        <!-- Location Field -->
+        <div
+          style="
+            width: 18%;
+            height: 83px;
+            left: 3%;
+            position: absolute;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5px;
+            display: inline-flex;
+          "
+        >
+          <div
+            style="
+              align-self: stretch;
+              color: black;
+              font-size: 16px;
+              font-family: Poppins;
+              font-weight: 400;
+              word-wrap: break-word;
+            "
+          >
+            Location
+          </div>
+          <div
+            style="
+              align-self: stretch;
+              padding-left: 11px;
+              padding-right: 11px;
+              padding-top: 8px;
+              padding-bottom: 8px;
+              background: white;
+              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+              overflow: hidden;
+              border-radius: 6px;
+              justify-content: flex-start;
+              align-items: center;
+              gap: 5px;
+              display: inline-flex;
+            "
+          >
+            <img src="/assets/icons/location-pin.svg" alt="Location" />
+            <input
+              name="location"
+              value="Dhaka"
+              style="
+                color: #3b3b3b;
+                font-size: 22px;
+                font-family: Poppins;
+                font-weight: 400;
+                word-wrap: break-word;
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 100%;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Type Field -->
+        <div
+          style="
+            width: 18%;
+            height: 91px;
+            left: 23%;
+            position: absolute;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5px;
+            display: inline-flex;
+          "
+        >
+          <div
+            style="
+              align-self: stretch;
+              color: black;
+              font-size: 16px;
+              font-family: Poppins;
+              font-weight: 400;
+              word-wrap: break-word;
+            "
+          >
+            Type
+          </div>
+          <div
+            style="
+              align-self: stretch;
+              height: 50px;
+              position: relative;
+              background: white;
+              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+              overflow: hidden;
+              border-radius: 6px;
+            "
+          >
+            <img
+              src="/assets/icons/arrow_down.svg"
+              alt="Arrow Down"
+              style="left: 224.5px; top: 15px; position: absolute"
+            />
+            <select
+              name="type"
+              style="
+                left: 7px;
+                top: 14px;
+                position: absolute;
+                color: #3b3b3b;
+                font-size: 22px;
+                font-family: Poppins;
+                font-weight: 400;
+                line-height: 21.6px;
+                word-wrap: break-word;
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 210px;
+              "
+            >
+              <option>Residential</option>
+              <option>Commercial</option>
+              <option>Land</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Area Field -->
+        <div
+          style="
+            width: 18%;
+            height: 95px;
+            left: 43%;
+            position: absolute;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5px;
+            display: inline-flex;
+          "
+        >
+          <div
+            style="
+              align-self: stretch;
+              color: black;
+              font-size: 16px;
+              font-family: Poppins;
+              font-weight: 400;
+              word-wrap: break-word;
+            "
+          >
+            Area
+          </div>
+          <div
+            style="
+              align-self: stretch;
+              height: 50px;
+              position: relative;
+              background: white;
+              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+              overflow: hidden;
+              border-radius: 6px;
+            "
+          >
+            <img
+              src="/assets/icons/arrow_down.svg"
+              alt="Arrow Down"
+              style="left: 223.5px; top: 15px; position: absolute"
+            />
+            <select
+              name="area"
+              style="
+                left: 7px;
+                top: 14px;
+                position: absolute;
+                color: #3b3b3b;
+                font-size: 22px;
+                font-family: Poppins;
+                font-weight: 400;
+                line-height: 21.6px;
+                word-wrap: break-word;
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 210px;
+              "
+            >
+              <option>Uttara</option>
+              <option>Gulshan</option>
+              <option>Bashundhara</option>
+              <option>Malibagh</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Max Price Field -->
+        <div
+          style="
+            width: 18%;
+            height: 97px;
+            left: 63%;
+            position: absolute;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 5px;
+            display: inline-flex;
+          "
+        >
+          <div
+            style="
+              align-self: stretch;
+              color: black;
+              font-size: 16px;
+              font-family: Poppins;
+              font-weight: 400;
+              word-wrap: break-word;
+            "
+          >
+            Max. Price
+          </div>
+          <div
+            style="
+              align-self: stretch;
+              height: 50px;
+              position: relative;
+              background: white;
+              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+              overflow: hidden;
+              border-radius: 6px;
+            "
+          >
+            <img
+              src="/assets/icons/arrow_down.svg"
+              alt="Arrow Down"
+              style="left: 223.5px; top: 20px; position: absolute"
+            />
+            <input
+              name="maxPrice"
+              value="৳ 40,000"
+              style="
+                left: 11px;
+                top: 14px;
+                position: absolute;
+                color: #3b3b3b;
+                font-size: 22px;
+                font-family: Poppins;
+                font-weight: 400;
+                line-height: 21.6px;
+                word-wrap: break-word;
+                border: none;
+                outline: none;
+                background: transparent;
+                width: 200px;
+              "
+            />
+          </div>
+        </div>
+
+        <!-- Search Button -->
+        <div
+          style="
+            width: 15%;
+            height: 55px;
+            left: 83%;
+            top: 53px;
+            position: absolute;
+            background: #f3f3f3;
+            box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+          "
+        >
+          <button
+            type="submit"
+            style="
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+              position: absolute;
+              text-align: center;
+              justify-content: center;
+              display: flex;
+              flex-direction: column;
+              color: #f44335;
+              font-size: 24px;
+              font-family: Poppins;
+              font-weight: 500;
+              word-wrap: break-word;
+              border: none;
+              background: transparent;
+              cursor: pointer;
+            "
+          >
+            Search
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{{end}}
