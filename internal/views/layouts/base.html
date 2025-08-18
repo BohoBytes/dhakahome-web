@@ -12,39 +12,126 @@
     <!-- Page -->
     <main>{{ template "content" . }}</main>
 
-    <!-- Footer (as per your comp) -->
-    <footer class="mt-20 bg-[#0f0f0f] text-white">
-      <div class="mx-auto max-w-6xl px-4 py-12 grid md:grid-cols-3 gap-10">
-        <div class="space-y-3">
-          <img src="/assets/logo.svg" class="h-10 invert" alt="logo" />
-          <p class="text-sm text-white/70">one stop housing solution</p>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-3">Bangladesh Office</h4>
-          <p class="text-sm text-white/80">
-            House 9, (8th Floor), Road 2, Sector 3,<br />Uttara, Dhaka-1230
-          </p>
-          <p class="text-sm mt-2 text-white/80">
-            01877-721-579 (Sales)<br />01742-839-596 (Rent)
-          </p>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-3">US Office</h4>
-          <p class="text-sm text-white/80">
-            2920 S. Rainbow Blvd. Ste 170,<br />Las Vegas, NV 89146
-          </p>
-          <p class="text-sm mt-2 text-white/80">702-202-8214</p>
-        </div>
-      </div>
-      <div class="border-t border-white/10">
-        <div
-          class="mx-auto max-w-6xl px-4 py-6 text-xs text-white/60 flex justify-between"
-        >
-          <span>© Dhaka Home</span>
-          <div class="flex items-center gap-4">
-            <a href="#" class="hover:text-white">Facebook</a>
-            <a href="#" class="hover:text-white">YouTube</a>
+    <!-- Footer -->
+    <footer
+      class="text-white py-12 px-4 bg-cover bg-center"
+      style="background-image: url('/assets/images/footer-bg.png')"
+    >
+      <div class="max-w-7xl mx-auto">
+        <!-- Main Content Flex -->
+        <div class="flex flex-col lg:flex-row mb-24">
+          <!-- Left Section: Logo -->
+          <div
+            class="flex flex-col items-center lg:items-start lg:pr-[140px] mb-8 lg:mb-0"
+          >
+            <img
+              src="/assets/icons/logo-white.svg"
+              alt="Logo White"
+              class="h-40"
+            />
           </div>
+
+          <!-- Right Section: Office Info -->
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
+            <!-- Bangladesh Office -->
+            <div class="text-center lg:text-left">
+              <h3 class="text-xl font-medium mb-6">Bangladesh Office</h3>
+
+              <!-- Address -->
+              <div
+                class="flex items-start justify-center lg:justify-start space-x-3 mb-4"
+              >
+                <img
+                  src="/assets/icons/location-grey.svg"
+                  alt="Location"
+                  class="w-[20px] h-[20px] mt-1 flex-shrink-0"
+                />
+                <p class="text-[#DBDBDB] text-[16px] leading-relaxed">
+                  House 9, (8th Floor), Road 2, Sector 3,<br />
+                  Uttara, Dhaka-1230
+                </p>
+              </div>
+
+              <!-- Phone Numbers -->
+              <div
+                class="flex items-start justify-center lg:justify-start space-x-3"
+              >
+                <img
+                  src="/assets/icons/phone.svg"
+                  alt="Phone"
+                  class="w-[20px] h-[20px] mt-1 flex-shrink-0"
+                />
+                <div class="text-[#DBDBDB] text-[16px] leading-relaxed">
+                  <p>01877-721-579 (Sales)</p>
+                  <p>01742-839-596 (Rent)</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- US Office -->
+            <div class="text-center lg:text-left">
+              <h3 class="text-xl font-medium mb-6">US Office</h3>
+
+              <!-- Address -->
+              <div
+                class="flex items-start justify-center lg:justify-start space-x-3 mb-4"
+              >
+                <img
+                  src="/assets/icons/location-grey.svg"
+                  alt="Location"
+                  class="w-[20px] h-[20px] mt-1 flex-shrink-0"
+                />
+                <p class="text-[#DBDBDB] text-[16px] leading-relaxed">
+                  2920 S. Rainbow Blvd. Ste 170,<br />
+                  Las Vegas, NV 89146
+                </p>
+              </div>
+
+              <!-- Phone Number -->
+              <div
+                class="flex items-start justify-center lg:justify-start space-x-3"
+              >
+                <img
+                  src="/assets/icons/phone.svg"
+                  alt="Phone"
+                  class="w-[20px] h-[20px] mt-1 flex-shrink-0"
+                />
+                <p class="text-[#DBDBDB] text-[16px] leading-relaxed">
+                  702-202-8214
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Media Icons -->
+        <div class="flex justify-center items-center space-x-6 mb-6">
+          <a href="#" class="hover:opacity-80 transition-opacity">
+            <img
+              src="/assets/icons/facebook.svg"
+              alt="Facebook"
+              class="w-auto h-[30px]"
+            />
+          </a>
+          <a href="#" class="hover:opacity-80 transition-opacity">
+            <img
+              src="/assets/icons/google.svg"
+              alt="Google"
+              class="w-auto h-[30px]"
+            />
+          </a>
+          <a href="#" class="hover:opacity-80 transition-opacity">
+            <img
+              src="/assets/icons/youtube.svg"
+              alt="YouTube"
+              class="w-auto h-[30px]"
+            />
+          </a>
+        </div>
+
+        <!-- Copyright -->
+        <div class="text-center">
+          <p class="text-white text-base">© Dhaka Home</p>
         </div>
       </div>
     </footer>
