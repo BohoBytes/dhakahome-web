@@ -1,0 +1,372 @@
+================================================================================
+DHAKAHOME WEB - ARCHITECTURE DIAGRAMS
+================================================================================
+
+1. REQUEST FLOW DIAGRAM
+================================================================================
+
+                               HTTP Request
+                                    |
+                                    v
+                    ┌─────────────────────────────┐
+                    │   Chi Router                 │
+                    │  (internal/http/router.go)  │
+                    └──────────────┬───────────────┘
+                                   |
+                ┌──────────────────┼──────────────────┐
+                |                  |                  |
+                v                  v                  v
+        ┌───────────────┐  ┌──────────────┐  ┌─────────────┐
+        │  Page Handler │  │Partial Handler│  │Static Assets│
+        │ (pages.go)    │  │ (partials.go) │  │  /assets/*  │
+        └───────┬───────┘  └────────┬──────┘  └─────────────┘
+                |                   |
+                v                   v
+        ┌──────────────┐   ┌────────────────┐
+        │ Template     │   │API Client      │
+        │ Render       │   │(api/client.go) │
+        │ (ParseFiles) │   │                │
+        └───────┬──────┘   └────────┬───────┘
+                |                   |
+                |          ┌────────┴─────────┐
+                |          |                  |
+                |          v                  v
+                |    ┌──────────────┐   ┌──────────────┐
+                |    │ Real API     │   │ Mock Data    │
+                |    │ Endpoint     │   │ (Fallback)   │
+                |    └──────────────┘   └──────────────┘
+                |
+                v
+        ┌──────────────────────────────┐
+        │  Template Execution          │
+        │  base.html                   │
+        │  + pages/*.html              │
+        │  + partials/*.html           │
+        └────────────┬─────────────────┘
+                     |
+                     v
+        ┌──────────────────────────────┐
+        │ HTML Response                │
+        │ (with Tailwind CSS + HTMX)   │
+        └──────────────────────────────┘
+
+
+2. TEMPLATE COMPOSITION HIERARCHY
+================================================================================
+
+USER REQUEST: GET /new-home
+     |
+     v
+┌─────────────────────────────────────────────────────────────────┐
+│                        base.html                                │
+│  <!DOCTYPE html>                                                │
+│  <html>                                                         │
+│    <head>... Tailwind CSS, HTMX ...</head>                     │
+│    <body>                                                       │
+│      <main>{{ template "content" . }}</main>                   │
+│                ↓                                                │
+│      ┌──────────────────────────────────────────────────────┐  │
+│      │            CONTENT BLOCK                             │  │
+│      │  {{define "content"}}                                │  │
+│      │    {{template "partials/new-hero.html" .}}          │  │
+│      │         ↓                                            │  │
+│      │    {{template "partials/new-search.html" .}}        │  │
+│      │         ↓                                            │  │
+│      │    {{template "partials/new-services.html" .}}      │  │
+│      │         ↓                                            │  │
+│      │    {{template "partials/new-why-best.html" .}}      │  │
+│      │         ↓                                            │  │
+│      │    {{template "partials/new-properties-area.html" .}}│ │
+│      │         ↓                                            │  │
+│      │    {{template "partials/new-testimonials.html" .}} │  │
+│      │  {{end}}                                             │  │
+│      └──────────────────────────────────────────────────────┘  │
+│                                                                │
+│      <footer>... hardcoded footer from base.html ...</footer> │
+│    </body>                                                     │
+│  </html>                                                       │
+└─────────────────────────────────────────────────────────────────┘
+
+HANDLER CODE:
+  renderNewHome(w, "pages/new-home.html", "new-home.html", nil)
+    → ParseFiles(
+        "internal/views/layouts/base.html",
+        "internal/views/pages/new-home.html",
+        "internal/views/partials/new-hero.html",
+        "internal/views/partials/new-search.html",
+        ... (all 6 partials)
+      )
+    → ExecuteTemplate(w, "pages/new-home.html", data)
+
+
+3. DATA FLOW FOR SEARCH RESULTS
+================================================================================
+
+User enters search criteria
+           |
+           v
+┌──────────────────────────────┐
+│ GET /new-search              │
+│ ?location=Uttara             │
+│ &type=Residential            │
+│ &area=...                    │
+└──────────────┬───────────────┘
+               |
+               v
+┌──────────────────────────────────────────┐
+│ Handler: NewSearchResultsPage            │
+│                                          │
+│ 1. Extract query params                 │
+│ 2. Create API client                    │
+│ 3. Call client.SearchProperties(q)      │
+└──────────────┬───────────────────────────┘
+               |
+        ┌──────┴──────┐
+        |             |
+        v             v
+    ┌────────┐   ┌──────────────┐
+    │Real API│   │Mock Fallback │
+    │Success │   │(if unreachable)
+    └────────┘   └──────────────┘
+        |             |
+        └──────┬──────┘
+               |
+               v
+    ┌─────────────────────────────────┐
+    │ PropertyList struct             │
+    │ {                               │
+    │   Items: [                      │
+    │     {ID, Title, Price, ...},   │
+    │     {ID, Title, Price, ...},   │
+    │     ...                         │
+    │   ],                            │
+    │   Page: 1,                      │
+    │   Pages: 1,                     │
+    │   Total: 5                      │
+    │ }                               │
+    └───────────────┬─────────────────┘
+                    |
+                    v
+    ┌─────────────────────────────────────────┐
+    │ Render templates with data:             │
+    │ map[string]any{                         │
+    │   "List": PropertyList,                 │
+    │   "Query": url.Values,                  │
+    │   "formatPrice": formatPrice func       │
+    │ }                                       │
+    └──────────────┬────────────────────────┘
+                   |
+                   v
+    ┌───────────────────────────────────────────────────────┐
+    │ new-search-results.html                               │
+    │ {{range .List.Items}}                                │
+    │   <div class="property-card">                        │
+    │     <h2>{{.Title}}</h2>                              │
+    │     <img src="{{index .Images 0}}" />               │
+    │     <p>{{.Currency}}{{formatPrice .Price}}</p>      │
+    │     ... more details                                │
+    │   </div>                                             │
+    │ {{else}}                                             │
+    │   <p>No properties found</p>                         │
+    │ {{end}}                                              │
+    └───────────────┬───────────────────────────────────────┘
+                    |
+                    v
+            HTML Response with
+            styled property cards
+
+
+4. HTMX DYNAMIC SEARCH FLOW
+================================================================================
+
+Initial Load: GET /search
+  ↓
+  Render search.html with HTMX attributes:
+  <form hx-get="/search-partial"
+        hx-target="#results"
+        hx-push-url="true">
+    <input name="q" />
+    <button>Apply</button>
+  </form>
+  <div id="results">
+    {{ template "partials/results.html" . }}
+  </div>
+
+
+User updates search criteria and clicks Apply
+  ↓
+  HTMX intercepts form submission
+  ↓
+  GET /search-partial?q=...&type=...&sort=...
+  ↓
+  Handler: SearchPartial
+    1. Parse query params
+    2. Call client.SearchProperties(q)
+    3. Return ONLY the <results.html> partial (no full page)
+  ↓
+  HTMX receives HTML snippet
+  ↓
+  HTMX replaces #results div with new content
+  ↓
+  HTMX pushes URL to browser history (hx-push-url="true")
+  ↓
+  User sees updated results without page reload
+
+
+5. FILE ORGANIZATION & RESPONSIBILITIES
+================================================================================
+
+cmd/web/main.go
+  └─ Entry point
+  └─ Initializes router on ADDR
+
+internal/http/router.go
+  └─ Defines all routes
+  └─ Maps URLs to handlers
+  └─ Serves static assets
+
+internal/handlers/pages.go
+  └─ Full page handlers
+  └─ Render function(s)
+  └─ Includes all required partials
+  └─ Passes data to templates
+
+internal/handlers/partials.go
+  └─ HTMX partial handlers
+  └─ Returns HTML snippets only
+  └─ Pre-loads templates
+
+internal/api/client.go
+  └─ REST API client
+  └─ Calls backend endpoints
+  └─ Mock data fallback
+  └─ Data models (Property, PropertyList, LeadReq)
+
+internal/views/layouts/base.html
+  └─ Main HTML structure
+  └─ <head> with CSS/JS
+  └─ {{template "content" .}}
+  └─ <footer>
+
+internal/views/pages/*.html
+  └─ Page-specific content
+  └─ Define "content" block
+  └─ Include required partials
+  └─ Access passed data
+
+internal/views/partials/*.html
+  └─ Reusable components
+  └─ Include other partials (header, footer)
+  └─ Access data via {{.}}
+
+web/tailwind.input.css
+  └─ @font-face definitions
+  └─ @tailwind directives
+  └─ @layer components (reusable classes)
+
+tailwind.config.js
+  └─ Theme extension
+  └─ Custom colors & sizes
+  └─ Safelist for dynamic classes
+  └─ Content paths
+
+public/assets/
+  └─ tailwind.css (generated, don't edit)
+  └─ images/
+  └─ icons/
+  └─ fonts/
+
+
+6. STYLING DECISION TREE
+================================================================================
+
+Need to style an element?
+
+  ├─ Can use standard Tailwind class?
+  │  └─ YES: Use inline utility
+  │     Example: class="px-6 py-3 bg-primary text-white rounded-lg"
+  │
+  └─ NO: Does it need custom value?
+     │
+     ├─ Exact pixel value from Figma?
+     │  └─ YES: Use arbitrary value
+     │     Example: class="text-[75px]" or class="rounded-[20px]"
+     │     REMEMBER: Add to safelist in tailwind.config.js
+     │
+     └─ Complex pattern reused 3+ times?
+        └─ YES: Add to @layer components
+           Location: web/tailwind.input.css
+           Example:
+             @layer components {
+               .search-card {
+                 @apply bg-white rounded-[18px] border border-black/10;
+               }
+             }
+
+
+7. ADDING A NEW FEATURE CHECKLIST
+================================================================================
+
+Creating a new page (/about):
+
+[✓] Create template file
+    internal/views/pages/about.html
+    - Define "content" block with layout
+    - Include partials as needed
+
+[✓] Create any new partials
+    internal/views/partials/about-team.html
+    - Each partial has its own {{define "partials/..."}}
+
+[✓] Add handler
+    internal/handlers/pages.go
+    - func AboutPage(w http.ResponseWriter, r *http.Request)
+    - Call render() with page file
+
+[✓] Update render function (if new partials)
+    internal/handlers/pages.go
+    - Add new partials to ParseFiles()
+
+[✓] Add route
+    internal/http/router.go
+    - r.Get("/about", handlers.AboutPage)
+
+[✓] Add styles
+    - Use inline utilities (preferred)
+    - OR add to @layer components if reusable
+    - OR use arbitrary values if exact Figma specs needed
+    - Remember: Add to safelist if using arbitrary values
+
+[✓] Test locally
+    npm run css:dev  # Terminal 1
+    go run ./cmd/web # Terminal 2
+    Visit http://localhost:5173/about
+
+
+Creating a dynamic component (property listing):
+
+[✓] Define data model
+    internal/api/client.go
+    - Add struct fields if needed
+
+[✓] Add handler that fetches data
+    internal/handlers/pages.go
+    - Query API client
+    - Pass data to render()
+
+[✓] Create reusable partial
+    internal/views/partials/property-item.html
+    - {{define "partials/property-item.html"}}
+    - Accept data via {{.}}
+
+[✓] Use partial in loop
+    internal/views/pages/listings.html
+    - {{range .Properties}}
+    -   {{template "partials/property-item.html" .}}
+    - {{end}}
+
+[✓] Style the partial
+    - Use .ID, .Price, .Title etc in template
+    - Apply Tailwind classes
+
+================================================================================
