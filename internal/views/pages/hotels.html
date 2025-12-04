@@ -1,0 +1,108 @@
+{{define "content"}}
+<!-- Header -->
+<section class="relative isolate bg-white">
+  {{template "partials/header.html" .}}
+</section>
+
+<!-- Divider line -->
+<div class="border-t border-[#D4D4D4]"></div>
+
+<!-- Hotels Content -->
+<section class="py-10 px-4 min-h-[70vh]">
+  <div class="max-w-[85rem] mx-auto space-y-6">
+    <h1 class="text-[26px] md:text-[30px] lg:text-[34px] font-normal leading-[1.2] text-black">
+      Our Hotel at Cox's Bazar
+    </h1>
+
+    <div class="bg-[#f3f3f3] rounded-[10px] p-4 sm:p-5 lg:p-6">
+      <div class="grid gap-4 lg:gap-6 lg:grid-cols-[300px_1fr_260px] xl:grid-cols-[320px_1fr_280px] items-stretch min-h-[420px]">
+        <!-- Left column -->
+        <div class="flex flex-col gap-4 h-full">
+          <div class="inline-flex items-center gap-3 bg-[#0098d4] text-white rounded-[10px] px-3 py-2 shadow-[0_4px_16.1px_rgba(0,0,0,0.15)]">
+            <div class="w-[38px] h-[38px] rounded-full border-2 border-white overflow-hidden flex-shrink-0">
+              <img src="http://localhost:3845/assets/9114ba32e0519d7ca5c8d04db3406095ff3c6ba1.png" alt="Hotel icon" class="w-full h-full object-cover" />
+            </div>
+            <span class="text-[16px] md:text-[18px] leading-[25px] whitespace-nowrap">Hotel Cox Vacation</span>
+          </div>
+
+          <div class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden flex-1 min-h-[210px]">
+            <img
+              src="http://localhost:3845/assets/ceccab9bcb02b4c6d7bd1712ea96733a69cad769.png"
+              alt="Living area"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <div class="bg-white border-2 border-[#5db9e3] rounded-[10px] p-4 space-y-3 mt-auto">
+            <div class="bg-[#5db9e3] text-white rounded-[6px] px-3 py-2 text-[18px] leading-[25px]">
+              Room Types &amp; Starting Price
+            </div>
+            <div class="text-[#0098d4] text-[16px] md:text-[18px] leading-[25px] space-y-2">
+              <p>Deluxe Room — ৳2,500 / night</p>
+              <p>Couple Room — ৳3,000 / night</p>
+              <p>Family Room — ৳4,500 / night</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center image -->
+        <div class="w-full h-full">
+          <div class="relative w-full h-full min-h-[360px] rounded-[10px] overflow-hidden bg-white">
+            <img
+              src="http://localhost:3845/assets/64fdf844a04838373161e3d29e5b8e330932166f.png"
+              alt="Oceanfront terrace"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="flex flex-col gap-4 h-full">
+          <div class="bg-[#5db9e3] rounded-[10px] text-white p-4 md:p-5 space-y-3 flex-1 min-h-[230px] flex flex-col justify-center">
+            <div class="flex flex-col gap-3 text-[16px] md:text-[18px] leading-[25px]">
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>Free Wi-Fi</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>Balcony View</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>AC Rooms</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>Room Service</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>LED TV</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>+12</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <span>24/7 Room Service</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden h-[140px] md:h-[160px]">
+            <img
+              src="http://localhost:3845/assets/26da67a287328a41bb316454191042716d06c35e.png"
+              alt="Bedroom"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{end}}
+
+{{define "pages/hotels.html"}}{{template "layouts/base.html" .}}{{end}}

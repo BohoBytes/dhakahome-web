@@ -33,6 +33,7 @@ func NewRouter() *chi.Mux {
 	r.Get("/search", handlers.SearchPage)
 	r.Get("/faq", handlers.FAQPage)
 	r.Get("/about-us", handlers.AboutUsPage)
+	r.Get("/hotels", handlers.HotelsPage)
 	r.Get("/properties/{id}", handlers.PropertyPage)
 
 	// htmx partials

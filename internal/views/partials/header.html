@@ -64,8 +64,8 @@
 
         <!-- Our Hotels -->
         <a
-          href="#"
-          class="relative text-[22px] font-normal leading-[28px] whitespace-nowrap text-[#ACACAC]"
+          href="/hotels"
+          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Our Hotels</a
         >
@@ -127,8 +127,8 @@
 
         <!-- Our Hotels -->
         <a
-          href="#"
-          class="relative text-[#ACACAC] text-[18px] font-normal leading-[24px] whitespace-nowrap"
+          href="/hotels"
+          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Hotels</a
         >
@@ -178,9 +178,9 @@
               >Properties</a
             >
             <a
-              href="#"
-              class="text-[#ACACAC] text-[20px] font-normal leading-[28px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+              href="/hotels"
+              class="{{if eq $active `hotels`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[20px] leading-[28px] py-2 border-b border-gray-200"
+              style="font-family: 'Poppins', sans-serif;"
               >Our Hotels</a
             >
             <a

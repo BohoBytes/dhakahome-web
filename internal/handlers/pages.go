@@ -140,6 +140,22 @@ func AboutUsPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func HotelsPage(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Hotels page handler called")
+	w.Header().Set("Content-Type", "text/html")
+	t := template.Must(template.New("pages/hotels.html").Funcs(template.FuncMap{
+		"eq": func(a, b any) bool { return a == b },
+	}).ParseFiles(
+		"internal/views/layouts/base.html",
+		"internal/views/pages/hotels.html",
+		"internal/views/partials/header.html",
+	))
+	if err := t.ExecuteTemplate(w, "pages/hotels.html", map[string]any{"ActivePage": "hotels"}); err != nil {
+		log.Printf("Hotels template execution error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
 func formatPrice(price float64) string {
 	if price == 0 {
 		return "0"
