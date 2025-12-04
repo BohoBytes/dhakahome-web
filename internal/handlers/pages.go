@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -98,7 +99,57 @@ func PropertyPage(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	cl := api.New()
 	p, _ := cl.GetProperty(id) // TODO: handle error
-	render(w, "pages/property.html", "property.html", map[string]any{"P": p})
+
+	similarQuery := url.Values{}
+	if p.Type != "" {
+		similarQuery.Set("type", p.Type)
+	}
+	// grab a few extra so filtering by listing type still yields rows
+	similarQuery.Set("limit", "12")
+
+	similar := api.PropertyList{}
+	if list, err := cl.SearchProperties(similarQuery); err == nil {
+		filtered := make([]api.Property, 0, len(list.Items))
+		for _, item := range list.Items {
+			if item.ID == p.ID {
+				continue
+			}
+			if p.ListingType != "" && !strings.EqualFold(item.ListingType, p.ListingType) {
+				continue
+			}
+			filtered = append(filtered, item)
+		}
+
+		if len(filtered) == 0 {
+			for _, item := range list.Items {
+				if item.ID == p.ID {
+					continue
+				}
+				filtered = append(filtered, item)
+			}
+		}
+
+		if len(filtered) > 6 {
+			filtered = filtered[:6]
+		}
+
+		similar = api.PropertyList{
+			Items: filtered,
+			Page:  1,
+			Pages: 1,
+			Total: len(filtered),
+		}
+	}
+
+	render(w, "pages/property.html", "property.html", map[string]any{
+		"P":               p,
+		"Similar":         similar,
+		"SearchBoxLayout": "static",
+		"ShowSimilar":     len(similar.Items) > 0,
+		"ActivePage":      "home",
+		"SimilarType":     p.Type,
+		"SimilarListing":  p.ListingType,
+	})
 }
 
 func FAQPage(w http.ResponseWriter, r *http.Request) {

@@ -1,7 +1,9 @@
 {{define "partials/search-box.html"}}
 <!-- Search Panel overlay, pinned to the bottom of the hero -->
-<div class="relative md:absolute left-0 right-0 md:bottom-[-70px] z-10 mt-8 md:mt-0">
-  <div class="mx-auto px-4">
+{{$layout := or .SearchBoxLayout "floating"}}
+{{$floating := eq $layout "floating"}}
+<div class="{{if $floating}}relative md:absolute left-0 right-0 md:bottom-[-70px] z-10 mt-8 md:mt-0{{else}}relative z-10 py-4{{end}}">
+  <div class="mx-auto px-4 {{if not $floating}}max-w-[85rem]{{end}}">
     <form action="/search" method="get">
       <div
         class="figma-search-container w-full max-w-[85rem] bg-white rounded-[10px] mx-auto overflow-hidden"

@@ -109,17 +109,21 @@ func deriveTokenURL(base string) string {
 }
 
 type Property struct {
-	ID        string   `json:"id"`
-	Title     string   `json:"title"`
-	Address   string   `json:"address"`
-	Price     float64  `json:"price"`
-	Currency  string   `json:"currency"`
-	Images    []string `json:"images"`
-	Badges    []string `json:"badges"`
-	Bedrooms  int      `json:"bedrooms"`
-	Bathrooms int      `json:"bathrooms"`
-	Area      int      `json:"area"` // in square feet
-	Parking   int      `json:"parking"`
+	ID          string   `json:"id"`
+	Title       string   `json:"title"`
+	Address     string   `json:"address"`
+	Price       float64  `json:"price"`
+	Currency    string   `json:"currency"`
+	Type        string   `json:"type"`
+	ListingType string   `json:"listingType"`
+	Images      []string `json:"images"`
+	Badges      []string `json:"badges"`
+	Bedrooms    int      `json:"bedrooms"`
+	Bathrooms   int      `json:"bathrooms"`
+	Area        int      `json:"area"` // in square feet
+	Parking     int      `json:"parking"`
+	Gallery     []string `json:"-"`
+	HasImages   bool     `json:"-"`
 }
 
 type PropertyList struct {
@@ -482,8 +486,10 @@ func mapAssetToProperty(raw map[string]any) Property {
 	location := pickMap(raw, "Location", "location")
 
 	prop := Property{
-		ID:       firstString(raw, "ID", "id"),
-		Currency: "৳",
+		ID:          firstString(raw, "ID", "id"),
+		Currency:    "৳",
+		Type:        titleize(firstString(raw, "Type", "type")),
+		ListingType: titleize(firstString(raw, "Status", "status")),
 		Title: firstNonEmpty(
 			firstString(details, "listing_title", "listingTitle", "title"),
 			firstString(raw, "Name", "name"),
@@ -499,10 +505,7 @@ func mapAssetToProperty(raw map[string]any) Property {
 		firstString(location, "raw"),
 	)
 
-	prop.Images = selectPhotoURLs(pickSlice(raw, "photos", "Photos"))
-	if len(prop.Images) == 0 {
-		prop.Images = []string{"/assets/images/property-placeholder.svg"}
-	}
+	prop.Gallery = selectPhotoURLs(pickSlice(raw, "photos", "Photos"))
 
 	if details != nil {
 		if v, ok := intFrom(details, "bedrooms"); ok {
@@ -520,6 +523,12 @@ func mapAssetToProperty(raw map[string]any) Property {
 		if price := extractPrice(details); price > 0 {
 			prop.Price = price
 		}
+		if prop.ListingType == "" {
+			prop.ListingType = titleize(firstString(details, "listing_type", "listingType"))
+		}
+		if prop.Type == "" {
+			prop.Type = titleize(firstString(details, "property_type", "propertyType"))
+		}
 	}
 
 	if prop.Price == 0 {
@@ -529,15 +538,76 @@ func mapAssetToProperty(raw map[string]any) Property {
 	}
 
 	badges := []string{
-		titleize(firstString(raw, "Type", "type")),
-		titleize(firstString(raw, "Status", "status")),
+		prop.Type,
+		prop.ListingType,
 		titleize(firstString(location, "city")),
 		titleize(firstString(location, "neighborhood")),
 		titleize(firstString(details, "furnishingStatus", "furnishing_status")),
 	}
 	prop.Badges = dedupStrings(badges)
 
+	return finalizeProperty(prop)
+}
+
+func finalizeProperty(prop Property) Property {
+	// Ensure we have a gallery reference to know if real photos exist
+	if len(prop.Gallery) == 0 && len(prop.Images) > 0 {
+		prop.Gallery = prop.Images
+	}
+	if len(prop.Gallery) > 0 {
+		prop.HasImages = true
+	}
+
+	// Provide a placeholder only for display; keep HasImages for actual photo presence
+	if len(prop.Images) == 0 {
+		if len(prop.Gallery) > 0 {
+			prop.Images = prop.Gallery
+		} else {
+			prop.Images = []string{"/assets/images/placeholders/property-placeholder.svg"}
+		}
+	}
+
+	if prop.Type == "" {
+		if t := deriveTypeFromBadges(prop.Badges); t != "" {
+			prop.Type = t
+		}
+	}
+	if prop.ListingType == "" {
+		if lt := deriveListingTypeFromBadges(prop.Badges); lt != "" {
+			prop.ListingType = lt
+		}
+	}
+
+	if prop.Currency == "" {
+		prop.Currency = "৳"
+	}
 	return prop
+}
+
+func deriveTypeFromBadges(badges []string) string {
+	for _, badge := range badges {
+		clean := strings.ToLower(strings.TrimSpace(badge))
+		switch clean {
+		case "residential", "commercial", "land", "plot":
+			return titleize(clean)
+		}
+	}
+	return ""
+}
+
+func deriveListingTypeFromBadges(badges []string) string {
+	for _, badge := range badges {
+		clean := strings.ToLower(strings.TrimSpace(badge))
+		switch {
+		case strings.Contains(clean, "sale"):
+			return "For Sale"
+		case strings.Contains(clean, "to-let"), strings.Contains(clean, "rent"):
+			return "To-let"
+		case strings.Contains(clean, "lease"):
+			return "Lease"
+		}
+	}
+	return ""
 }
 
 func extractPrice(details map[string]any) float64 {
@@ -854,6 +924,9 @@ func (c *Client) getMockSearchResults(q url.Values) PropertyList {
 	}
 
 	items := filtered[start:end]
+	for i := range items {
+		items[i] = finalizeProperty(items[i])
+	}
 
 	return PropertyList{
 		Items: items,

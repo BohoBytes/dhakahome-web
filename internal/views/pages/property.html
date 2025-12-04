@@ -1,272 +1,362 @@
 {{define "content"}}
-<!-- Property Details Page -->
 <div class="min-h-screen bg-white">
   <!-- Header -->
   {{template "partials/header.html" .}}
 
-  <!-- Search Box -->
-  {{template "partials/search-box.html" .}}
+  <!-- Search band -->
+  <section class="relative isolate overflow-hidden mt-6 mb-6">
+    <div class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10"></div>
+    <div class="absolute inset-0 bg-white/55 -z-10"></div>
+    <div class="max-w-[1100px] mx-auto px-4 py-7">
+      {{template "partials/search-box.html" .}}
+    </div>
+  </section>
 
   <!-- Property Details Section -->
-  <div class="max-w-[85rem] mx-auto px-4 py-12 mt-24">
-    <div class="bg-[#f1f1f1] rounded-[20px] shadow-[0_4px_4px_rgba(0,0,0,0.15)] p-8">
+  <section class="max-w-[85rem] mx-auto px-4 pb-16">
+    <div class="bg-[#f1f1f1] rounded-[18px] shadow-[0_10px_30px_rgba(0,0,0,0.08)] p-6 md:p-8">
       <!-- Header with Back Button, Title, and Price -->
-      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-4">
-          <button onclick="history.back()" class="w-[19px] h-[33px] flex-shrink-0">
-            <img src="/assets/icons/arrow-back.svg" alt="Back" class="w-full h-full" />
+      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <div class="flex items-start gap-3">
+          <button onclick="history.back()" class="w-[40px] h-[40px] flex items-center justify-center rounded-full bg-[#f6f6f6] hover:bg-[#ececec] transition">
+            <img src="/assets/icons/arrow-back.svg" alt="Back" class="w-[18px] h-[24px]" />
           </button>
-          <h1 class="text-[32px] lg:text-[45px] font-normal leading-[54px] text-[#414141]">
-            {{.P.Title}}
-          </h1>
+          <div>
+            <h1 class="text-[26px] md:text-[32px] font-semibold leading-tight text-[#2d2d2d]">
+              {{.P.Title}}
+            </h1>
+            <p class="text-sm md:text-base text-[#6b6b6b] mt-1">{{.P.Address}}</p>
+          </div>
         </div>
-        <div class="text-[32px] lg:text-[45px] font-normal leading-[54px] text-[#414141]">
-          {{printf "৳%.0f" .P.Price}}
+        <div class="text-[24px] md:text-[30px] font-semibold leading-[38px] text-[#f44335]">
+          {{.P.Currency}}{{formatPrice .P.Price}}
         </div>
       </div>
 
       <!-- Badges -->
-      <div class="flex gap-4 mb-6 flex-wrap">
+      <div class="flex flex-wrap gap-2 mt-3">
         {{range .P.Badges}}
-        <span class="text-lg font-normal text-[#f44335]">{{.}}</span>
+        <span class="inline-flex items-center px-3 py-[6px] text-[13px] md:text-[14px] text-[#f44335] border border-[#f44335] rounded-[6px] bg-white">
+          {{.}}
+        </span>
         {{end}}
       </div>
 
       <!-- Property Images -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <!-- Main Image -->
-        <div class="lg:col-span-2">
-          <div class="relative bg-[#f3f3f3] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]">
-            {{if .P.Images}}
-            <img src="{{index .P.Images 0}}" alt="{{.P.Title}}" class="w-full h-[451px] object-cover" />
-            {{else}}
-            <img src="https://picsum.photos/1039/451" alt="Property" class="w-full h-[451px] object-cover" />
-            {{end}}
-            <!-- Property Stats Overlay -->
-            <div class="absolute bottom-0 left-0 right-0 bg-white/90 p-4">
-              <div class="flex items-center justify-around flex-wrap gap-4">
-                {{if .P.Bedrooms}}
-                <div class="flex items-center gap-2">
-                  <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6" />
-                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Bedrooms}} BHK</span>
-                </div>
-                {{end}}
-                {{if .P.Bathrooms}}
-                <div class="flex items-center gap-2">
-                  <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6" />
-                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Bathrooms}}</span>
-                </div>
-                {{end}}
-                {{if .P.Area}}
-                <div class="flex items-center gap-2">
-                  <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6" />
-                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Area}} sq ft</span>
-                </div>
-                {{end}}
-                {{if .P.Parking}}
-                <div class="flex items-center gap-2">
-                  <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6" />
-                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Parking}}</span>
-                </div>
-                {{end}}
+      {{if .P.HasImages}}
+      {{$count := len .P.Gallery}}
+      <div class="mt-6 space-y-3">
+        {{if eq $count 1}}
+        <button type="button" class="relative block w-full h-[320px] md:h-[420px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="0">
+          <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+        </button>
+        {{else if eq $count 2}}
+        <div class="grid grid-cols-3 gap-3 md:gap-4">
+          <button type="button" class="col-span-2 h-[320px] md:h-[420px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="0">
+            <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+          </button>
+          <button type="button" class="col-span-1 h-[320px] md:h-[420px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="1">
+            <img src="{{index .P.Gallery 1}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+          </button>
+        </div>
+        {{else}}
+        <div class="grid grid-cols-3 gap-3 md:gap-4">
+          <button type="button" class="col-span-2 h-[320px] md:h-[420px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="0">
+            <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+          </button>
+          <div class="grid grid-rows-2 gap-3 md:gap-4">
+            <button type="button" class="h-[156px] md:h-[200px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="1">
+              <img src="{{index .P.Gallery 1}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+            </button>
+            <button type="button" class="relative h-[156px] md:h-[200px] rounded-[14px] overflow-hidden shadow-[0_6px_16px_rgba(0,0,0,0.12)]" data-gallery-index="2">
+              <img src="{{index .P.Gallery 2}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+              {{if gt $count 3}}
+              <div class="absolute inset-0 bg-black/45 flex items-center justify-center">
+                <span class="text-white text-2xl md:text-3xl font-semibold">+{{sub $count 3}}</span>
               </div>
-            </div>
+              {{end}}
+            </button>
           </div>
         </div>
+        {{end}}
+      </div>
+      {{end}}
 
-        <!-- Thumbnail Gallery -->
-        <div class="space-y-4">
-          {{if gt (len .P.Images) 1}}
-          <div class="relative rounded-[10px] overflow-hidden">
-            <img src="{{index .P.Images 1}}" alt="Interior" class="w-full h-[219px] object-cover" />
-          </div>
-          {{else}}
-          <div class="relative rounded-[10px] overflow-hidden">
-            <img src="/assets/images/property-interior.png" alt="Interior" class="w-full h-[219px] object-cover" />
-          </div>
-          {{end}}
-          <div class="relative rounded-[10px] overflow-hidden">
-            {{if gt (len .P.Images) 2}}
-            <img src="{{index .P.Images 2}}" alt="Gallery" class="w-full h-[219px] object-cover" />
-            {{else}}
-            <img src="https://picsum.photos/594/219" alt="Gallery" class="w-full h-[219px] object-cover" />
-            {{end}}
-            {{if gt (len .P.Images) 3}}
-            <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span class="text-white text-[60px] lg:text-[92px] font-normal">+10</span>
-            </div>
-            {{end}}
-          </div>
+      <!-- Quick Stats -->
+      <div class="mt-6 bg-[#f6f6f6] rounded-[12px] p-4 flex flex-wrap gap-4">
+        {{if .P.Bedrooms}}
+        <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+          <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-5 h-5" />
+          <span>{{.P.Bedrooms}} BHK</span>
         </div>
+        {{end}}
+        {{if .P.Bathrooms}}
+        <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+          <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-5 h-5" />
+          <span>{{.P.Bathrooms}} Baths</span>
+        </div>
+        {{end}}
+        {{if .P.Area}}
+        <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+          <img src="/assets/icons/area.svg" alt="Area" class="w-5 h-5" />
+          <span>{{.P.Area}} sq ft</span>
+        </div>
+        {{end}}
+        {{if .P.Parking}}
+        <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+          <img src="/assets/icons/parking.svg" alt="Parking" class="w-5 h-5" />
+          <span>{{.P.Parking}} Parking</span>
+        </div>
+        {{end}}
       </div>
 
       <!-- Amenities -->
-      <div class="bg-[#dadada] rounded-[5px] p-4 mb-6">
-        <div class="flex flex-wrap gap-4">
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Gas Supply</span>
+      <div class="bg-[#fafafa] rounded-[10px] p-4 mt-6">
+        <div class="flex flex-wrap gap-3">
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Gas Supply</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Boundary Wall</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Boundary Wall</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Kitchen Cabinet</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Kitchen Cabinet</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Power Backup</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Power Backup</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Parking</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Parking</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Lift</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Lift</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Servant Room</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Servant Room</span>
           </div>
-          <div class="flex items-center gap-2">
-            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
-            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Furnished</span>
+          <div class="flex items-center gap-2 text-sm md:text-base text-[#4b4b4b]">
+            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-5 h-5" />
+            <span>Furnished</span>
           </div>
         </div>
       </div>
 
       <!-- Description Section -->
-      <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] p-6 mb-6">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
-          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838]">Description</h2>
-          <div class="flex items-center gap-4 bg-[#d9d9d9] rounded-[5px] px-4 py-2">
-            <div class="flex items-center gap-2">
-              <img src="/assets/icons/calendar.svg" alt="Year" class="w-[30px] h-[30px]" />
-              <span class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#737373]">2023</span>
-            </div>
-            <div class="w-px h-11 bg-[#9d9d9d]"></div>
-            <div class="flex items-center gap-2">
-              <img src="/assets/icons/date.svg" alt="Date" class="w-[29px] h-[29px]" />
-              <span class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#737373]">Jan 12, 2025</span>
+      <div class="grid lg:grid-cols-[2fr,1fr] gap-6 mt-8">
+        <div class="bg-[#fafafa] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] p-5 md:p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <h2 class="text-[22px] md:text-[26px] font-semibold text-[#2f2f2f]">Description</h2>
+            <div class="flex items-center gap-4 bg-white rounded-[8px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+              <div class="flex items-center gap-2 text-sm md:text-base text-[#737373]">
+                <img src="/assets/icons/calendar.svg" alt="Year" class="w-6 h-6" />
+                <span>2023</span>
+              </div>
+              <div class="w-px h-9 bg-[#d6d6d6]"></div>
+              <div class="flex items-center gap-2 text-sm md:text-base text-[#737373]">
+                <img src="/assets/icons/date.svg" alt="Date" class="w-6 h-6" />
+                <span>Jan 12, 2025</span>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="border-t border-[#a3a3a3] pt-4">
-          <h3 class="text-[20px] lg:text-2xl font-medium leading-[26.4px] text-[#272727] mb-2">
-            {{.P.Title}}
-          </h3>
-          <p class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#7d7d7d] mb-4">
-            {{.P.Address}}
-          </p>
-          <p class="text-[18px] lg:text-[22px] font-normal leading-[32px] lg:leading-[39px] text-[#4c4c4c]">
-            Step into this spacious and thoughtfully planned apartment, ideal for families seeking comfort, convenience, and style. Spanning {{.P.Area}} square feet, this home features {{.P.Bedrooms}} generously sized bedrooms, each designed to ensure privacy and natural light. The {{.P.Bathrooms}} well-appointed bathrooms, including attached ones, offer added ease for busy households.
-          </p>
-        </div>
-      </div>
 
-      <!-- Required Documents and Contact Form -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="border-t border-[#e0e0e0] pt-4">
+            <h3 class="text-[18px] md:text-[20px] font-semibold text-[#2d2d2d] mb-1">
+              {{.P.Title}}
+            </h3>
+            <p class="text-sm md:text-base text-[#6e6e6e] mb-3">
+              {{.P.Address}}
+            </p>
+            <p class="text-base md:text-lg leading-relaxed text-[#4c4c4c]">
+              Step into this spacious and thoughtfully planned apartment, ideal for families seeking comfort, convenience, and style. Spanning {{.P.Area}} square feet, this home features {{.P.Bedrooms}} generously sized bedrooms, each designed to ensure privacy and natural light. The {{.P.Bathrooms}} well-appointed bathrooms, including attached ones, offer added ease for busy households.
+            </p>
+          </div>
+        </div>
+
         <!-- Required Documents -->
-        <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
-          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838] mb-4">Required Documents</h2>
-          <div class="border-t border-[#aeaeae] pt-4 space-y-6">
-            <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">NID Copy</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Employment Letter</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Security Deposit Agreement</span>
+        <div class="space-y-4">
+          <div class="bg-[#fafafa] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] p-5">
+            <h2 class="text-[20px] md:text-[22px] font-semibold text-[#2f2f2f] mb-3">Required Documents</h2>
+            <div class="border-t border-[#e0e0e0] pt-3 space-y-4">
+              <div class="flex items-center gap-3 text-sm md:text-base text-[#4b4b4b]">
+                <img src="/assets/icons/check-circle.svg" alt="Check" class="w-5 h-5 flex-shrink-0" />
+                <span>NID Copy</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm md:text-base text-[#4b4b4b]">
+                <img src="/assets/icons/check-circle.svg" alt="Check" class="w-5 h-5 flex-shrink-0" />
+                <span>Employment Letter</span>
+              </div>
+              <div class="flex items-center gap-3 text-sm md:text-base text-[#4b4b4b]">
+                <img src="/assets/icons/check-circle.svg" alt="Check" class="w-5 h-5 flex-shrink-0" />
+                <span>Security Deposit Agreement</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Contact Form -->
-        <div class="lg:col-span-2 bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
-          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838] mb-4">Contact Dhaka Home about this property</h2>
-          <div class="border-t border-[#aeaeae] pt-6">
-            <form action="/lead" method="post" class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Contact Form -->
+          <div class="bg-[#fafafa] rounded-[12px] shadow-[0_4px_10px_rgba(0,0,0,0.08)] p-5">
+            <h2 class="text-[20px] md:text-[22px] font-semibold text-[#2f2f2f] mb-3">Contact Dhaka Home about this property</h2>
+            <div class="border-t border-[#e0e0e0] pt-4">
+              <form action="/lead" method="post" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-sm md:text-base font-medium text-[#4b4b4b] mb-2 block">Name</label>
+                    <input 
+                      type="text" 
+                      name="name"
+                      placeholder="Your name"
+                      class="w-full border-b border-[#b3b3b3] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-sm md:text-base" 
+                    />
+                  </div>
+                  <div>
+                    <label class="text-sm md:text-base font-medium text-[#4b4b4b] mb-2 block">Phone</label>
+                    <input 
+                      type="tel" 
+                      name="phone"
+                      placeholder="Phone number"
+                      class="w-full border-b border-[#b3b3b3] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-sm md:text-base" 
+                    />
+                  </div>
+                </div>
                 <div>
-                  <label class="text-base font-normal text-[#535353] mb-2 block">Name</label>
+                  <label class="text-sm md:text-base font-medium text-[#4b4b4b] mb-2 block">Email</label>
                   <input 
-                    type="text" 
-                    name="name"
-                    placeholder="Your name"
-                    class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
+                    type="email" 
+                    name="email"
+                    placeholder="Your email"
+                    class="w-full border-b border-[#b3b3b3] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-sm md:text-base" 
                   />
                 </div>
                 <div>
-                  <label class="text-base font-normal text-[#535353] mb-2 block">Phone</label>
-                  <input 
-                    type="tel" 
-                    name="phone"
-                    placeholder="Phone number"
-                    class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
-                  />
+                  <label class="text-sm md:text-base font-medium text-[#4b4b4b] mb-2 block">Message</label>
+                  <textarea 
+                    name="message"
+                    placeholder="Your message"
+                    class="w-full border-b border-[#b3b3b3] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] resize-none text-[#3b3b3b] text-sm md:text-base" 
+                    rows="3"
+                  ></textarea>
                 </div>
-              </div>
-              <div>
-                <label class="text-base font-normal text-[#535353] mb-2 block">Email</label>
-                <input 
-                  type="email" 
-                  name="email"
-                  placeholder="Your email"
-                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
-                />
-              </div>
-              <div>
-                <label class="text-base font-normal text-[#535353] mb-2 block">Message</label>
-                <textarea 
-                  name="message"
-                  placeholder="Your message"
-                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] resize-none text-[#3b3b3b]" 
-                  rows="3"
-                ></textarea>
-              </div>
-              <input type="hidden" name="propertyId" value="{{.P.ID}}" />
-              <div class="flex flex-col sm:flex-row gap-4">
-                <button 
-                  type="button"
-                  class="flex items-center justify-center gap-3 rounded-[5px] border border-[#f44335] px-6 py-3 hover:bg-[#f44335] hover:text-white transition-colors group"
-                >
-                  <img src="/assets/icons/phone-call.svg" alt="Call" class="w-7 h-7" />
-                  <span class="text-[18px] lg:text-[22px] font-medium leading-7 text-[#f44335] group-hover:text-white">Call</span>
-                </button>
-                <button 
-                  type="submit"
-                  class="bg-[#f44335] text-white text-[20px] lg:text-2xl font-medium leading-7 px-8 py-3 rounded-[5px] hover:bg-[#d63a2e] transition-colors"
-                >
-                  Send E-mail
-                </button>
-              </div>
-            </form>
+                <input type="hidden" name="propertyId" value="{{.P.ID}}" />
+                <div class="flex flex-col sm:flex-row gap-3">
+                  <button 
+                    type="button"
+                    class="flex items-center justify-center gap-2 rounded-[8px] border border-[#f44335] px-5 py-3 hover:bg-[#f44335] hover:text-white transition-colors group text-sm md:text-base font-semibold text-[#f44335]"
+                  >
+                    <img src="/assets/icons/phone-call.svg" alt="Call" class="w-6 h-6" />
+                    <span class="group-hover:text-white">Call</span>
+                  </button>
+                  <button 
+                    type="submit"
+                    class="bg-[#f44335] text-white text-sm md:text-base font-semibold px-6 py-3 rounded-[8px] hover:bg-[#d63a2e] transition-colors"
+                  >
+                    Send E-mail
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Similar Listings Section (placeholder for future implementation) -->
-  <div class="max-w-[1734px] mx-auto px-4 py-12">
-    <h2 class="text-[32px] lg:text-[40px] font-medium leading-[51.6px] text-[#383838] mb-[35px]">Similar Listings</h2>
+  <!-- Similar Listings Section -->
+  <section class="max-w-[85rem] mx-auto px-4 pb-20">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-[22px] md:text-[26px] font-semibold leading-[34px] text-[#2f2f2f]">Similar Listings</h2>
+      {{if gt (len .Similar.Items) 0}}
+      <span class="text-sm text-[#7a7a7a]">Based on {{.SimilarType}} {{.SimilarListing}}</span>
+      {{end}}
+    </div>
     
-    <div class="space-y-5">
-      <!-- Property cards will be added here when similar listings data is available -->
-      <div class="text-center text-gray-500 py-12">
-        Similar listings will appear here
-      </div>
+    {{if gt (len .Similar.Items) 0}}
+    <div class="space-y-4">
+      {{range .Similar.Items}}
+      {{template "partials/property-card.html" .}}
+      {{end}}
     </div>
-  </div>
+    {{else}}
+    <div class="text-center text-[#7d7d7d] py-10">
+      No similar listings available right now.
+    </div>
+    {{end}}
+  </section>
 </div>
+
+{{if .P.HasImages}}
+<!-- Lightbox -->
+<div id="gallery-lightbox" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center px-4">
+  <button type="button" class="absolute top-6 right-6 text-white text-2xl" data-lightbox-close>&times;</button>
+  <button type="button" class="absolute left-4 md:left-10 text-white text-3xl font-semibold" data-lightbox-prev aria-label="Previous photo">&#10094;</button>
+  <img id="lightbox-image" src="" alt="Gallery" class="max-h-[80vh] max-w-[90vw] object-contain rounded-[12px] shadow-[0_10px_25px_rgba(0,0,0,0.4)]" />
+  <button type="button" class="absolute right-4 md:right-10 text-white text-3xl font-semibold" data-lightbox-next aria-label="Next photo">&#10095;</button>
+</div>
+
+<script>
+  (function() {
+    const galleryImages = [{{range $i, $img := .P.Gallery}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}];
+    const lightbox = document.getElementById('gallery-lightbox');
+    if (!lightbox || galleryImages.length === 0) return;
+
+    const imgEl = document.getElementById('lightbox-image');
+    const closeBtn = lightbox.querySelector('[data-lightbox-close]');
+    const prevBtn = lightbox.querySelector('[data-lightbox-prev]');
+    const nextBtn = lightbox.querySelector('[data-lightbox-next]');
+    const triggers = document.querySelectorAll('[data-gallery-index]');
+    let currentIndex = 0;
+
+    function show(index) {
+      if (index < 0 || index >= galleryImages.length) return;
+      currentIndex = index;
+      imgEl.src = galleryImages[currentIndex];
+      lightbox.classList.remove('hidden');
+      lightbox.classList.add('flex');
+    }
+
+    function hide() {
+      lightbox.classList.add('hidden');
+      lightbox.classList.remove('flex');
+    }
+
+    function next() {
+      const nextIndex = (currentIndex + 1) % galleryImages.length;
+      show(nextIndex);
+    }
+
+    function prev() {
+      const prevIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+      show(prevIndex);
+    }
+
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.getAttribute('data-gallery-index') || 0);
+        show(idx);
+      });
+    });
+
+    closeBtn.addEventListener('click', hide);
+    nextBtn.addEventListener('click', next);
+    prevBtn.addEventListener('click', prev);
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) hide();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (lightbox.classList.contains('hidden')) return;
+      if (e.key === 'Escape') hide();
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+    });
+  })();
+</script>
+{{end}}
 {{end}}
 
 {{define "pages/property.html"}}{{template "layouts/base.html" .}}{{end}}
