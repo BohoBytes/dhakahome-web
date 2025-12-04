@@ -20,14 +20,11 @@
 
 <!-- NEW: Search Results List Section -->
 <section id="search-results">
-  {{template "partials/new-search-results-list.html" .}}
+  {{template "partials/search-results-list.html" .}}
 </section>
 
-<!-- Properties by Area Section (reused from homepage /) -->
-{{template "partials/properties-by-area.html" .}}
-
-<!-- Testimonials Section (reused from homepage /) -->
-{{template "partials/testimonials.html" .}}
+<!-- Common sections (Services, Why Dhaka Home, Properties by Area, Testimonials, FAQ) -->
+{{template "partials/common-sections.html" .}}
 {{end}}
 
 {{define "pages/new-search-results.html"}}{{template "layouts/base.html" .}}{{end}}

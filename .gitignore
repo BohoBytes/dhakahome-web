@@ -5,6 +5,7 @@
 # Binary
 bin/
 tmp/
+cmd/web/__debug_bin*
 
 # Go
 *.exe

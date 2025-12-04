@@ -10,6 +10,12 @@ A modern property search web application for Dhaka, Bangladesh, built with Go, H
 - **API**: OAuth2 client credentials flow with Nestlo backend
 - **Font**: Poppins (Google Fonts)
 
+## Configure API
+Set `API_BASE_URL` to your Nestlo endpoint (local/staging/prod). Default is `http://localhost:3000/api/v1`.  
+Authentication options:
+- Provide `API_CLIENT_ID` / `API_CLIENT_SECRET` (and optionally `API_TOKEN_SCOPE`, `API_AUTH_URL`) to fetch OAuth2 client-credential tokens automatically.
+- Or set `API_AUTH_TOKEN` to force a static bearer token (bypasses OAuth).
+
 ---
 
 ## Quick Start (Local Development)

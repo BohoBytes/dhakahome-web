@@ -88,6 +88,7 @@ module.exports = {
     'gap-[35px]',
     'gap-12',
     'gap-9',
+    'text-[22px]',
     'px-9',
     'py-[18px]',
     'py-[5px]',

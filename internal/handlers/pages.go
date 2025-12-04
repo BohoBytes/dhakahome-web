@@ -17,6 +17,7 @@ import (
 func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, data any) {
 	log.Printf("Rendering template: %s with page: %s", topLevelTemplate, pageFile)
 	t := template.Must(template.New(pageFile).Funcs(template.FuncMap{
+		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
 		"add":         add,
 		"sub":         sub,
@@ -55,14 +56,20 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		log.Printf("home search error: %v", err)
 	}
 	w.Header().Set("Content-Type", "text/html")
-	render(w, "pages/home.html", "home.html", map[string]any{"List": list})
+	render(w, "pages/home.html", "home.html", map[string]any{
+		"List":             list,
+		"UseSearchPartial": true,
+		"ActivePage":       "home",
+	})
 }
 
 func SearchPage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	cl := api.New()
 	list, _ := cl.SearchProperties(q) // TODO: handle error, flash message
+	w.Header().Set("Content-Type", "text/html")
 	t := template.Must(template.New("pages/search-results.html").Funcs(template.FuncMap{
+		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
 		"add":         add,
 		"sub":         sub,
@@ -83,7 +90,12 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/property-card.html",
 		"internal/views/partials/pagination.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/search-results.html", map[string]any{"List": list, "Query": q}); err != nil {
+	if err := t.ExecuteTemplate(w, "pages/search-results.html", map[string]any{
+		"List":             list,
+		"Query":            q,
+		"UseSearchPartial": true,
+		"ActivePage":       "home",
+	}); err != nil {
 		log.Printf("search page template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -99,7 +111,9 @@ func PropertyPage(w http.ResponseWriter, r *http.Request) {
 func FAQPage(w http.ResponseWriter, r *http.Request) {
 	log.Printf("FAQ handler called")
 	w.Header().Set("Content-Type", "text/html")
-	t := template.Must(template.ParseFiles(
+	t := template.Must(template.New("pages/faq.html").Funcs(template.FuncMap{
+		"eq": func(a, b any) bool { return a == b },
+	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/faq.html",
 		"internal/views/partials/header.html",
@@ -113,12 +127,14 @@ func FAQPage(w http.ResponseWriter, r *http.Request) {
 func AboutUsPage(w http.ResponseWriter, r *http.Request) {
 	log.Printf("About Us handler called")
 	w.Header().Set("Content-Type", "text/html")
-	t := template.Must(template.ParseFiles(
+	t := template.Must(template.New("pages/about-us.html").Funcs(template.FuncMap{
+		"eq": func(a, b any) bool { return a == b },
+	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/about-us.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/about-us.html", nil); err != nil {
+	if err := t.ExecuteTemplate(w, "pages/about-us.html", map[string]any{"ActivePage": "about"}); err != nil {
 		log.Printf("About Us template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -129,25 +145,30 @@ func formatPrice(price float64) string {
 		return "0"
 	}
 	s := strconv.FormatInt(int64(price), 10)
-	n := len(s)
-	if n <= 3 {
+	if len(s) <= 3 {
 		return s
 	}
-	var result strings.Builder
-	rem := n % 3
-	if rem > 0 {
-		result.WriteString(s[:rem])
-		if n > rem {
-			result.WriteRune(',')
+
+	parts := []string{s[len(s)-3:]}
+	prefix := s[:len(s)-3]
+
+	for len(prefix) > 0 {
+		if len(prefix) <= 2 {
+			parts = append(parts, prefix)
+			break
+		}
+		parts = append(parts, prefix[len(prefix)-2:])
+		prefix = prefix[:len(prefix)-2]
+	}
+
+	var out strings.Builder
+	for i := len(parts) - 1; i >= 0; i-- {
+		out.WriteString(parts[i])
+		if i > 0 {
+			out.WriteRune(',')
 		}
 	}
-	for i := rem; i < n; i += 3 {
-		result.WriteString(s[i : i+3])
-		if i+3 < n {
-			result.WriteRune(',')
-		}
-	}
-	return result.String()
+	return out.String()
 }
 
 func add(a, b int) int { return a + b }
