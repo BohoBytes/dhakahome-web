@@ -1,0 +1,40 @@
+# Environment files
+.env.*
+!.env.example
+
+# Binary
+bin/
+tmp/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Build
+dist/
+build/
+
+# AI Tools
+.cursor/
+.claude/

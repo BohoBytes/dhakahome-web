@@ -1,0 +1,105 @@
+{{define "partials/new-search.html"}}
+<!-- New Search Section from Figma -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="relative bg-white rounded-[10px] border-[5px] border-[#ff4c4a] border-solid shadow-[0px_5px_8.3px_0px_rgba(0,0,0,0.32)] p-8">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 backdrop-blur-[15.7px] bg-repeat bg-size-[481px_481px] bg-top-left opacity-[0.14] rounded-[10px] pointer-events-none" style="background-image: url('/assets/images/backgrounds/search-bg.png')"></div>
+      
+      <!-- Search Form -->
+      <form action="/new-search" method="get" class="relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+          
+          <!-- Location Search -->
+          <div class="flex flex-col gap-3">
+            <label class="text-[16px] font-normal text-black">Location</label>
+            <div class="bg-white rounded-[6px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-3 py-2 flex items-center gap-2">
+              <img src="/assets/icons/location.svg" alt="Location" class="w-4 h-5" />
+              <input 
+                type="text" 
+                name="location" 
+                value="Dhaka" 
+                placeholder="Location"
+                class="text-[22px] font-normal text-[#3b3b3b] border-none outline-none bg-transparent flex-1"
+              />
+            </div>
+          </div>
+          
+          <!-- Type Search -->
+          <div class="flex flex-col gap-3">
+            <label class="text-[16px] font-normal text-black">Type</label>
+            <div class="bg-white rounded-[6px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-3 py-3 relative">
+              <select 
+                name="type" 
+                class="text-[22px] font-normal text-[#3b3b3b] border-none outline-none bg-transparent w-full appearance-none cursor-pointer"
+              >
+                <option value="">Any Type</option>
+                <option value="Residential">Residential</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Land">Land</option>
+                <option value="Office Space">Office Space</option>
+                <option value="Hostel">Hostel</option>
+              </select>
+              <div class="absolute right-3 top-3 pointer-events-none">
+                <svg width="16" height="8" viewBox="0 0 20 10" fill="none">
+                  <path d="M20 1.50743L10 10L0 1.50743L1.775 -4.98562e-07L10 6.98514L18.225 -6.99899e-07L20 1.50743Z" fill="#ACACAC"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Area Search -->
+          <div class="flex flex-col gap-3">
+            <label class="text-[16px] font-normal text-black">Area</label>
+            <div class="bg-white rounded-[6px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-3 py-3 relative">
+              <select 
+                name="area" 
+                class="text-[22px] font-normal text-[#3b3b3b] border-none outline-none bg-transparent w-full appearance-none cursor-pointer"
+              >
+                <option value="">Any Area</option>
+                <option value="Uttara">Uttara</option>
+                <option value="Gulshan">Gulshan</option>
+                <option value="Bashundhara">Bashundhara</option>
+                <option value="Malibagh">Malibagh</option>
+              </select>
+              <div class="absolute right-3 top-3 pointer-events-none">
+                <svg width="16" height="8" viewBox="0 0 20 10" fill="none">
+                  <path d="M20 1.50743L10 10L0 1.50743L1.775 -4.98562e-07L10 6.98514L18.225 -6.99899e-07L20 1.50743Z" fill="#ACACAC"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Price Search -->
+          <div class="flex flex-col gap-3">
+            <label class="text-[16px] font-normal text-black">Max. Price</label>
+            <div class="bg-white rounded-[6px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-3 py-3 relative">
+              <input 
+                type="text" 
+                name="maxPrice" 
+                value="৳ 40,000" 
+                placeholder="Max Price"
+                class="text-[22px] font-normal text-[#3b3b3b] border-none outline-none bg-transparent w-full"
+              />
+              <div class="absolute right-3 top-3 pointer-events-none">
+                <svg width="16" height="8" viewBox="0 0 20 10" fill="none">
+                  <path d="M20 1.50743L10 10L0 1.50743L1.775 -4.98562e-07L10 6.98514L18.225 -6.99899e-07L20 1.50743Z" fill="#ACACAC"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search Button -->
+          <button 
+            type="submit"
+            class="bg-[#f3f3f3] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] h-[55px] flex items-center justify-center hover:bg-[#e0e0e0] transition-colors cursor-pointer"
+          >
+            <span class="text-[24px] font-medium text-[#F44335]">Search</span>
+          </button>
+          
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{{end}}

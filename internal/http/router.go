@@ -31,6 +31,8 @@ func NewRouter() *chi.Mux {
 		w.Write([]byte("<h1>Test page works!</h1>"))
 	})
 	r.Get("/search", handlers.SearchPage)
+	r.Get("/faq", handlers.FAQPage)
+	r.Get("/about-us", handlers.AboutUsPage)
 	r.Get("/properties/{id}", handlers.PropertyPage)
 
 	// htmx partials

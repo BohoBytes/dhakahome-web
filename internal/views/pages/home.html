@@ -1,28 +1,28 @@
 {{define "content"}}
 <!-- HERO with Header (full-bleed background across the whole section) -->
-<section class="relative isolate">
+<section class="relative isolate pb-8">
   <!-- full-bleed background -->
   <div
-    class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 bg-[url('/assets/hero-bg.png')] bg-cover bg-center"
+    class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 bg-[url('/assets/images/backgrounds/hero-bg.png')] bg-cover bg-center"
   ></div>
 
   {{template "partials/header.html" .}}
   
   {{template "partials/hero.html" .}}
   
-  {{template "partials/search-box.html" .}}
+{{template "partials/search-box.html" .}}
 </section>
 
 <!-- spacer to accommodate the overlay -->
-<div class="h-16"></div>
+<div class="h-8 md:h-40"></div>
 
-{{template "partials/services.html" .}}
+<!-- Search results panel (empty on initial load, populated via HTMX) -->
+<section class="mx-auto max-w-[85rem] px-4 mt-6" id="search-results">
+  {{template "partials/results.html" .}}
+</section>
 
-{{template "partials/why-dhakahome.html" .}}
-
-{{template "partials/properties-by-area.html" .}}
-
-{{template "partials/testimonials.html" .}}
+<!-- Common sections -->
+{{template "partials/common-sections.html" .}}
 {{end}}
 
 {{define "pages/home.html"}}{{template "layouts/base.html" .}}{{end}}

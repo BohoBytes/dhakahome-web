@@ -1,19 +1,19 @@
 {{define "partials/hero.html"}}
 <!-- Hero content -->
 <div
-  class="mx-auto max-w-[85rem] px-4 grid md:grid-cols-[55fr,45fr] gap-5 items-center"
+  class="mx-auto max-w-[85rem] px-4 grid md:grid-cols-[55fr,45fr] gap-5 items-center pt-8 md:pt-12 lg:pt-16"
 >
-  <div class="space-y-6">
-    <h1 class="font-normal leading-tight text-5xl md:text-hero">
+  <div class="space-y-4 md:space-y-6">
+    <h1 class="font-normal leading-tight text-[32px] sm:text-[40px] md:text-[48px] lg:text-hero">
       Manage Your Properties<br /><span class="text-primary">Remotely</span>
     </h1>
-    <p class="text-subtext md:text-lg max-w-xl">
+    <p class="text-[16px] sm:text-[18px] md:text-lg max-w-xl leading-relaxed">
       Secure, efficient property management for owners worldwide.
     </p>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 pt-2">
       <a
         href="http://localhost:8080/"
-        class="inline-flex justify-center items-center gap-6 px-[52px] py-[19px] bg-[#F44335] rounded-[10px] text-white font-medium text-buttonlg leading-[33px] hover:bg-[#d63730] transition-colors"
+        class="inline-flex justify-center items-center gap-4 sm:gap-6 px-[32px] py-[14px] sm:px-[42px] sm:py-[16px] md:px-[52px] md:py-[19px] bg-[#F44335] rounded-[10px] text-white font-medium text-[16px] sm:text-[18px] md:text-buttonlg leading-[24px] sm:leading-[28px] md:leading-[33px] hover:bg-[#d63730] transition-colors"
       >
         Get Started
       </a>
@@ -24,9 +24,9 @@
   <div class="relative hidden md:block">
     <!-- Replace with exact asset or remove this block if your bg already includes the house -->
     <img
-      src="/assets/hero-image.png"
+      src="/assets/images/backgrounds/hero-image.png"
       alt=""
-      class="w-full h-[40rem] mt-[15px] object-cover"
+      class="w-full h-[30rem] md:h-[35rem] lg:h-[40rem] mt-[15px] object-cover"
     />
   </div>
 </div>

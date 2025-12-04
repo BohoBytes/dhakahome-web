@@ -1,29 +1,272 @@
 {{define "content"}}
-<article class="grid gap-4">
-  <img src="{{index .P.Images 0}}" class="w-full h-72 object-cover rounded" />
-  <h1 class="text-3xl font-bold">{{.P.Title}}</h1>
-  <div class="text-gray-600">{{.P.Address}}</div>
-  <div class="text-xl font-semibold">
-    {{printf "%.0f" .P.Price}} {{.P.Currency}}
+<!-- Property Details Page -->
+<div class="min-h-screen bg-white">
+  <!-- Header -->
+  {{template "partials/header.html" .}}
+
+  <!-- Search Box -->
+  {{template "partials/search-box.html" .}}
+
+  <!-- Property Details Section -->
+  <div class="max-w-[1734px] mx-auto px-4 py-12 mt-24">
+    <div class="bg-[#f1f1f1] rounded-[20px] shadow-[0_4px_4px_rgba(0,0,0,0.15)] p-8">
+      <!-- Header with Back Button, Title, and Price -->
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-4">
+          <button onclick="history.back()" class="w-[19px] h-[33px] flex-shrink-0">
+            <img src="/assets/icons/arrow-back.svg" alt="Back" class="w-full h-full" />
+          </button>
+          <h1 class="text-[32px] lg:text-[45px] font-normal leading-[54px] text-[#414141]">
+            {{.P.Title}}
+          </h1>
+        </div>
+        <div class="text-[32px] lg:text-[45px] font-normal leading-[54px] text-[#414141]">
+          {{printf "৳%.0f" .P.Price}}
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="flex gap-4 mb-6 flex-wrap">
+        {{range .P.Badges}}
+        <span class="text-lg font-normal text-[#f44335]">{{.}}</span>
+        {{end}}
+      </div>
+
+      <!-- Property Images -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Main Image -->
+        <div class="lg:col-span-2">
+          <div class="relative bg-[#f3f3f3] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]">
+            {{if .P.Images}}
+            <img src="{{index .P.Images 0}}" alt="{{.P.Title}}" class="w-full h-[451px] object-cover" />
+            {{else}}
+            <img src="https://picsum.photos/1039/451" alt="Property" class="w-full h-[451px] object-cover" />
+            {{end}}
+            <!-- Property Stats Overlay -->
+            <div class="absolute bottom-0 left-0 right-0 bg-white/90 p-4">
+              <div class="flex items-center justify-around flex-wrap gap-4">
+                {{if .P.Bedrooms}}
+                <div class="flex items-center gap-2">
+                  <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6" />
+                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Bedrooms}} BHK</span>
+                </div>
+                {{end}}
+                {{if .P.Bathrooms}}
+                <div class="flex items-center gap-2">
+                  <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6" />
+                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Bathrooms}}</span>
+                </div>
+                {{end}}
+                {{if .P.Area}}
+                <div class="flex items-center gap-2">
+                  <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6" />
+                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Area}} sq ft</span>
+                </div>
+                {{end}}
+                {{if .P.Parking}}
+                <div class="flex items-center gap-2">
+                  <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6" />
+                  <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">{{.P.Parking}}</span>
+                </div>
+                {{end}}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thumbnail Gallery -->
+        <div class="space-y-4">
+          {{if gt (len .P.Images) 1}}
+          <div class="relative rounded-[10px] overflow-hidden">
+            <img src="{{index .P.Images 1}}" alt="Interior" class="w-full h-[219px] object-cover" />
+          </div>
+          {{else}}
+          <div class="relative rounded-[10px] overflow-hidden">
+            <img src="/assets/images/property-interior.png" alt="Interior" class="w-full h-[219px] object-cover" />
+          </div>
+          {{end}}
+          <div class="relative rounded-[10px] overflow-hidden">
+            {{if gt (len .P.Images) 2}}
+            <img src="{{index .P.Images 2}}" alt="Gallery" class="w-full h-[219px] object-cover" />
+            {{else}}
+            <img src="https://picsum.photos/594/219" alt="Gallery" class="w-full h-[219px] object-cover" />
+            {{end}}
+            {{if gt (len .P.Images) 3}}
+            <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <span class="text-white text-[60px] lg:text-[92px] font-normal">+10</span>
+            </div>
+            {{end}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="bg-[#dadada] rounded-[5px] p-4 mb-6">
+        <div class="flex flex-wrap gap-4">
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Gas Supply</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Boundary Wall</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Kitchen Cabinet</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Power Backup</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Parking</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Lift</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Servant Room</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6" />
+            <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Furnished</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description Section -->
+      <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] p-6 mb-6">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
+          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838]">Description</h2>
+          <div class="flex items-center gap-4 bg-[#d9d9d9] rounded-[5px] px-4 py-2">
+            <div class="flex items-center gap-2">
+              <img src="/assets/icons/calendar.svg" alt="Year" class="w-[30px] h-[30px]" />
+              <span class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#737373]">2023</span>
+            </div>
+            <div class="w-px h-11 bg-[#9d9d9d]"></div>
+            <div class="flex items-center gap-2">
+              <img src="/assets/icons/date.svg" alt="Date" class="w-[29px] h-[29px]" />
+              <span class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#737373]">Jan 12, 2025</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="border-t border-[#a3a3a3] pt-4">
+          <h3 class="text-[20px] lg:text-2xl font-medium leading-[26.4px] text-[#272727] mb-2">
+            {{.P.Title}}
+          </h3>
+          <p class="text-[18px] lg:text-[22px] font-medium leading-[26.4px] text-[#7d7d7d] mb-4">
+            {{.P.Address}}
+          </p>
+          <p class="text-[18px] lg:text-[22px] font-normal leading-[32px] lg:leading-[39px] text-[#4c4c4c]">
+            Step into this spacious and thoughtfully planned apartment, ideal for families seeking comfort, convenience, and style. Spanning {{.P.Area}} square feet, this home features {{.P.Bedrooms}} generously sized bedrooms, each designed to ensure privacy and natural light. The {{.P.Bathrooms}} well-appointed bathrooms, including attached ones, offer added ease for busy households.
+          </p>
+        </div>
+      </div>
+
+      <!-- Required Documents and Contact Form -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Required Documents -->
+        <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
+          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838] mb-4">Required Documents</h2>
+          <div class="border-t border-[#aeaeae] pt-4 space-y-6">
+            <div class="flex items-center gap-3">
+              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
+              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">NID Copy</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
+              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Employment Letter</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
+              <span class="text-[18px] lg:text-[22px] font-normal leading-[26.4px] text-[#535353]">Security Deposit Agreement</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="lg:col-span-2 bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
+          <h2 class="text-[28px] lg:text-[34px] font-medium text-[#383838] mb-4">Contact Dhaka Home about this property</h2>
+          <div class="border-t border-[#aeaeae] pt-6">
+            <form action="/lead" method="post" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="text-base font-normal text-[#535353] mb-2 block">Name</label>
+                  <input 
+                    type="text" 
+                    name="name"
+                    placeholder="Your name"
+                    class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
+                  />
+                </div>
+                <div>
+                  <label class="text-base font-normal text-[#535353] mb-2 block">Phone</label>
+                  <input 
+                    type="tel" 
+                    name="phone"
+                    placeholder="Phone number"
+                    class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="text-base font-normal text-[#535353] mb-2 block">Email</label>
+                <input 
+                  type="email" 
+                  name="email"
+                  placeholder="Your email"
+                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b]" 
+                />
+              </div>
+              <div>
+                <label class="text-base font-normal text-[#535353] mb-2 block">Message</label>
+                <textarea 
+                  name="message"
+                  placeholder="Your message"
+                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] resize-none text-[#3b3b3b]" 
+                  rows="3"
+                ></textarea>
+              </div>
+              <input type="hidden" name="propertyId" value="{{.P.ID}}" />
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button 
+                  type="button"
+                  class="flex items-center justify-center gap-3 rounded-[5px] border border-[#f44335] px-6 py-3 hover:bg-[#f44335] hover:text-white transition-colors group"
+                >
+                  <img src="/assets/icons/phone-call.svg" alt="Call" class="w-7 h-7" />
+                  <span class="text-[18px] lg:text-[22px] font-medium leading-7 text-[#f44335] group-hover:text-white">Call</span>
+                </button>
+                <button 
+                  type="submit"
+                  class="bg-[#f44335] text-white text-[20px] lg:text-2xl font-medium leading-7 px-8 py-3 rounded-[5px] hover:bg-[#d63a2e] transition-colors"
+                >
+                  Send E-mail
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <form action="/lead" method="post" class="grid sm:grid-cols-3 gap-3 mt-4">
-    <input
-      name="name"
-      placeholder="Your name"
-      class="border rounded px-3 py-2"
-    />
-    <input name="phone" placeholder="Phone" class="border rounded px-3 py-2" />
-    <input
-      name="email"
-      placeholder="Email"
-      class="border rounded px-3 py-2 sm:col-span-2"
-    />
-    <input type="hidden" name="propertyId" value="{{.P.ID}}" />
-    <button class="rounded bg-black text-white px-4 py-2 sm:col-span-1">
-      Request info
-    </button>
-  </form>
-</article>
-{{end}} {{define "pages/property.html"}}{{template "layouts/base.html"
-.}}{{end}}
+  <!-- Similar Listings Section (placeholder for future implementation) -->
+  <div class="max-w-[1734px] mx-auto px-4 py-12">
+    <h2 class="text-[32px] lg:text-[40px] font-medium leading-[51.6px] text-[#383838] mb-[35px]">Similar Listings</h2>
+    
+    <div class="space-y-5">
+      <!-- Property cards will be added here when similar listings data is available -->
+      <div class="text-center text-gray-500 py-12">
+        Similar listings will appear here
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{define "pages/property.html"}}{{template "layouts/base.html" .}}{{end}}

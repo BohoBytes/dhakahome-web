@@ -1,0 +1,60 @@
+{{define "content"}}
+<!-- Header -->
+<section class="relative isolate bg-white">
+  {{template "partials/header.html" .}}
+</section>
+
+<!-- Divider line -->
+<div class="border-t border-[#D4D4D4]"></div>
+
+<!-- About Us Content -->
+<section class="py-12 px-4 min-h-[70vh]">
+  <div class="max-w-[1800px] mx-auto">
+    <!-- Title -->
+    <h1 class="text-[34px] font-normal leading-[40.8px] text-black mb-8">
+      About Us
+    </h1>
+
+    <!-- Main Content Container -->
+    <div class="flex flex-col lg:flex-row gap-6 items-start">
+      <!-- Left Section: Executive Info Card -->
+      <div class="flex-1 flex flex-col gap-[21px]">
+        <!-- Executive Name and Title Card -->
+        <div class="bg-[#f4f4f4] border border-[#8b8b8b] rounded-[10px] px-6 py-[14px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p class="text-[30px] font-normal leading-[40.8px] text-black whitespace-nowrap">
+            Md Belayet Hossain
+          </p>
+          <p class="text-[22px] font-normal leading-[26.4px] text-[#5b5b5b] capitalize whitespace-nowrap">
+            Managing Director
+          </p>
+        </div>
+
+        <!-- Company History Card -->
+        <div class="bg-[#f4f4f4] border border-[#8b8b8b] rounded-[10px] p-6 min-h-[341px]">
+          <p class="text-[18px] font-normal leading-[32px] text-[#3a3a3a]">
+            Our journey began from a one bedroom apartment based in Las Vegas, USA in 2003, where we started to sell plots and flats for Bashundhara Housing to Non Residential Bangladeshis.
+            <br /><br />
+            We represented Bashundhara Housing and took their products to every corner of the USA and Canada, to thousands of Non Residential Bangladeshis living abroad. We professionally and legally served many of their existing and potential clients, managed and maintained every transaction of Bashudhara Housing took place in North America. Our honesty, integrity and customer service rewarded us with more than three thousand sales in just three years. Soon, many other renowned Real Estate companies of Bangladesh appointed us as their exclusive sales agent. We represented some of the renowned companies named: Swadesh Properties Ltd., Biswas Builders Ltd., AG Properties Ltd., SAKPDL Properties Ltd. We proudly sold some apartment products of Shanta Properties and Building Technologies and Ideas Ltd (BTI).
+            <br /><br />
+            By 2010, we served more than 9,000 clients in North America, Australia, and Bangladesh
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Section: Executive Photo -->
+      <div class="flex-shrink-0 w-full lg:w-[336px] lg:mt-0">
+        <div class="bg-[#f0f0f0] border border-[#8b8b8b] rounded-[10px] overflow-hidden relative h-[431px]">
+          <img
+            src="/assets/images/belayet-hossain.png"
+            alt="Md Belayet Hossain - Managing Director"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{end}}
+
+{{define "pages/about-us.html"}}{{template "layouts/base.html" .}}{{end}}
+

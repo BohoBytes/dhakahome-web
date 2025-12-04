@@ -1,28 +1,33 @@
 {{define "partials/search-box.html"}}
 <!-- Search Panel overlay, pinned to the bottom of the hero -->
-<div class="absolute left-0 right-0" style="bottom: -6.5rem">
-  <div class="mx-auto px-4">
-    <form>
+<div class="relative md:absolute left-0 right-0 md:bottom-[-104px] z-10 mt-8 md:mt-0">
+      <div class="mx-auto px-4">
+    <form
+      action="/search"
+      method="get"
+      {{if .UseSearchPartial}}
+        hx-get="/search-partial"
+        hx-target="#search-results"
+        hx-push-url="true"
+      {{end}}
+    >
       <div
-        class="figma-search-container"
+        class="figma-search-container w-full max-w-[85rem] bg-white rounded-[10px] mx-auto overflow-hidden"
         style="
-          width: 88%;
-          max-width: 1000px;
-          height: 135px;
-          background: white;
+          min-height: 135px;
+          height: auto;
           box-shadow: 0px 5px 8.3px rgba(0, 0, 0, 0.32);
-          overflow: hidden;
           border-radius: 10px;
           outline: 3px #ff4c4a solid;
           outline-offset: -3px;
           backdrop-filter: blur(15.7px);
-          background-image: url(/assets/search-bg.png);
+          background-image: url(/assets/images/backgrounds/search-bg.png);
           background-size: cover;
-          margin: 0 auto;
           display: flex;
-          align-items: center;
-          padding: 26px 20px;
-          gap: 16px;
+          flex-direction: column;
+          align-items: stretch;
+          padding: 20px 16px;
+          gap: 12px;
         "
       >
         <!-- Location Field -->
@@ -35,15 +40,17 @@
             justify-content: center;
             gap: 5px;
           "
+          class="w-full md:w-auto"
         >
           <div
             style="
               color: black;
-              font-size: 16px;
+              font-size: 14px;
               font-family: Poppins;
               font-weight: 400;
               word-wrap: break-word;
             "
+            class="md:text-base"
           >
             Location
           </div>
@@ -59,13 +66,13 @@
               gap: 5px;
             "
           >
-            <img src="/assets/icons/location.svg" alt="Location" />
+            <img src="/assets/icons/location.svg" alt="Location" class="w-4 h-4 md:w-auto md:h-auto" />
             <input
               name="location"
               value="Dhaka"
               style="
                 color: #3b3b3b;
-                font-size: 18px;
+                font-size: 16px;
                 font-family: Poppins;
                 font-weight: 400;
                 word-wrap: break-word;
@@ -75,6 +82,7 @@
                 flex: 1;
                 min-width: 0;
               "
+              class="md:text-lg"
             />
           </div>
         </div>
@@ -89,15 +97,17 @@
             justify-content: center;
             gap: 5px;
           "
+          class="w-full md:w-auto"
         >
           <div
             style="
               color: black;
-              font-size: 16px;
+              font-size: 14px;
               font-family: Poppins;
               font-weight: 400;
               word-wrap: break-word;
             "
+            class="md:text-base"
           >
             Type
           </div>
@@ -117,7 +127,7 @@
               name="type"
               style="
                 color: #3b3b3b;
-                font-size: 18px;
+                font-size: 16px;
                 font-family: Poppins;
                 font-weight: 400;
                 line-height: 21.6px;
@@ -130,6 +140,7 @@
                 padding: 14px 7px;
                 appearance: none;
               "
+              class="md:text-lg"
             >
               <option>Residential</option>
               <option>Commercial</option>
@@ -139,6 +150,7 @@
               src="/assets/icons/arrow_down.svg"
               alt="Arrow Down"
               style="position: absolute; right: 15px; pointer-events: none"
+              class="w-4 h-4 md:w-auto md:h-auto"
             />
           </div>
         </div>
@@ -153,15 +165,17 @@
             justify-content: center;
             gap: 5px;
           "
+          class="w-full md:w-auto"
         >
           <div
             style="
               color: black;
-              font-size: 16px;
+              font-size: 14px;
               font-family: Poppins;
               font-weight: 400;
               word-wrap: break-word;
             "
+            class="md:text-base"
           >
             Area
           </div>
@@ -181,7 +195,7 @@
               name="area"
               style="
                 color: #3b3b3b;
-                font-size: 18px;
+                font-size: 16px;
                 font-family: Poppins;
                 font-weight: 400;
                 line-height: 21.6px;
@@ -194,6 +208,7 @@
                 padding: 14px 7px;
                 appearance: none;
               "
+              class="md:text-lg"
             >
               <option>Uttara</option>
               <option>Gulshan</option>
@@ -204,6 +219,7 @@
               src="/assets/icons/arrow_down.svg"
               alt="Arrow Down"
               style="position: absolute; right: 15px; pointer-events: none"
+              class="w-4 h-4 md:w-auto md:h-auto"
             />
           </div>
         </div>
@@ -218,15 +234,17 @@
             justify-content: center;
             gap: 5px;
           "
+          class="w-full md:w-auto"
         >
           <div
             style="
               color: black;
-              font-size: 16px;
+              font-size: 14px;
               font-family: Poppins;
               font-weight: 400;
               word-wrap: break-word;
             "
+            class="md:text-base"
           >
             Max. Price
           </div>
@@ -247,7 +265,7 @@
               value="৳ 40,000"
               style="
                 color: #3b3b3b;
-                font-size: 18px;
+                font-size: 16px;
                 font-family: Poppins;
                 font-weight: 400;
                 line-height: 21.6px;
@@ -259,26 +277,40 @@
                 min-width: 0;
                 padding: 14px 11px;
               "
+              class="md:text-lg"
             />
             <img
               src="/assets/icons/arrow_down.svg"
               alt="Arrow Down"
               style="position: absolute; right: 15px; pointer-events: none"
+              class="w-4 h-4 md:w-auto md:h-auto"
             />
           </div>
         </div>
 
         <!-- Search Button -->
-        <div style="flex: 0 0 120px; display: flex; margin-top: 29px">
-          <a
-            href="http://localhost:8080/login"
-            class="inline-flex justify-center items-center gap-2 px-7 py-3 rounded-[10px] border-2 border-[#F44335] text-[#F44335] font-medium text-buttonmd leading-7 hover:bg-[#F44335] hover:text-white transition-colors"
+        <div style="flex: 0 0 auto; display: flex; margin-top: 0;" class="md:mt-[29px] md:flex-[0_0_120px] w-full md:w-auto">
+          <button
+            type="submit"
+            class="inline-flex justify-center items-center gap-2 w-full md:w-auto px-7 py-3 rounded-[10px] border-2 border-[#F44335] text-[#F44335] font-medium text-[16px] md:text-buttonmd leading-7 hover:bg-[#F44335] hover:text-white transition-colors cursor-pointer"
           >
             Search
-          </a>
+          </button>
         </div>
       </div>
     </form>
   </div>
 </div>
+
+<style>
+  @media (min-width: 768px) {
+    .figma-search-container {
+      flex-direction: row !important;
+      align-items: center !important;
+      padding: 26px 20px !important;
+      gap: 16px !important;
+      height: 135px !important;
+    }
+  }
+</style>
 {{end}}

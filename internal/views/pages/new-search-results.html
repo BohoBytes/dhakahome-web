@@ -1,0 +1,33 @@
+{{define "content"}}
+<!-- Search Results Page - Reusing Homepage Sections from / -->
+
+<!-- HERO Section with Header (same as homepage /) -->
+<section class="relative isolate">
+  <!-- full-bleed background -->
+  <div
+    class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 bg-[url('/assets/images/backgrounds/hero-bg.png')] bg-cover bg-center"
+  ></div>
+
+  {{template "partials/header.html" .}}
+  
+  {{template "partials/hero.html" .}}
+  
+  {{template "partials/search-box.html" .}}
+</section>
+
+<!-- spacer to accommodate the overlay -->
+<div class="h-16"></div>
+
+<!-- NEW: Search Results List Section -->
+<section id="search-results">
+  {{template "partials/new-search-results-list.html" .}}
+</section>
+
+<!-- Properties by Area Section (reused from homepage /) -->
+{{template "partials/properties-by-area.html" .}}
+
+<!-- Testimonials Section (reused from homepage /) -->
+{{template "partials/testimonials.html" .}}
+{{end}}
+
+{{define "pages/new-search-results.html"}}{{template "layouts/base.html" .}}{{end}}

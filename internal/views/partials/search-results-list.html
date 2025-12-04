@@ -1,0 +1,31 @@
+{{define "partials/search-results-list.html"}}
+<!-- Search Results List Section (Reusable Component) -->
+<section class="bg-white mt-16">
+  <div class="max-w-[85rem] mx-auto px-4">
+    <!-- Results Header -->
+    <div class="text-center mt-[120px] mb-[30px]">
+      <h1 class="text-[40px] font-medium leading-[60px] text-[#3b3b3b] mb-2">
+        Search <span class="text-primary">Results</span>
+      </h1>
+      <p class="text-[16px] text-[#797979]">
+        Found {{.List.Total}} properties matching your criteria
+      </p>
+    </div>
+
+    <!-- Property Cards List -->
+    <div class="flex flex-col gap-4">
+      {{range .List.Items}}
+        {{template "partials/property-card.html" .}}
+      {{else}}
+        <!-- No Results -->
+        <div class="bg-[#f9f9f9] rounded-[10px] shadow-[0px_5px_9.9px_0px_rgba(0,0,0,0.15)] p-8 text-center">
+          <p class="text-[16px] text-[#797979]">No properties found matching your criteria.</p>
+        </div>
+      {{end}}
+    </div>
+
+    <!-- Pagination -->
+    {{template "partials/pagination.html" .}}
+  </div>
+</section>
+{{end}}
