@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 
@@ -37,7 +36,6 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 		"internal/views/partials/properties-by-area.html",
 		"internal/views/partials/testimonials.html",
 		"internal/views/partials/faq.html",
-		"internal/views/partials/results.html", // safe to include for all pages
 	))
 	log.Printf("Templates parsed successfully")
 	if err := t.ExecuteTemplate(w, topLevelTemplate, data); err != nil {
@@ -50,16 +48,11 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Home handler called")
-	cl := api.New()
-	list, err := cl.SearchProperties(url.Values{})
-	if err != nil {
-		log.Printf("home search error: %v", err)
-	}
 	w.Header().Set("Content-Type", "text/html")
 	render(w, "pages/home.html", "home.html", map[string]any{
-		"List":             list,
-		"UseSearchPartial": true,
-		"ActivePage":       "home",
+		"List":        api.PropertyList{},
+		"ShowResults": false,
+		"ActivePage":  "home",
 	})
 }
 
@@ -91,10 +84,10 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/pagination.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/search-results.html", map[string]any{
-		"List":             list,
-		"Query":            q,
-		"UseSearchPartial": true,
-		"ActivePage":       "home",
+		"List":        list,
+		"Query":       q,
+		"ActivePage":  "home",
+		"ShowResults": true,
 	}); err != nil {
 		log.Printf("search page template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)

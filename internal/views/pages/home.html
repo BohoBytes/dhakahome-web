@@ -14,12 +14,14 @@
 </section>
 
 <!-- spacer to accommodate the overlay -->
-<div class="h-8 md:h-40"></div>
+<div class="h-8 md:h-28"></div>
 
-<!-- Search results panel (empty on initial load, populated via HTMX) -->
+<!-- Search results panel (only after a search) -->
+{{if .ShowResults}}
 <section class="mx-auto max-w-[85rem] px-4 mt-6" id="search-results">
-  {{template "partials/results.html" .}}
+  {{template "partials/search-results-list.html" .}}
 </section>
+{{end}}
 
 <!-- Common sections -->
 {{template "partials/common-sections.html" .}}

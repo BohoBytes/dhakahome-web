@@ -37,8 +37,6 @@ func NewRouter() *chi.Mux {
 	r.Get("/properties/{id}", handlers.PropertyPage)
 
 	// htmx partials
-	r.Get("/search-partial", handlers.SearchPartial)
-
 	// forms
 	r.Post("/lead", handlers.SubmitLead)
 

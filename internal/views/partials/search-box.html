@@ -1,16 +1,8 @@
 {{define "partials/search-box.html"}}
 <!-- Search Panel overlay, pinned to the bottom of the hero -->
-<div class="relative md:absolute left-0 right-0 md:bottom-[-104px] z-10 mt-8 md:mt-0">
+<div class="relative md:absolute left-0 right-0 md:bottom-[-70px] z-10 mt-8 md:mt-0">
   <div class="mx-auto px-4">
-    <form
-      action="/search"
-      method="get"
-      {{if .UseSearchPartial}}
-        hx-get="/search-partial"
-        hx-target="#search-results"
-        hx-push-url="true"
-      {{end}}
-    >
+    <form action="/search" method="get">
       <div
         class="figma-search-container w-full max-w-[85rem] bg-white rounded-[10px] mx-auto overflow-hidden"
         style="
