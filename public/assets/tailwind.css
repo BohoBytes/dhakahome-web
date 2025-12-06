@@ -777,6 +777,9 @@ body {
 .top-\[90px\] {
   top: 90px;
 }
+.bottom-4 {
+  bottom: 1rem;
+}
 .isolate {
   isolation: isolate;
 }
@@ -1037,6 +1040,27 @@ body {
 .h-full {
   height: 100%;
 }
+.h-11 {
+  height: 2.75rem;
+}
+.h-7 {
+  height: 1.75rem;
+}
+.h-\[200px\] {
+  height: 200px;
+}
+.h-\[29px\] {
+  height: 29px;
+}
+.h-\[420px\] {
+  height: 420px;
+}
+.h-\[22px\] {
+  height: 22px;
+}
+.h-\[25px\] {
+  height: 25px;
+}
 .max-h-\[80vh\] {
   max-height: 80vh;
 }
@@ -1132,6 +1156,21 @@ body {
 }
 .w-screen {
   width: 100vw;
+}
+.w-7 {
+  width: 1.75rem;
+}
+.w-\[29px\] {
+  width: 29px;
+}
+.w-\[30px\] {
+  width: 30px;
+}
+.w-\[25px\] {
+  width: 25px;
+}
+.w-\[268px\] {
+  width: 268px;
 }
 .max-w-7xl {
   max-width: 80rem;
@@ -1282,6 +1321,13 @@ body {
 .gap-\[37px\] {
   gap: 37px;
 }
+.gap-x-6 {
+  -moz-column-gap: 1.5rem;
+       column-gap: 1.5rem;
+}
+.gap-y-3 {
+  row-gap: 0.75rem;
+}
 .space-x-3 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.75rem * var(--tw-space-x-reverse));
@@ -1331,6 +1377,14 @@ body {
   --tw-space-y-reverse: 0;
   margin-top: calc(11px * calc(1 - var(--tw-space-y-reverse)));
   margin-bottom: calc(11px * var(--tw-space-y-reverse));
+}
+.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(1.25rem * var(--tw-space-y-reverse));
+}
+.self-start {
+  align-self: flex-start;
 }
 .self-end {
   align-self: flex-end;
@@ -1406,6 +1460,9 @@ body {
 }
 .border-t {
   border-top-width: 1px;
+}
+.border-l {
+  border-left-width: 1px;
 }
 .border-\[\#424242\] {
   --tw-border-opacity: 1;
@@ -1483,6 +1540,10 @@ body {
 .border-white {
   --tw-border-opacity: 1;
   border-color: rgb(255 255 255 / var(--tw-border-opacity, 1));
+}
+.border-\[\#535353\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(83 83 83 / var(--tw-border-opacity, 1));
 }
 .bg-\[\#0098d4\] {
   --tw-bg-opacity: 1;
@@ -1629,6 +1690,9 @@ body {
 }
 .bg-white\/90 {
   background-color: rgb(255 255 255 / 0.9);
+}
+.bg-black\/50 {
+  background-color: rgb(0 0 0 / 0.5);
 }
 .bg-opacity-50 {
   --tw-bg-opacity: 0.5;
@@ -1797,6 +1861,10 @@ body {
 .py-\[6px\] {
   padding-top: 6px;
   padding-bottom: 6px;
+}
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
 }
 .pb-16 {
   padding-bottom: 4rem;
@@ -2400,6 +2468,11 @@ body {
   background-color: rgb(243 244 246 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-\[\#e8e8e8\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(232 232 232 / var(--tw-bg-opacity, 1));
+}
+
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
@@ -2609,6 +2682,9 @@ body {
   .md\:p-8 {
     padding: 2rem;
   }
+  .md\:p-10 {
+    padding: 2.5rem;
+  }
   .md\:px-\[24px\] {
     padding-left: 24px;
     padding-right: 24px;
@@ -2682,6 +2758,9 @@ body {
     font-size: 1.125rem;
     line-height: 1.75rem;
   }
+  .md\:text-\[45px\] {
+    font-size: 45px;
+  }
   .md\:leading-\[26px\] {
     line-height: 26px;
   }
@@ -2735,6 +2814,9 @@ body {
   }
   .lg\:grid-cols-\[300px_1fr_260px\] {
     grid-template-columns: 300px 1fr 260px;
+  }
+  .lg\:grid-cols-\[1fr\2c 2fr\] {
+    grid-template-columns: 1fr 2fr;
   }
   .lg\:flex-row {
     flex-direction: row;
