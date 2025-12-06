@@ -7,10 +7,42 @@
     <title>DhakaHome</title>
     <link rel="stylesheet" href="/assets/tailwind.css" />
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+    <style>
+      :root {
+        --page-max-width: 85rem;
+        --page-gutter: 1rem;
+        --page-gutter-lg: 2.5rem;
+      }
+
+      main.page-shell > * {
+        width: 100%;
+        max-width: var(--page-max-width);
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: var(--page-gutter);
+        padding-right: var(--page-gutter);
+      }
+
+      @media (min-width: 1024px) {
+        main.page-shell > * {
+          padding-left: var(--page-gutter-lg);
+          padding-right: var(--page-gutter-lg);
+        }
+      }
+
+      .full-bleed {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin-left: 50% !important;
+        transform: translateX(-50%);
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+    </style>
   </head>
-  <body class="min-h-screen bg-bg text-textprimary font-sans">
+  <body class="min-h-screen bg-bg text-textprimary font-sans overflow-x-hidden">
     <!-- Page -->
-    <main>{{ template "content" . }}</main>
+    <main class="page-shell">{{ template "content" . }}</main>
 
     <!-- Footer -->
     <footer

@@ -1,6 +1,6 @@
 {{define "content"}}
 <!-- HERO with Header (full-bleed background across the whole section) -->
-<section class="relative isolate pb-8">
+<section class="full-bleed relative isolate pb-8">
   <!-- full-bleed background -->
   <div
     class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 bg-[url('/assets/images/backgrounds/hero-bg.png')] bg-cover bg-center"
@@ -18,7 +18,7 @@
 
 <!-- Search results panel (only after a search) -->
 {{if .ShowResults}}
-<section class="mx-auto max-w-[85rem] px-4 mt-6" id="search-results">
+<section class="mt-6" id="search-results">
   {{template "partials/search-results-list.html" .}}
 </section>
 {{end}}
