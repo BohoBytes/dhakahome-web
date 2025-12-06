@@ -1,0 +1,79 @@
+{{define "content"}}
+<!-- Header -->
+<section class="relative isolate bg-white">
+  {{template "partials/header.html" .}}
+</section>
+
+<!-- Divider line -->
+<div class="border-t border-[#D4D4D4]"></div>
+
+<!-- Contact Content -->
+<section class="py-10 space-y-5">
+  <div class="space-y-1">
+    <p class="text-[#F44335] text-[28px] md:text-[32px] font-medium leading-[36px]" style="font-family: 'Poppins', sans-serif;">
+      Have Questions?
+    </p>
+    <p class="text-[#656565] text-[18px] leading-[26px]" style="font-family: 'Poppins', sans-serif;">
+      We’re Just a Message Away
+    </p>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2 items-stretch">
+    <div class="bg-[#f2f2f2] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] overflow-hidden h-full">
+      <img
+        src="/assets/images/placeholders/contact-placeholder.png"
+        alt="City illustration"
+        class="w-full h-full max-h-[500px] object-cover"
+      />
+    </div>
+
+    <div class="bg-[#f6f6f6] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] p-6 md:p-8 space-y-5 h-full flex flex-col">
+      <h2 class="text-[#656565] text-[22px] leading-[30px] font-normal" style="font-family: 'Poppins', sans-serif;">
+        We’re Just a Message Away
+      </h2>
+      <form action="/lead" method="post" class="space-y-4 flex-1 flex flex-col">
+        <input
+          name="name"
+          type="text"
+          required
+          placeholder="Name"
+          class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
+          style="font-family: 'Poppins', sans-serif;"
+        />
+        <input
+          name="email"
+          type="email"
+          required
+          placeholder="Email"
+          class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
+          style="font-family: 'Poppins', sans-serif;"
+        />
+        <input
+          name="phone"
+          type="tel"
+          placeholder="Phone"
+          class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
+          style="font-family: 'Poppins', sans-serif;"
+        />
+        <textarea
+          name="message"
+          rows="4"
+          placeholder="Ask Your Questions Here"
+          class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335] resize-none flex-1"
+          style="font-family: 'Poppins', sans-serif;"
+        ></textarea>
+
+        <button
+          type="submit"
+          class="w-full bg-[#f44335] hover:bg-[#d63a2e] text-white text-[20px] font-medium leading-[30px] rounded-[5px] py-[10px] transition-colors"
+          style="font-family: 'Poppins', sans-serif;"
+        >
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+{{end}}
+
+{{define "pages/contact-us.html"}}{{template "layouts/base.html" .}}{{end}}

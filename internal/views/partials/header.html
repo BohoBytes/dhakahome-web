@@ -81,7 +81,7 @@
         <!-- Contact Us -->
         <a
           href="/contact-us"
-          class="relative text-[#ACACAC] text-[22px] font-normal leading-[28px] whitespace-nowrap"
+          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif; font-weight: 400;"
           >Contact Us</a
         >
@@ -140,6 +140,14 @@
           style="font-family: 'Poppins', sans-serif;"
           >About Us</a
         >
+
+        <!-- Contact Us -->
+        <a
+          href="/contact-us"
+          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          style="font-family: 'Poppins', sans-serif;"
+          >Contact Us</a
+        >
       </nav>
 
       <!-- Mobile/Tablet Menu Overlay -->
@@ -191,7 +199,7 @@
             >
             <a
               href="/contact-us"
-              class="text-[#ACACAC] text-[20px] font-normal leading-[28px] py-2 border-b border-gray-200"
+              class="{{if eq $active `contact`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[20px] leading-[28px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 400;"
               >Contact Us</a
             >

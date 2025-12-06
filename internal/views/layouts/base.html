@@ -40,9 +40,9 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-bg text-textprimary font-sans overflow-x-hidden">
+  <body class="min-h-screen bg-bg text-textprimary font-sans overflow-x-hidden flex flex-col">
     <!-- Page -->
-    <main class="page-shell">{{ template "content" . }}</main>
+    <main class="page-shell flex-1 w-full">{{ template "content" . }}</main>
 
     <!-- Footer -->
     <footer

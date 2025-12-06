@@ -200,6 +200,22 @@ func HotelsPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ContactUsPage(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Contact Us page handler called")
+	w.Header().Set("Content-Type", "text/html")
+	t := template.Must(template.New("pages/contact-us.html").Funcs(template.FuncMap{
+		"eq": func(a, b any) bool { return a == b },
+	}).ParseFiles(
+		"internal/views/layouts/base.html",
+		"internal/views/pages/contact-us.html",
+		"internal/views/partials/header.html",
+	))
+	if err := t.ExecuteTemplate(w, "pages/contact-us.html", map[string]any{"ActivePage": "contact"}); err != nil {
+		log.Printf("Contact Us template execution error: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
 func formatPrice(price float64) string {
 	if price == 0 {
 		return "0"
