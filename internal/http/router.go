@@ -36,6 +36,7 @@ func NewRouter() *chi.Mux {
 	r.Get("/about-us/", handlers.AboutUsPage) // allow trailing slash
 	r.Get("/about", handlers.AboutUsPage)     // alias
 	r.Get("/hotels", handlers.HotelsPage)
+	r.Get("/properties", handlers.PropertiesPage)
 	r.Get("/contact-us", handlers.ContactUsPage)
 	r.Get("/contact", handlers.ContactUsPage) // alias
 	r.Get("/properties/{id}", handlers.PropertyPage)

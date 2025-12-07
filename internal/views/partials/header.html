@@ -39,8 +39,8 @@
         <!-- Properties with dropdown -->
         <div class="relative flex items-center">
           <a
-            href="#"
-            class="relative text-[#ACACAC] text-[20px] font-normal leading-[26px] whitespace-nowrap"
+            href="/properties"
+            class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
             style="font-family: 'Poppins', sans-serif; font-weight: 400;"
             >Properties</a
           >
@@ -56,7 +56,7 @@
             >
               <path
                 d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z"
-                fill="#ACACAC"
+                fill="{{if eq $active `properties`}}#F44335{{else}}#ACACAC{{end}}"
               />
             </svg>
           </div>
@@ -110,8 +110,8 @@
         <!-- Properties with dropdown -->
         <div class="relative flex items-center">
           <a
-            href="#"
-            class="relative text-[#ACACAC] text-[16px] font-normal leading-[22px] whitespace-nowrap"
+            href="/properties"
+            class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
             style="font-family: 'Poppins', sans-serif; font-weight: 400;"
             >Properties</a
           >
@@ -127,7 +127,7 @@
             >
               <path
                 d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z"
-                fill="#ACACAC"
+                fill="{{if eq $active `properties`}}#F44335{{else}}#ACACAC{{end}}"
               />
             </svg>
           </div>
@@ -197,7 +197,7 @@
             >
             <a
               href="/properties"
-              class="text-[#ACACAC] text-[18px] font-normal leading-[26px] py-2 border-b border-gray-200"
+              class="{{if eq $active `properties`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 400;"
               >Properties</a
             >

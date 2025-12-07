@@ -1,30 +1,24 @@
 {{define "content"}}
-<!-- Search Results Page - Reusing Homepage Sections from / -->
+<!-- Search Page (dedicated) -->
 
-<!-- HERO Section with Header (same as homepage /) -->
-<section class="full-bleed relative isolate">
-  <!-- full-bleed background -->
-  <div
-    class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen -z-10 bg-[url('/assets/images/backgrounds/hero-bg.png')] bg-cover bg-center"
-  ></div>
+{{template "partials/page-header.html" .}}
 
-  {{template "partials/header.html" .}}
-  
-  {{template "partials/hero.html" .}}
-  
-  {{template "partials/search-box.html" .}}
+<!-- Search box -->
+<section class="relative isolate full-bleed h-[16rem]">
+  <div class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10 h-[16rem]"></div>
+  <div class="absolute inset-0 bg-white/65 -z-10"></div>
+  <div class="max-w-[1100px] mx-auto px-4 md:px-6 py-14">
+    {{template "partials/search-box.html" .}}
+  </div>
 </section>
 
-<!-- spacer to accommodate the overlay -->
-<div class="h-16"></div>
-
-<!-- Search Results List Section -->
+<!-- Search results -->
 <section id="search-results">
   {{template "partials/search-results-list.html" .}}
 </section>
 
-<!-- Common sections (Services, Why Dhaka Home, Properties by Area, Testimonials, FAQ) -->
-{{template "partials/common-sections.html" .}}
+<!-- Properties by Area -->
+{{template "partials/properties-by-area.html" .}}
 {{end}}
 
 {{define "pages/search-results.html"}}{{template "layouts/base.html" .}}{{end}}

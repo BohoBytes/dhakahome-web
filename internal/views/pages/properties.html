@@ -1,0 +1,133 @@
+{{define "content"}}
+{{$mapImage := "/assets/images/placeholders/map-placeholder.png"}}
+{{$location := .Query.Get "location"}}
+{{$status := .Query.Get "status"}}
+{{$ptype := .Query.Get "type"}}
+{{$priceMax := .Query.Get "price_max"}}
+<section class="bg-white">
+  {{template "partials/page-header.html" .}}
+
+  <div class="max-w-[85rem] mx-auto px-4 md:px-6 pb-16">
+    <div class="flex flex-col gap-3 pt-6">
+      <div class="flex items-center justify-between gap-4">
+        <h1 class="text-[24px] md:text-[28px] leading-[33px] text-[#3b3b3b] font-medium" style="font-family: 'Poppins', sans-serif;">
+          Apartments for Sale
+        </h1>
+        <form method="get" class="flex flex-wrap items-center justify-end gap-2 text-[14px] leading-[18px] text-[#616161]">
+          <select name="location" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
+            onchange="this.form.submit()">
+            <option value="" {{if eq $location ""}}selected{{end}}>Dhaka</option>
+            <option value="Uttara" {{if eq $location "Uttara"}}selected{{end}}>Uttara</option>
+            <option value="Bashundhara" {{if eq $location "Bashundhara"}}selected{{end}}>Bashundhara</option>
+            <option value="Gulshan" {{if eq $location "Gulshan"}}selected{{end}}>Gulshan</option>
+          </select>
+          <select name="status" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
+            onchange="this.form.submit()">
+            <option value="" {{if eq $status ""}}selected{{end}}>All</option>
+            <option value="To-let" {{if eq $status "To-let"}}selected{{end}}>Rent</option>
+            <option value="For Sale" {{if eq $status "For Sale"}}selected{{end}}>Sale</option>
+          </select>
+          <select name="type" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
+            onchange="this.form.submit()">
+            <option value="" {{if eq $ptype ""}}selected{{end}}>All Types</option>
+            <option value="Residential" {{if eq $ptype "Residential"}}selected{{end}}>Residential</option>
+            <option value="Commercial" {{if eq $ptype "Commercial"}}selected{{end}}>Commercial</option>
+            <option value="Plot" {{if eq $ptype "Plot"}}selected{{end}}>Land</option>
+          </select>
+          <select name="price_max" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
+            onchange="this.form.submit()">
+            <option value="" {{if eq $priceMax ""}}selected{{end}}>Any Price</option>
+            <option value="5000000" {{if eq $priceMax "5000000"}}selected{{end}}>৳ 50,00,000</option>
+            <option value="10000000" {{if eq $priceMax "10000000"}}selected{{end}}>৳ 1,00,00,000</option>
+            <option value="50000000" {{if eq $priceMax "50000000"}}selected{{end}}>৳ 5,00,00,000</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-4">
+      <div class="relative bg-[#f3f3f3] border border-[#dbdbdb] rounded-[18px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] overflow-hidden h-[760px]">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{$mapImage}}');"></div>
+        <div class="absolute left-4 top-4 bg-white/90 text-[#414141] text-xs px-3 py-1 rounded-full border border-[#dbdbdb] shadow-sm">
+          Map placeholder
+        </div>
+        <div class="absolute bottom-4 right-4 flex flex-col items-center gap-3 bg-white/90 border border-[#d9d9d9] rounded-full px-2 py-3 shadow-[0_4px_6.9px_rgba(0,0,0,0.10)]">
+          <button type="button" class="w-8 h-8 rounded-full bg-[#ff5a4b] text-white text-lg leading-none flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)]">+</button>
+          <div class="w-[22px] border-t border-[#d9d9d9]"></div>
+          <button type="button" class="w-8 h-8 rounded-full bg-[#f4f4f4] text-[#616161] text-lg leading-none flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)]">−</button>
+        </div>
+      </div>
+
+      <div class="bg-white border border-[#dbdbdb] rounded-[18px] shadow-[0_2px_8.1px_rgba(0,0,0,0.15)] p-3 flex flex-col h-[760px]">
+        <div class="flex items-center justify-between bg-[#f4f4f4] border border-[#dbdbdb] rounded-[5px] px-3 py-2">
+          <span class="text-[13px] leading-[18px] text-[#616161]" style="font-family: 'Poppins', sans-serif;">{{.List.Total}} Results Found</span>
+          <svg class="w-5 h-5 text-[#616161]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M3 7h18v2H3V7zm4 4h10v2H7v-2zm-2 4h14v2H5v-2z" />
+          </svg>
+        </div>
+
+        <div class="mt-3 space-y-3 overflow-y-auto flex-1 pr-1">
+          {{if and .List (gt (len .List.Items) 0)}}
+            {{range .List.Items}}
+              <a href="/properties/{{.ID}}" class="flex gap-3 bg-[#f6f6f6] border border-[#dbdbdb] rounded-[10px] p-3 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:-translate-y-[1px] transition-transform duration-200">
+                <div class="relative w-[165px] h-[125px] rounded-[10px] overflow-hidden flex-shrink-0 bg-white">
+                  {{if .Images}}
+                    <img src="{{index .Images 0}}" alt="{{.Title}}" class="absolute inset-0 w-full h-full object-cover" />
+                  {{else}}
+                    <div class="absolute inset-0 flex items-center justify-center text-[#a2a2a2] text-sm bg-[#efefef]">No Image</div>
+                  {{end}}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    {{range .Badges}}
+                      {{if or (eq . "Residential") (eq . "Commercial") (eq . "Plot") (eq . "To-let") (eq . "For Sale")}}
+                        <span class="inline-flex items-center gap-1 bg-[#ffd8d5] text-[#f44335] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">{{.}}</span>
+                      {{end}}
+                    {{end}}
+                    {{if .Bedrooms}}
+                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
+                      <img src="/assets/icons/bedroom.svg" alt="" class="w-3.5 h-3.5" />
+                      {{.Bedrooms}}
+                    </span>
+                    {{end}}
+                    {{if .Bathrooms}}
+                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
+                      <img src="/assets/icons/bathroom.svg" alt="" class="w-3.5 h-3.5" />
+                      {{.Bathrooms}}
+                    </span>
+                    {{end}}
+                    {{if .Area}}
+                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
+                      <img src="/assets/icons/area.svg" alt="" class="w-3.5 h-3.5" />
+                      {{.Area}} ft
+                    </span>
+                    {{end}}
+                  </div>
+                  <div class="mt-3 space-y-1">
+                    <p class="text-[16px] leading-[22px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Title}}</p>
+                    <p class="text-[13px] leading-[18px] text-[#a2a2a2]" style="font-family: 'Poppins', sans-serif;">{{.Address}}</p>
+                  </div>
+                  <div class="mt-2 flex items-center justify-between">
+                    <p class="text-[18px] leading-[24px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Currency}}{{formatPrice .Price}}</p>
+                    <span class="w-5 h-5 text-[#a2a2a2]" aria-hidden="true">
+                      <svg class="w-full h-full rotate-[-90deg]" viewBox="0 0 10 20" fill="currentColor">
+                        <path d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            {{end}}
+          {{else}}
+            <div class="bg-white rounded-[10px] border border-[#e4e4e4] p-6 text-center text-[#414141]">
+              No properties found. Adjust filters to see more options.
+            </div>
+          {{end}}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{{end}}
+
+{{define "pages/properties.html"}}{{template "layouts/base.html" .}}{{end}}

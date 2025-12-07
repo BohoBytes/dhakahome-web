@@ -19,9 +19,9 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 	t := template.Must(template.New(pageFile).Funcs(template.FuncMap{
 		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
-	"add":         add,
-	"sub":         sub,
-	"seq":         seq,
+		"add":         add,
+		"sub":         sub,
+		"seq":         seq,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/"+pageFile,
@@ -66,9 +66,9 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.New("pages/search-results.html").Funcs(template.FuncMap{
 		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
-	"add":         add,
-	"sub":         sub,
-	"seq":         seq,
+		"add":         add,
+		"sub":         sub,
+		"seq":         seq,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/search-results.html",
@@ -95,6 +95,18 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		log.Printf("search page template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+
+func PropertiesPage(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	cl := api.New()
+	list, _ := cl.SearchProperties(q) // mock-backed in dev
+	w.Header().Set("Content-Type", "text/html")
+	render(w, "pages/properties.html", "properties.html", map[string]any{
+		"ActivePage": "properties",
+		"List":       list,
+		"Query":      q,
+	})
 }
 
 func PropertyPage(w http.ResponseWriter, r *http.Request) {

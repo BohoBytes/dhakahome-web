@@ -33,6 +33,7 @@ func main() {
 		"/faq",
 		"/about-us",
 		"/hotels",
+		"/properties",
 		"/contact-us",
 	}
 
