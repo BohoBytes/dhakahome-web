@@ -19,12 +19,13 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 	t := template.Must(template.New(pageFile).Funcs(template.FuncMap{
 		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
-		"add":         add,
-		"sub":         sub,
-		"seq":         seq,
+	"add":         add,
+	"sub":         sub,
+	"seq":         seq,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/"+pageFile,
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 		"internal/views/partials/hero.html",
 		"internal/views/partials/search-box.html",
@@ -65,12 +66,13 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 	t := template.Must(template.New("pages/search-results.html").Funcs(template.FuncMap{
 		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
-		"add":         add,
-		"sub":         sub,
-		"seq":         seq,
+	"add":         add,
+	"sub":         sub,
+	"seq":         seq,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/search-results.html",
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 		"internal/views/partials/hero.html",
 		"internal/views/partials/search-box.html",
@@ -160,6 +162,7 @@ func FAQPage(w http.ResponseWriter, r *http.Request) {
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/faq.html",
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/faq.html", nil); err != nil {
@@ -176,6 +179,7 @@ func AboutUsPage(w http.ResponseWriter, r *http.Request) {
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/about-us.html",
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/about-us.html", map[string]any{"ActivePage": "about"}); err != nil {
@@ -192,6 +196,7 @@ func HotelsPage(w http.ResponseWriter, r *http.Request) {
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/hotels.html",
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/hotels.html", map[string]any{"ActivePage": "hotels"}); err != nil {
@@ -208,6 +213,7 @@ func ContactUsPage(w http.ResponseWriter, r *http.Request) {
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/contact-us.html",
+		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/contact-us.html", map[string]any{"ActivePage": "contact"}); err != nil {

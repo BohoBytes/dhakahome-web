@@ -1,7 +1,7 @@
 {{define "content"}}
 <div class="min-h-screen bg-white">
   <!-- Header -->
-  {{template "partials/header.html" .}}
+  {{template "partials/page-header.html" .}}
 
   <!-- Search band -->
   <section class="relative isolate overflow-hidden mt-6 mb-6">
@@ -321,7 +321,7 @@
   </section>
 
   <!-- Similar Listings Section -->
-  <section class="max-w-[85rem] mx-auto px-4 pb-20">
+  <section class="pb-20">
     <h2 class="text-[40px] font-medium leading-[51.6px] text-[#383838] mb-8" style="font-family: 'Poppins', sans-serif;">Similar Listings</h2>
     
     {{if gt (len .Similar.Items) 0}}
