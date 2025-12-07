@@ -10,7 +10,7 @@
     </a>
 
     <!-- Right side: Menu + Login button -->
-    <div class="flex items-center gap-2 md:gap-[35px]">
+    <div class="flex items-center gap-2 md:gap-[24px]">
       <!-- Mobile Hamburger Menu Button -->
       <button
         id="mobile-menu-toggle"
@@ -26,12 +26,12 @@
 
       <!-- Desktop Navigation menu -->
       <nav
-        class="hidden lg:flex relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[37px] px-[24px] pr-[27px] py-[13px] h-[54px]"
+        class="hidden lg:flex relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[28px] px-[20px] pr-[22px] py-[11px] h-[50px]"
         style="box-shadow: 0px 4px 16.1px rgba(0, 0, 0, 0.15)"
       >
         <a
           href="/"
-          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Home</a
         >
@@ -40,7 +40,7 @@
         <div class="relative flex items-center">
           <a
             href="#"
-            class="relative text-[#ACACAC] text-[22px] font-normal leading-[28px] whitespace-nowrap"
+            class="relative text-[#ACACAC] text-[20px] font-normal leading-[26px] whitespace-nowrap"
             style="font-family: 'Poppins', sans-serif; font-weight: 400;"
             >Properties</a
           >
@@ -65,15 +65,23 @@
         <!-- Our Hotels -->
         <a
           href="/hotels"
-          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Our Hotels</a
+        >
+
+        <!-- FAQs -->
+        <a
+          href="/faq"
+          class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `faq`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          style="font-family: 'Poppins', sans-serif;"
+          >FAQs</a
         >
 
         <!-- About Us -->
         <a
           href="/about-us"
-          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >About Us</a
         >
@@ -81,7 +89,7 @@
         <!-- Contact Us -->
         <a
           href="/contact-us"
-          class="relative text-[22px] leading-[28px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif; font-weight: 400;"
           >Contact Us</a
         >
@@ -89,12 +97,12 @@
 
       <!-- Tablet Navigation menu (simplified) -->
       <nav
-        class="hidden md:flex lg:hidden relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[20px] px-[16px] pr-[18px] py-[10px] h-[48px]"
+        class="hidden md:flex lg:hidden relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[16px] px-[14px] pr-[16px] py-[9px] h-[44px]"
         style="box-shadow: 0px 4px 16.1px rgba(0, 0, 0, 0.15)"
       >
         <a
           href="/"
-          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Home</a
         >
@@ -103,7 +111,7 @@
         <div class="relative flex items-center">
           <a
             href="#"
-            class="relative text-[#ACACAC] text-[18px] font-normal leading-[24px] whitespace-nowrap"
+            class="relative text-[#ACACAC] text-[16px] font-normal leading-[22px] whitespace-nowrap"
             style="font-family: 'Poppins', sans-serif; font-weight: 400;"
             >Properties</a
           >
@@ -128,15 +136,23 @@
         <!-- Our Hotels -->
         <a
           href="/hotels"
-          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Our Hotels</a
+        >
+
+        <!-- FAQs -->
+        <a
+          href="/faq"
+          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `faq`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          style="font-family: 'Poppins', sans-serif;"
+          >FAQs</a
         >
 
         <!-- About Us -->
         <a
           href="/about-us"
-          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >About Us</a
         >
@@ -144,7 +160,7 @@
         <!-- Contact Us -->
         <a
           href="/contact-us"
-          class="relative text-[18px] leading-[24px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
+          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
           style="font-family: 'Poppins', sans-serif;"
           >Contact Us</a
         >
@@ -175,31 +191,37 @@
           <nav class="flex flex-col p-4 gap-4">
             <a
               href="/"
-              class="text-[#F44335] text-[20px] font-medium leading-[28px] py-2 border-b border-gray-200"
+              class="text-[#F44335] text-[18px] font-medium leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 500;"
               >Home</a
             >
             <a
               href="/properties"
-              class="text-[#ACACAC] text-[20px] font-normal leading-[28px] py-2 border-b border-gray-200"
+              class="text-[#ACACAC] text-[18px] font-normal leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 400;"
               >Properties</a
             >
             <a
               href="/hotels"
-              class="{{if eq $active `hotels`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[20px] leading-[28px] py-2 border-b border-gray-200"
+              class="{{if eq $active `hotels`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif;"
               >Our Hotels</a
             >
             <a
+              href="/faq"
+              class="{{if eq $active `faq`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
+              style="font-family: 'Poppins', sans-serif;"
+              >FAQs</a
+            >
+            <a
               href="/about-us"
-              class="text-[#ACACAC] text-[20px] font-normal leading-[28px] py-2 border-b border-gray-200"
+              class="{{if eq $active `about`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 400;"
               >About Us</a
             >
             <a
               href="/contact-us"
-              class="{{if eq $active `contact`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[20px] leading-[28px] py-2 border-b border-gray-200"
+              class="{{if eq $active `contact`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
               style="font-family: 'Poppins', sans-serif; font-weight: 400;"
               >Contact Us</a
             >
@@ -211,7 +233,7 @@
       <div class="flex items-center gap-3">
         <a
           href="/login"
-          class="inline-flex justify-center items-center gap-2 px-[16px] py-[10px] md:px-[24px] md:py-[12px] lg:px-[29px] lg:py-[13px] rounded-[10px] border-2 border-[#F44335] text-[#F44335] text-[16px] md:text-[18px] lg:text-[22px] font-medium leading-[24px] md:leading-[26px] lg:leading-[28px] hover:bg-[#F44335] hover:text-white transition-colors whitespace-nowrap"
+          class="inline-flex justify-center items-center gap-2 px-[14px] py-[8px] md:px-[18px] md:py-[10px] lg:px-[20px] lg:py-[11px] rounded-[10px] border-2 border-[#F44335] text-[#F44335] text-[15px] md:text-[16px] lg:text-[18px] font-medium leading-[22px] md:leading-[24px] lg:leading-[24px] hover:bg-[#F44335] hover:text-white transition-colors whitespace-nowrap"
           style="font-family: 'Poppins', sans-serif; font-weight: 500;"
         >
           <span class="hidden sm:inline">Login</span>

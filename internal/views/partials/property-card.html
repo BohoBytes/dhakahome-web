@@ -4,9 +4,9 @@
   href="/properties/{{.ID}}"
   class="group block bg-[#f9f9f9] rounded-[20px] shadow-[0px_5px_9.9px_rgba(0,0,0,0.15)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200"
 >
-  <div class="flex items-stretch">
+  <div class="flex flex-col md:flex-row items-stretch">
     <!-- Property Image -->
-    <div class="w-[268px] h-[250px] relative flex-shrink-0">
+    <div class="w-full h-[200px] md:w-[268px] md:h-[250px] relative flex-shrink-0">
       {{if .Images}}
       <img
         src="{{index .Images 0}}"
@@ -24,39 +24,39 @@
     </div>
 
     <!-- Property Details Section -->
-    <div class="flex-1 flex flex-col gap-5 px-8 py-6">
+    <div class="flex-1 flex flex-col gap-4 px-5 py-5 md:px-8 md:py-6">
       <!-- Amenities (top right) -->
-      <div class="flex items-center gap-9 bg-[#e4e4e4] rounded-[5px] px-6 py-2 self-start">
+      <div class="flex flex-wrap items-center gap-4 md:gap-6 bg-[#e4e4e4] rounded-[5px] px-4 py-2 self-start">
         {{if .Bedrooms}}
         <div class="flex items-center gap-2">
-          <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-[25px] h-[22px]" />
-          <span class="text-[20px] font-medium leading-[14.4px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Bedrooms}}</span>
+          <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-[20px] h-[18px] md:w-[25px] md:h-[22px]" />
+          <span class="text-[16px] md:text-[18px] font-medium leading-[20px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Bedrooms}}</span>
         </div>
         {{end}}
         {{if .Bathrooms}}
         <div class="flex items-center gap-2">
-          <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-[25px] h-[25px]" />
-          <span class="text-[20px] font-medium leading-[14.4px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Bathrooms}}</span>
+          <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-[20px] h-[20px] md:w-[25px] md:h-[25px]" />
+          <span class="text-[16px] md:text-[18px] font-medium leading-[20px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Bathrooms}}</span>
         </div>
         {{end}}
         {{if .Area}}
         <div class="flex items-center gap-2">
-          <img src="/assets/icons/area.svg" alt="Area" class="w-[25px] h-[25px]" />
-          <span class="text-[20px] font-medium leading-[14.4px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Area}} ft</span>
+          <img src="/assets/icons/area.svg" alt="Area" class="w-[20px] h-[20px] md:w-[25px] md:h-[25px]" />
+          <span class="text-[16px] md:text-[18px] font-medium leading-[20px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Area}} ft</span>
         </div>
         {{end}}
         {{if .Parking}}
         <div class="flex items-center gap-2">
-          <img src="/assets/icons/parking.svg" alt="Parking" class="w-[25px] h-[25px]" />
-          <span class="text-[20px] font-medium leading-[14.4px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Parking}}</span>
+          <img src="/assets/icons/parking.svg" alt="Parking" class="w-[20px] h-[20px] md:w-[25px] md:h-[25px]" />
+          <span class="text-[16px] md:text-[18px] font-medium leading-[20px] text-[#797979]" style="font-family: 'Poppins', sans-serif;">{{.Parking}}</span>
         </div>
         {{end}}
       </div>
 
       <!-- Badges -->
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-2 md:gap-3">
         {{range .Badges}}
-        <span class="text-[18px] font-normal leading-[16.8px] text-[#f44335] px-3 py-2" style="font-family: 'Poppins', sans-serif;">
+        <span class="text-[14px] md:text-[16px] font-normal leading-[18px] text-[#f44335] px-3 py-1.5" style="font-family: 'Poppins', sans-serif;">
           {{.}}
         </span>
         {{end}}
@@ -64,16 +64,16 @@
 
       <!-- Title and Address -->
       <div class="space-y-3">
-        <h2 class="text-[35px] font-normal leading-[28px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">
+        <h2 class="text-[22px] md:text-[30px] lg:text-[35px] font-normal leading-tight text-[#414141]" style="font-family: 'Poppins', sans-serif;">
           {{.Title}}
         </h2>
-        <p class="text-[22px] font-normal leading-[26.4px] text-[#7d7d7d]" style="font-family: 'Poppins', sans-serif;">
+        <p class="text-[16px] md:text-[18px] lg:text-[22px] font-normal leading-[24px] md:leading-[26.4px] text-[#7d7d7d]" style="font-family: 'Poppins', sans-serif;">
           {{.Address}}
         </p>
       </div>
 
       <!-- Price -->
-      <div class="mt-auto text-[35px] font-medium leading-[28px] text-[#414141] self-end" style="font-family: 'Poppins', sans-serif;">
+      <div class="mt-auto text-[24px] md:text-[30px] lg:text-[35px] font-medium leading-[30px] md:leading-[34px] text-[#414141] md:self-end" style="font-family: 'Poppins', sans-serif;">
         {{.Currency}}{{formatPrice .Price}}
       </div>
     </div>

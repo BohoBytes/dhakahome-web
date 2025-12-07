@@ -210,13 +210,31 @@ Example:
 
 ## Deployment
 
-### Build
+### Static export for Netlify
+Netlify serves static files only. Use mock data and pre-render HTML into `public/`, then point Netlify’s Publish directory to `public`.
 
 ```bash
-# Install dependencies and build
+# Install deps once
 npm ci
+
+# Build CSS and export static HTML (writes to public/)
 npm run css:build
-go build -o bin/server ./cmd/web
+go run ./cmd/export-static
+
+# Run locally from static output (any static server)
+python3 -m http.server 5173 -d public
+```
+
+Netlify settings:
+- Build command: `npm run css:build && go run ./cmd/export-static`
+- Publish directory: `public`
+
+### Run dynamically (Go server)
+If you deploy the Go server elsewhere:
+```bash
+npm run css:build
+go run ./cmd/web            # uses .env.local by default
+ENV_FILE=.env.uat go run ./cmd/web
 ```
 
 ### Run

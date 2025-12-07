@@ -165,7 +165,7 @@ func FAQPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/faq.html", nil); err != nil {
+	if err := t.ExecuteTemplate(w, "pages/faq.html", map[string]any{"ActivePage": "faq"}); err != nil {
 		log.Printf("FAQ template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}

@@ -1061,6 +1061,9 @@ body {
 .h-\[25px\] {
   height: 25px;
 }
+.h-\[44px\] {
+  height: 44px;
+}
 .max-h-\[80vh\] {
   max-height: 80vh;
 }
@@ -1323,6 +1326,12 @@ body {
 }
 .gap-\[37px\] {
   gap: 37px;
+}
+.gap-\[16px\] {
+  gap: 16px;
+}
+.gap-\[28px\] {
+  gap: 28px;
 }
 .gap-x-6 {
   -moz-column-gap: 1.5rem;
@@ -1881,6 +1890,26 @@ body {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
 }
+.px-\[14px\] {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+.px-\[20px\] {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.py-\[11px\] {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+.py-\[8px\] {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+.py-\[9px\] {
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
 .pb-16 {
   padding-bottom: 4rem;
 }
@@ -1925,6 +1954,12 @@ body {
 }
 .pt-\[5px\] {
   padding-top: 5px;
+}
+.pr-\[16px\] {
+  padding-right: 16px;
+}
+.pr-\[22px\] {
+  padding-right: 22px;
 }
 .text-center {
   text-align: center;
@@ -2019,6 +2054,9 @@ body {
 }
 .text-\[28px\] {
   font-size: 28px;
+}
+.text-\[15px\] {
+  font-size: 15px;
 }
 .font-medium {
   font-weight: 500;
@@ -2127,6 +2165,9 @@ body {
 }
 .leading-\[36px\] {
   line-height: 36px;
+}
+.leading-\[22px\] {
+  line-height: 22px;
 }
 .text-\[\#0098d4\] {
   --tw-text-opacity: 1;
@@ -2681,6 +2722,15 @@ body {
   .md\:h-auto {
     height: auto;
   }
+  .md\:h-\[22px\] {
+    height: 22px;
+  }
+  .md\:h-\[250px\] {
+    height: 250px;
+  }
+  .md\:h-\[25px\] {
+    height: 25px;
+  }
   .md\:w-\[100px\] {
     width: 100px;
   }
@@ -2689,6 +2739,12 @@ body {
   }
   .md\:w-auto {
     width: auto;
+  }
+  .md\:w-\[25px\] {
+    width: 25px;
+  }
+  .md\:w-\[268px\] {
+    width: 268px;
   }
   .md\:flex-\[0_0_120px\] {
     flex: 0 0 120px;
@@ -2723,10 +2779,22 @@ body {
   .md\:gap-\[35px\] {
     gap: 35px;
   }
+  .md\:gap-\[24px\] {
+    gap: 24px;
+  }
+  .md\:gap-3 {
+    gap: 0.75rem;
+  }
+  .md\:gap-6 {
+    gap: 1.5rem;
+  }
   .md\:space-y-6 > :not([hidden]) ~ :not([hidden]) {
     --tw-space-y-reverse: 0;
     margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
     margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
+  }
+  .md\:self-end {
+    align-self: flex-end;
   }
   .md\:p-5 {
     padding: 1.25rem;
@@ -2759,6 +2827,22 @@ body {
   .md\:py-\[19px\] {
     padding-top: 19px;
     padding-bottom: 19px;
+  }
+  .md\:px-\[18px\] {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  .md\:py-\[10px\] {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .md\:px-8 {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .md\:py-6 {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
   }
   .md\:pt-12 {
     padding-top: 3rem;
@@ -2824,6 +2908,15 @@ body {
   }
   .md\:leading-\[60px\] {
     line-height: 60px;
+  }
+  .md\:leading-\[24px\] {
+    line-height: 24px;
+  }
+  .md\:leading-\[26\.4px\] {
+    line-height: 26.4px;
+  }
+  .md\:leading-\[34px\] {
+    line-height: 34px;
   }
 }
 
@@ -2902,6 +2995,14 @@ body {
     padding-top: 13px;
     padding-bottom: 13px;
   }
+  .lg\:px-\[20px\] {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .lg\:py-\[11px\] {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
   .lg\:pr-\[140px\] {
     padding-right: 140px;
   }
@@ -2921,8 +3022,17 @@ body {
     font-size: 48px;
     line-height: 1.1;
   }
+  .lg\:text-\[18px\] {
+    font-size: 18px;
+  }
+  .lg\:text-\[35px\] {
+    font-size: 35px;
+  }
   .lg\:leading-\[28px\] {
     line-height: 28px;
+  }
+  .lg\:leading-\[24px\] {
+    line-height: 24px;
   }
 }
 
