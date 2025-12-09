@@ -64,6 +64,7 @@ module.exports = {
     'text-[20px]',
     'text-[18px]',
     'text-[16px]',
+    'text-[12px]',
     'text-[92px]',
     'max-w-[1723px]',
     'max-w-[1734px]',

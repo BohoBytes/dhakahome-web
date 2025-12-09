@@ -15,33 +15,37 @@
   <!-- Property Details Section -->
   <section class="pb-16">
     <div class="bg-[#f1f1f1] rounded-[20px] shadow-[0_4px_4px_rgba(0,0,0,0.15)] p-6 md:p-10">
-      <!-- Header with Back Button, Title, and Price -->
-      <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-4">
-        <div class="flex items-start gap-3">
-          <button onclick="history.back()" class="w-[40px] h-[40px] flex items-center justify-center rounded-full hover:bg-[#e8e8e8] transition flex-shrink-0 mt-1">
-            <svg width="19" height="33" viewBox="0 0 19 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16.5 3L3 16.5L16.5 30" stroke="#383838" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div>
-            <h1 class="text-[32px] md:text-[45px] font-normal leading-[54px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">
+      <!-- Header with Back Button, Title -->
+      <div class="relative mb-4">   
+        <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between pl-14 md:pl-0">
+          <button
+          onclick="history.back()"
+          class="w-[40px] h-[40px] flex items-center justify-center rounded-full hover:bg-[#e8e8e8] transition mt-1 absolute left-0 top-0 md:static"
+        >
+          <svg width="10" height="16" viewBox="0 0 19 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.5 3L3 16.5L16.5 30" stroke="#383838" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="flex flex-col items-center md:items-start gap-1">
+            <h1 class="text-[20px] md:text-[24px] font-normal leading-[54px] text-[#414141] text-center md:text-left" style="font-family: 'Poppins', sans-serif;">
               {{.P.Title}}
             </h1>
           </div>
         </div>
-        <div class="text-[32px] md:text-[45px] font-normal leading-[54px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">
-          {{.P.Currency}}{{formatPrice .P.Price}}
-        </div>
       </div>
 
-      <!-- Badges -->
+      <!-- Badges and Price-->
+      <div class="relative mb-4">
       <div class="flex flex-wrap gap-2 mb-6">
         {{range .P.Badges}}
-        <span class="inline-flex items-center px-4 py-2 text-[18px] font-normal text-[#f44335] bg-white rounded-[6px]" style="font-family: 'Poppins', sans-serif;">
-          {{.}}
-        </span>
+        {{template "partials/property-badge.html" .}}
         {{end}}
       </div>
+      <div class="text-[25px] md:text-[30px] font-normal leading-[54px] text-[#414141] text-center md:text-right" style="font-family: 'Poppins', sans-serif;">
+        {{.P.Currency}}{{formatPrice .P.Price}}
+      </div>
+      </div>
+
 
       <!-- Property Images with Overlay Stats -->
       {{if .P.HasImages}}
@@ -53,32 +57,7 @@
             <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
           </button>
           <!-- Stats Overlay -->
-          <div class="absolute bottom-4 left-4 right-4 bg-[#e4e4e4] rounded-[5px] p-4 flex flex-wrap gap-6">
-            {{if .P.Bedrooms}}
-            <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-              <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6" />
-              <span>{{.P.Bedrooms}}BHK Flat</span>
-            </div>
-            {{end}}
-            {{if .P.Bathrooms}}
-            <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-              <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6" />
-              <span>{{.P.Bathrooms}}</span>
-            </div>
-            {{end}}
-            {{if .P.Area}}
-            <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-              <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6" />
-              <span>{{.P.Area}} sq ft</span>
-            </div>
-            {{end}}
-            {{if .P.Parking}}
-            <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-              <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6" />
-              <span>Yes</span>
-            </div>
-            {{end}}
-          </div>
+            {{template "partials/property-stats.html" .P}}
         </div>
         {{else if eq $count 2}}
         <div class="grid grid-cols-3 gap-4">
@@ -87,32 +66,7 @@
               <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
             </button>
             <!-- Stats Overlay -->
-            <div class="absolute bottom-4 left-4 right-4 bg-[#e4e4e4] rounded-[5px] p-4 flex flex-wrap gap-6">
-              {{if .P.Bedrooms}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6" />
-                <span>{{.P.Bedrooms}}BHK Flat</span>
-              </div>
-              {{end}}
-              {{if .P.Bathrooms}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6" />
-                <span>{{.P.Bathrooms}}</span>
-              </div>
-              {{end}}
-              {{if .P.Area}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6" />
-                <span>{{.P.Area}} sq ft</span>
-              </div>
-              {{end}}
-              {{if .P.Parking}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6" />
-                <span>Yes</span>
-              </div>
-              {{end}}
-            </div>
+              {{template "partials/property-stats.html" .P}}
           </div>
           <button type="button" class="col-span-1 h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="1">
             <img src="{{index .P.Gallery 1}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
@@ -125,32 +79,7 @@
               <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
             </button>
             <!-- Stats Overlay -->
-            <div class="absolute bottom-4 left-4 right-4 bg-[#e4e4e4] rounded-[5px] p-4 flex flex-wrap gap-6">
-              {{if .P.Bedrooms}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6" />
-                <span>{{.P.Bedrooms}}BHK Flat</span>
-              </div>
-              {{end}}
-              {{if .P.Bathrooms}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6" />
-                <span>{{.P.Bathrooms}}</span>
-              </div>
-              {{end}}
-              {{if .P.Area}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6" />
-                <span>{{.P.Area}} sq ft</span>
-              </div>
-              {{end}}
-              {{if .P.Parking}}
-              <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-                <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6" />
-                <span>Yes</span>
-              </div>
-              {{end}}
-            </div>
+              {{template "partials/property-stats.html" .P}}
           </div>
           <div class="grid grid-rows-2 gap-4">
             <button type="button" class="h-[200px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="1">

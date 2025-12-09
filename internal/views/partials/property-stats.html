@@ -1,0 +1,28 @@
+{{define "partials/property-stats.html"}}
+<div style="background-color: rgba(61, 61, 61, 0.76)" class="absolute bottom-0 left-0 right-0 p-2 flex flex-wrap justify-center gap-6 rounded-b-[10px] text-white">
+{{if .Bedrooms}}
+<div class="flex items-center gap-2 text-[16px] font-normal leading-[26.4px] text-white" style="font-family: 'Poppins', sans-serif;">
+  <img src="/assets/icons/bedroom.svg" alt="Bedrooms" class="w-6 h-6 filter invert" />
+  <span>{{.Bedrooms}}BHK Flat</span>
+</div>
+{{end}}
+{{if .Bathrooms}}
+<div class="flex items-center gap-2 text-[16px] font-normal leading-[26.4px] text-white" style="font-family: 'Poppins', sans-serif;">
+  <img src="/assets/icons/bathroom.svg" alt="Bathrooms" class="w-6 h-6 filter invert" />
+  <span>{{.Bathrooms}}</span>
+</div>
+{{end}}
+{{if .Area}}
+<div class="flex items-center gap-2 text-[16px] font-normal leading-[26.4px] text-white" style="font-family: 'Poppins', sans-serif;">
+  <img src="/assets/icons/area.svg" alt="Area" class="w-6 h-6 filter invert" />
+  <span>{{.Area}} sq ft</span>
+</div>
+{{end}}
+{{if .Parking}}
+<div class="flex items-center gap-2 text-[16px] font-normal leading-[26.4px] text-white" style="font-family: 'Poppins', sans-serif;">
+  <img src="/assets/icons/parking.svg" alt="Parking" class="w-6 h-6 filter invert" />
+  <span>Yes</span>
+</div>
+{{end}}
+</div>
+{{end}}

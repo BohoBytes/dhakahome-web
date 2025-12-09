@@ -31,6 +31,8 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 		"internal/views/partials/search-box.html",
 		"internal/views/partials/search-results-list.html",
 		"internal/views/partials/property-card.html",
+		"internal/views/partials/property-badge.html",
+		"internal/views/partials/property-stats.html",
 		"internal/views/partials/pagination.html",
 		"internal/views/partials/common-sections.html",
 		"internal/views/partials/services.html",
@@ -84,6 +86,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/faq.html",
 		"internal/views/partials/search-results-list.html",
 		"internal/views/partials/property-card.html",
+		"internal/views/partials/property-badge.html",
 		"internal/views/partials/pagination.html",
 	))
 	if err := t.ExecuteTemplate(w, "pages/search-results.html", map[string]any{
