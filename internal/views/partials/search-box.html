@@ -2,6 +2,7 @@
 <!-- Search Panel overlay, pinned to the bottom of the hero -->
 {{$layout := or .SearchBoxLayout "floating"}}
 {{$floating := eq $layout "floating"}}
+{{$search := .Search}}
 <div class="{{if $floating}}relative md:absolute left-0 right-0 z-10 mt-8 md:mt-0{{else}}relative z-10 py-4{{end}}">
   <div class="mx-auto px-4 {{if not $floating}}max-w-[85rem]{{end}}">
     <form action="/search" method="get">
@@ -24,63 +25,6 @@
           gap: 12px;
         "
       >
-        <!-- Location Field -->
-        <div
-          style="
-            flex: 1 1 0;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 5px;
-          "
-          class="w-full md:w-auto"
-        >
-          <div
-            style="
-              color: black;
-              font-size: 14px;
-              font-family: Poppins;
-              font-weight: 400;
-              word-wrap: break-word;
-            "
-            class="md:text-base"
-          >
-            Location
-          </div>
-          <div
-            style="
-              padding: 8px 11px;
-              background: white;
-              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
-              overflow: hidden;
-              border-radius: 6px;
-              display: flex;
-              align-items: center;
-              gap: 5px;
-            "
-          >
-            <img src="/assets/icons/location.svg" alt="Location" class="w-4 h-4 md:w-auto md:h-auto" />
-            <input
-              name="location"
-              value="Dhaka"
-              style="
-                color: #3b3b3b;
-                font-size: 16px;
-                font-family: Poppins;
-                font-weight: 400;
-                word-wrap: break-word;
-                border: none;
-                outline: none;
-                background: transparent;
-                flex: 1;
-                min-width: 0;
-              "
-              class="md:text-lg"
-            />
-          </div>
-        </div>
-
         <!-- Type Field -->
         <div
           style="
@@ -136,9 +80,82 @@
               "
               class="md:text-lg"
             >
-              <option>Residential</option>
-              <option>Commercial</option>
-              <option>Land</option>
+              {{range $search.TypeOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedType .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <img
+              src="/assets/icons/arrow_down.svg"
+              alt="Arrow Down"
+              style="position: absolute; right: 15px; pointer-events: none"
+              class="w-4 h-4 md:w-auto md:h-auto"
+            />
+          </div>
+        </div>
+
+        <!-- City Field -->
+        <div
+          style="
+            flex: 1 1 0;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+          "
+          class="w-full md:w-auto"
+        >
+          <div
+            style="
+              color: black;
+              font-size: 14px;
+              font-family: Poppins;
+              font-weight: 400;
+              word-wrap: break-word;
+            "
+            class="md:text-base"
+          >
+            City
+          </div>
+          <div
+            style="
+              height: 50px;
+              background: white;
+              box-shadow: 0px 4px 6.2px rgba(0, 0, 0, 0.15);
+              overflow: hidden;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              position: relative;
+              gap: 6px;
+              padding-left: 11px;
+            "
+          >
+            <img src="/assets/icons/location.svg" alt="City" class="w-4 h-4 md:w-auto md:h-auto" />
+            <select
+              id="search-city"
+              name="city"
+              data-search-city="true"
+              style="
+                color: #3b3b3b;
+                font-size: 16px;
+                font-family: Poppins;
+                font-weight: 400;
+                line-height: 21.6px;
+                word-wrap: break-word;
+                border: none;
+                outline: none;
+                background: transparent;
+                flex: 1;
+                min-width: 0;
+                padding: 14px 7px 14px 0;
+                appearance: none;
+              "
+              class="md:text-lg"
+            >
+              {{range $search.CityOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedCity .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
             </select>
             <img
               src="/assets/icons/arrow_down.svg"
@@ -186,7 +203,11 @@
             "
           >
             <select
+              id="search-area"
               name="area"
+              data-search-area="true"
+              data-fetch-url="/api/search/neighborhoods"
+              data-selected="{{$.Search.SelectedArea}}"
               style="
                 color: #3b3b3b;
                 font-size: 16px;
@@ -204,10 +225,9 @@
               "
               class="md:text-lg"
             >
-              <option>Uttara</option>
-              <option>Gulshan</option>
-              <option>Bashundhara</option>
-              <option>Malibagh</option>
+              {{range $search.AreaOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedArea .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
             </select>
             <img
               src="/assets/icons/arrow_down.svg"
@@ -218,7 +238,7 @@
           </div>
         </div>
 
-        <!-- Max Price Field -->
+        <!-- Listing Type Field -->
         <div
           style="
             flex: 1 1 0;
@@ -240,7 +260,7 @@
             "
             class="md:text-base"
           >
-            Max. Price
+            Listing Type
           </div>
           <div
             style="
@@ -254,9 +274,8 @@
               position: relative;
             "
           >
-            <input
-              name="maxPrice"
-              value="৳ 40,000"
+            <select
+              name="listing_type"
               style="
                 color: #3b3b3b;
                 font-size: 16px;
@@ -270,9 +289,14 @@
                 flex: 1;
                 min-width: 0;
                 padding: 14px 11px;
+                appearance: none;
               "
               class="md:text-lg"
-            />
+            >
+              {{range $search.ListingTypeOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedListingType .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
             <img
               src="/assets/icons/arrow_down.svg"
               alt="Arrow Down"
@@ -307,4 +331,67 @@
     }
   }
 </style>
+<script>
+  (function () {
+    const citySelect = document.querySelector("[data-search-city]");
+    const areaSelect = document.querySelector("[data-search-area]");
+    if (!citySelect || !areaSelect) return;
+
+    const endpoint = areaSelect.dataset.fetchUrl;
+    const initialArea = areaSelect.dataset.selected || "";
+
+    const resetAreaOptions = () => {
+      areaSelect.innerHTML = "";
+      const anyOpt = document.createElement("option");
+      anyOpt.value = "";
+      anyOpt.textContent = "Any";
+      areaSelect.appendChild(anyOpt);
+    };
+
+    const populateAreas = (areas, preset) => {
+      areas.forEach((area) => {
+        if (!area) return;
+        const opt = document.createElement("option");
+        opt.value = area;
+        opt.textContent = area;
+        areaSelect.appendChild(opt);
+      });
+      if (preset) {
+        areaSelect.value = preset;
+      }
+    };
+
+    const fetchAreas = async (city, preset) => {
+      resetAreaOptions();
+      if (!city || !endpoint) {
+        areaSelect.value = "";
+        return;
+      }
+      try {
+        const res = await fetch(`${endpoint}?city=${encodeURIComponent(city)}`);
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const payload = await res.json();
+        const rows = Array.isArray(payload) ? payload : payload.data || [];
+        populateAreas(rows, preset);
+      } catch (err) {
+        console.error("Unable to load areas", err);
+      }
+    };
+
+    const hasPrefetchedAreas = areaSelect.options.length > 1;
+    if (initialArea) {
+      if (!hasPrefetchedAreas && citySelect.value) {
+        fetchAreas(citySelect.value, initialArea);
+      } else {
+        areaSelect.value = initialArea;
+      }
+    } else if (!hasPrefetchedAreas && citySelect.value) {
+      fetchAreas(citySelect.value, "");
+    }
+
+    citySelect.addEventListener("change", (event) => {
+      fetchAreas(event.target.value, "");
+    });
+  })();
+</script>
 {{end}}

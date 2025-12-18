@@ -17,11 +17,14 @@ import (
 	"unicode"
 )
 
+const defaultStatusFilter = "listed_rental,listed_sale"
+
 // PropertyService defines the interface for property operations
 // This allows both real API client and mock service to implement the same interface
 type PropertyService interface {
 	SearchProperties(q url.Values) (PropertyList, error)
 	GetProperty(id string) (Property, error)
+	GetRequiredDocuments(assetType string) ([]Document, error)
 	SubmitLead(in LeadReq) error
 }
 
@@ -109,21 +112,34 @@ func deriveTokenURL(base string) string {
 }
 
 type Property struct {
-	ID          string   `json:"id"`
-	Title       string   `json:"title"`
-	Address     string   `json:"address"`
-	Price       float64  `json:"price"`
-	Currency    string   `json:"currency"`
-	Type        string   `json:"type"`
-	ListingType string   `json:"listingType"`
-	Images      []string `json:"images"`
-	Badges      []string `json:"badges"`
-	Bedrooms    int      `json:"bedrooms"`
-	Bathrooms   int      `json:"bathrooms"`
-	Area        int      `json:"area"` // in square feet
-	Parking     int      `json:"parking"`
-	Gallery     []string `json:"-"`
-	HasImages   bool     `json:"-"`
+	ID           string   `json:"id"`
+	Title        string   `json:"title"`
+	Address      string   `json:"address"`
+	Description  string   `json:"description,omitempty"`
+	Price        float64  `json:"price"`
+	Currency     string   `json:"currency"`
+	Type         string   `json:"type"`
+	ListingType  string   `json:"listingType"`
+	BuildYear    int      `json:"buildYear,omitempty"`
+	Images       []string `json:"images"`
+	Badges       []string `json:"badges"`
+	Amenities    []string `json:"amenities,omitempty"`
+	ListingYear  int      `json:"listingYear,omitempty"`
+	ListingDate  string   `json:"listingDate,omitempty"`
+	Bedrooms     int      `json:"bedrooms"`
+	Bathrooms    int      `json:"bathrooms"`
+	Area         int      `json:"area"` // in square feet
+	Parking      int      `json:"parking"`
+	Gallery      []string `json:"-"`
+	HasImages    bool     `json:"-"`
+	ContactPhone string   `json:"contactPhone,omitempty"`
+	ContactEmail string   `json:"contactEmail,omitempty"`
+}
+
+type Document struct {
+	ID         string `json:"id"`
+	Label      string `json:"label"`
+	IsRequired bool   `json:"isRequired"`
 }
 
 type PropertyList struct {
@@ -141,12 +157,12 @@ type assetListResponse struct {
 }
 
 func (c *Client) SearchProperties(q url.Values) (PropertyList, error) {
-	// If mock mode is enabled, use mock data
-	if c.mockEnabled {
-		return c.getMockSearchResults(q), nil
-	}
-
 	params := buildAssetSearchParams(q)
+
+	// If mock mode is enabled, use mock data built from normalized params
+	if c.mockEnabled {
+		return c.getMockSearchResults(params), nil
+	}
 
 	// Track request metrics for debugging
 	startTime := time.Now()
@@ -161,7 +177,7 @@ func (c *Client) SearchProperties(q url.Values) (PropertyList, error) {
 	if err != nil {
 		c.LastResponseStatus = 0
 		log.Printf("API: Request failed after %dms: %v - using mock data", c.LastRequestDuration.Milliseconds(), err)
-		return c.getMockSearchResults(q), nil
+		return c.getMockSearchResults(params), nil
 	}
 	defer res.Body.Close()
 
@@ -169,7 +185,7 @@ func (c *Client) SearchProperties(q url.Values) (PropertyList, error) {
 
 	if res.StatusCode != http.StatusOK {
 		log.Printf("API: Status %d after %dms - using mock data", res.StatusCode, c.LastRequestDuration.Milliseconds())
-		return c.getMockSearchResults(q), nil
+		return c.getMockSearchResults(params), nil
 	}
 
 	var payload assetListResponse
@@ -177,7 +193,7 @@ func (c *Client) SearchProperties(q url.Values) (PropertyList, error) {
 	dec.UseNumber()
 	if err := dec.Decode(&payload); err != nil {
 		log.Printf("API: JSON decode failed: %v - using mock data", err)
-		return c.getMockSearchResults(q), nil
+		return c.getMockSearchResults(params), nil
 	}
 
 	log.Printf("API: Successfully fetched %d properties from backend", len(payload.Data))
@@ -241,43 +257,60 @@ func buildAssetSearchParams(q url.Values) url.Values {
 	}
 	params.Set("limit", limit)
 
-	status := strings.TrimSpace(q.Get("status"))
+	status := cleanAnyValue(q.Get("status"))
 	if status == "" {
-		// Nestlo backend statuses: ready_for_listing, active, leased, etc.
-		status = "ready_for_listing,active"
+		if listingType := normalizeListingType(cleanAnyValue(firstNonEmpty(q.Get("listing_type"), q.Get("listingType")))); listingType != "" {
+			status = listingType
+		} else {
+			status = defaultStatusFilter
+		}
 	}
 	params.Set("status", status)
 
-	if rawQ := strings.TrimSpace(q.Get("q")); rawQ != "" {
+	if rawQ := cleanAnyValue(q.Get("q")); rawQ != "" {
 		params.Set("q", rawQ)
 	} else {
-		if loc := strings.TrimSpace(q.Get("location")); loc != "" {
+		if loc := cleanAnyValue(q.Get("location")); loc != "" {
 			params.Set("q", loc)
-		} else if area := strings.TrimSpace(q.Get("area")); area != "" {
+		} else if area := cleanAnyValue(q.Get("area")); area != "" {
 			params.Set("q", area)
 		}
 	}
 
-	if loc := strings.TrimSpace(q.Get("location")); loc != "" {
+	if loc := cleanAnyValue(q.Get("location")); loc != "" {
 		params.Set("location", loc)
 	}
 
-	if neighborhood := strings.TrimSpace(q.Get("neighborhood")); neighborhood != "" {
+	if neighborhood := cleanAnyValue(q.Get("neighborhood")); neighborhood != "" {
 		params.Set("neighborhood", neighborhood)
-	} else if area := strings.TrimSpace(q.Get("area")); area != "" {
+	} else if area := cleanAnyValue(q.Get("area")); area != "" {
 		params.Set("neighborhood", area)
 	}
 
-	if rawTypes := strings.TrimSpace(q.Get("types")); rawTypes != "" {
+	if rawTypes := cleanAnyValue(q.Get("types")); rawTypes != "" {
 		params.Set("types", rawTypes)
-	} else if t := normalizeTypeValue(q.Get("type")); t != "" {
+	} else if t := normalizeTypeValue(cleanAnyValue(q.Get("type"))); t != "" {
 		params.Set("types", t)
 	}
 
-	if priceMax := strings.TrimSpace(q.Get("price_max")); priceMax != "" {
-		params.Set("price_max", priceMax)
+	if priceMax := cleanAnyValue(q.Get("price_max")); priceMax != "" {
+		if parsed, ok := parsePriceField(priceMax); ok {
+			params.Set("price_max", strconv.FormatFloat(parsed, 'f', -1, 64))
+		} else {
+			params.Set("price_max", priceMax)
+		}
 	} else if maxPrice, ok := parsePriceField(q.Get("maxPrice")); ok {
 		params.Set("price_max", strconv.FormatFloat(maxPrice, 'f', -1, 64))
+	}
+
+	if priceMin := cleanAnyValue(q.Get("price_min")); priceMin != "" {
+		if parsed, ok := parsePriceField(priceMin); ok {
+			params.Set("price_min", strconv.FormatFloat(parsed, 'f', -1, 64))
+		} else {
+			params.Set("price_min", priceMin)
+		}
+	} else if minPrice, ok := parsePriceField(q.Get("minPrice")); ok {
+		params.Set("price_min", strconv.FormatFloat(minPrice, 'f', -1, 64))
 	}
 
 	for _, key := range []string{
@@ -285,13 +318,18 @@ func buildAssetSearchParams(q url.Values) url.Values {
 		"bedrooms",
 		"bathrooms",
 		"price_min",
+		"parking",
+		"serviced",
+		"shared_room",
+		"area_min",
+		"area_max",
 		"furnished",
 		"subunit_type",
 		"exclude_leased",
 		"sort_by",
 		"order",
 	} {
-		if val := strings.TrimSpace(q.Get(key)); val != "" {
+		if val := cleanAnyValue(q.Get(key)); val != "" {
 			params.Set(key, val)
 		}
 	}
@@ -299,10 +337,38 @@ func buildAssetSearchParams(q url.Values) url.Values {
 	return params
 }
 
+func cleanAnyValue(v string) string {
+	v = strings.TrimSpace(v)
+	if isAnyValue(v) {
+		return ""
+	}
+	return v
+}
+
+func isAnyValue(v string) bool {
+	return strings.EqualFold(strings.TrimSpace(v), "any")
+}
+
+func normalizeListingType(v string) string {
+	clean := strings.TrimSpace(strings.ToLower(v))
+	switch clean {
+	case "", "both":
+		return ""
+	case "rent", "rental", "listed_rental", "lease", "to-let", "to_let", "tolet":
+		return "listed_rental"
+	case "sale", "sell", "listed_sale", "for_sale":
+		return "listed_sale"
+	default:
+		return clean
+	}
+}
+
 func normalizeTypeValue(v string) string {
 	clean := strings.TrimSpace(strings.ToLower(v))
 	switch clean {
 	case "":
+		return ""
+	case "any":
 		return ""
 	case "residential":
 		return "Residential"
@@ -321,7 +387,12 @@ func parsePriceField(raw string) (float64, bool) {
 	}
 	var b strings.Builder
 	for _, r := range raw {
-		if unicode.IsDigit(r) || r == '.' {
+		switch {
+		case unicode.IsDigit(r):
+			if val, err := strconv.Atoi(string(r)); err == nil {
+				b.WriteString(strconv.Itoa(val))
+			}
+		case r == '.':
 			b.WriteRune(r)
 		}
 	}
@@ -333,6 +404,86 @@ func parsePriceField(raw string) (float64, bool) {
 		return 0, false
 	}
 	return val, true
+}
+
+func (c *Client) GetCities() ([]string, error) {
+	if c.mockEnabled {
+		return mockCities(), nil
+	}
+
+	params := url.Values{}
+	params.Set("status", defaultStatusFilter)
+
+	res, err := c.doGet("/assets/cities", params)
+	if err != nil {
+		log.Printf("API: cities request failed: %v - using mock data", err)
+		return mockCities(), nil
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		log.Printf("API: cities status %s - using mock data", res.Status)
+		return mockCities(), nil
+	}
+
+	var payload any
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		log.Printf("API: cities decode failed: %v - using mock data", err)
+		return mockCities(), nil
+	}
+
+	cities := parseStringList(payload)
+	if len(cities) == 0 {
+		log.Printf("API: cities response empty - using mock data")
+		return mockCities(), nil
+	}
+
+	return cities, nil
+}
+
+func (c *Client) GetNeighborhoods(city string) ([]string, error) {
+	city = cleanAnyValue(city)
+	if city == "" {
+		return nil, fmt.Errorf("neighborhoods: city is required")
+	}
+
+	if c.mockEnabled {
+		return mockNeighborhoods(city), nil
+	}
+
+	params := url.Values{}
+	params.Set("city", city)
+	params.Set("status", defaultStatusFilter)
+
+	res, err := c.doGet("/assets/neighborhoods", params)
+	if err != nil {
+		log.Printf("API: neighborhoods request failed for city=%s: %v - using mock data", city, err)
+		return mockNeighborhoods(city), nil
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		log.Printf("API: neighborhoods status %s for city=%s - using mock data", res.Status, city)
+		return mockNeighborhoods(city), nil
+	}
+
+	var payload any
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		log.Printf("API: neighborhoods decode failed for city=%s: %v - using mock data", city, err)
+		return mockNeighborhoods(city), nil
+	}
+
+	areas := parseStringList(payload)
+	if len(areas) == 0 {
+		log.Printf("API: neighborhoods empty for city=%s - using mock data", city)
+		return mockNeighborhoods(city), nil
+	}
+
+	return areas, nil
 }
 
 func (c *Client) doGet(path string, params url.Values) (*http.Response, error) {
@@ -505,6 +656,20 @@ func mapAssetToProperty(raw map[string]any) Property {
 		firstString(location, "raw"),
 	)
 
+	prop.Description = firstNonEmpty(
+		firstString(details, "description", "listing_description", "listingDescription", "overview", "remarks"),
+		firstString(raw, "description", "Description"),
+	)
+
+	prop.ContactPhone = firstNonEmpty(
+		firstString(details, "contact_phone", "contactPhone", "phone", "owner_phone", "ownerPhone"),
+		firstString(raw, "contact_phone", "contactPhone", "phone"),
+	)
+	prop.ContactEmail = firstNonEmpty(
+		firstString(details, "contact_email", "contactEmail", "email"),
+		firstString(raw, "contact_email", "contactEmail", "email"),
+	)
+
 	prop.Gallery = selectPhotoURLs(pickSlice(raw, "photos", "Photos"))
 
 	if details != nil {
@@ -529,6 +694,19 @@ func mapAssetToProperty(raw map[string]any) Property {
 		if prop.Type == "" {
 			prop.Type = titleize(firstString(details, "property_type", "propertyType"))
 		}
+
+		if v, ok := intFrom(details, "build_year", "buildYear", "year_built", "yearBuilt"); ok && v > 0 {
+			prop.BuildYear = v
+		}
+
+		if d := firstString(details, "listing_date", "listingDate", "available_from", "availableFrom", "created_at", "createdAt"); d != "" {
+			if parsed, ok := parseDateTime(d); ok {
+				prop.ListingYear = parsed.Year()
+				prop.ListingDate = parsed.Format("Jan 02, 2006")
+			} else {
+				prop.ListingDate = d
+			}
+		}
 	}
 
 	if prop.Price == 0 {
@@ -546,6 +724,12 @@ func mapAssetToProperty(raw map[string]any) Property {
 	}
 	prop.Badges = dedupStrings(badges)
 
+	amenities := extractAmenities(details)
+	if len(amenities) == 0 {
+		amenities = extractAmenities(raw)
+	}
+	prop.Amenities = dedupStrings(amenities)
+
 	return finalizeProperty(prop)
 }
 
@@ -558,13 +742,9 @@ func finalizeProperty(prop Property) Property {
 		prop.HasImages = true
 	}
 
-	// Provide a placeholder only for display; keep HasImages for actual photo presence
-	if len(prop.Images) == 0 {
-		if len(prop.Gallery) > 0 {
-			prop.Images = prop.Gallery
-		} else {
-			prop.Images = []string{"/assets/images/placeholders/property-placeholder.svg"}
-		}
+	// Keep Images in sync when we do have gallery assets; otherwise allow templates to show their own fallback
+	if len(prop.Images) == 0 && len(prop.Gallery) > 0 {
+		prop.Images = prop.Gallery
 	}
 
 	if prop.Type == "" {
@@ -581,6 +761,12 @@ func finalizeProperty(prop Property) Property {
 	if prop.Currency == "" {
 		prop.Currency = "৳"
 	}
+
+	// Keep amenities populated for display; fallback if none provided
+	if len(prop.Amenities) == 0 {
+		prop.Amenities = defaultAmenities()
+	}
+
 	return prop
 }
 
@@ -608,6 +794,94 @@ func deriveListingTypeFromBadges(badges []string) string {
 		}
 	}
 	return ""
+}
+
+func parseDateTime(raw string) (time.Time, bool) {
+	clean := strings.TrimSpace(raw)
+	if clean == "" {
+		return time.Time{}, false
+	}
+	layouts := []string{
+		time.RFC3339,
+		"2006-01-02",
+		"2006/01/02",
+		"02 Jan 2006",
+		"Jan 2, 2006",
+		"Jan 02, 2006",
+		"02-01-2006",
+		"02/01/2006",
+	}
+	for _, layout := range layouts {
+		if t, err := time.Parse(layout, clean); err == nil {
+			return t, true
+		}
+	}
+	// try unix seconds
+	if secs, err := strconv.ParseInt(clean, 10, 64); err == nil {
+		return time.Unix(secs, 0), true
+	}
+	return time.Time{}, false
+}
+
+func mockRequiredDocuments(assetType string) []Document {
+	return []Document{
+		{ID: "923dad", Label: "NID", IsRequired: true},
+		{ID: "23243fasf", Label: "Employment letter", IsRequired: true},
+		{ID: "da5da", Label: "Bank Statement", IsRequired: false},
+		{ID: "da67g5da", Label: "Solvency Certificate", IsRequired: false},
+	}
+}
+
+func mockCities() []string {
+	return []string{
+		"Dhaka",
+		"Chittagong",
+		"Sylhet",
+		"Khulna",
+		"Rajshahi",
+	}
+}
+
+func mockNeighborhoods(city string) []string {
+	switch strings.ToLower(strings.TrimSpace(city)) {
+	case "dhaka":
+		return []string{"Gulshan", "Banani", "Uttara", "Dhanmondi", "Bashundhara", "Mirpur"}
+	case "chittagong":
+		return []string{"Agrabad", "Nasirabad", "Pahartali"}
+	case "sylhet":
+		return []string{"Zinda Bazar", "Amberkhana", "Mirabazar"}
+	case "khulna":
+		return []string{"Sonadanga", "Khalishpur", "Mujgunni"}
+	case "rajshahi":
+		return []string{"Uttara", "Boalia", "Rajpara"}
+	default:
+		return []string{"Central", "North", "South"}
+	}
+}
+
+func mockPropertyByID(id string) (Property, bool) {
+	for _, p := range getAllMockProperties() {
+		if strings.EqualFold(p.ID, id) {
+			return p, true
+		}
+	}
+	return Property{}, false
+}
+
+func defaultAmenities() []string {
+	base := []string{
+		"Gas Supply",
+		"Boundary Wall",
+		"Kitchen Cabinet",
+		"Power Backup",
+		"Parking",
+		"Lift",
+		"Servant Room",
+		"Furnished",
+	}
+	out := make([]string, len(base))
+	copy(out, base)
+	return out
 }
 
 func extractPrice(details map[string]any) float64 {
@@ -643,6 +917,33 @@ func firstString(m map[string]any, keys ...string) string {
 		}
 	}
 	return ""
+}
+
+func firstBool(m map[string]any, keys ...string) bool {
+	if m == nil {
+		return false
+	}
+	for _, key := range keys {
+		if val, ok := m[key]; ok {
+			switch v := val.(type) {
+			case bool:
+				return v
+			case string:
+				if b, err := strconv.ParseBool(strings.TrimSpace(v)); err == nil {
+					return b
+				}
+			case json.Number:
+				if num, err := v.Float64(); err == nil {
+					return num != 0
+				}
+			case float64:
+				return v != 0
+			case int:
+				return v != 0
+			}
+		}
+	}
+	return false
 }
 
 func firstNonEmpty(values ...string) string {
@@ -857,6 +1158,62 @@ func dedupStrings(values []string) []string {
 	return result
 }
 
+func stringsFromSlice(values []any) []string {
+	out := make([]string, 0, len(values))
+	for _, v := range values {
+		if s := strings.TrimSpace(toString(v)); s != "" {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+func parseStringList(payload any) []string {
+	switch v := payload.(type) {
+	case []string:
+		return dedupStrings(v)
+	case []any:
+		return dedupStrings(stringsFromSlice(v))
+	case map[string]any:
+		if data, ok := v["data"]; ok {
+			return parseStringList(data)
+		}
+	}
+	return nil
+}
+
+func extractAmenities(m map[string]any) []string {
+	if m == nil {
+		return nil
+	}
+	keys := []string{"amenities", "Amenities", "features", "featureList", "features_list", "Features"}
+	for _, key := range keys {
+		if val, ok := m[key]; ok {
+			switch v := val.(type) {
+			case []string:
+				return v
+			case []any:
+				return stringsFromSlice(v)
+			case string:
+				if v == "" {
+					continue
+				}
+				parts := strings.Split(v, ",")
+				return parts
+			}
+		}
+	}
+	return nil
+}
+
+func mapToDocument(m map[string]any) Document {
+	return Document{
+		ID:         firstString(m, "id", "ID"),
+		Label:      firstString(m, "label", "name", "title"),
+		IsRequired: firstBool(m, "isRequired", "required", "is_required"),
+	}
+}
+
 func titleize(input string) string {
 	clean := strings.TrimSpace(strings.ReplaceAll(input, "_", " "))
 	if clean == "" {
@@ -940,11 +1297,14 @@ func contains(s, substr string) bool {
 	return strings.Contains(strings.ToLower(s), strings.ToLower(substr))
 }
 
-func containsAny(slice []string, val string) bool {
-	valLower := strings.ToLower(val)
-	for _, s := range slice {
-		if strings.ToLower(s) == valLower || strings.Contains(strings.ToLower(s), valLower) {
-			return true
+func containsAny(slice []string, vals ...string) bool {
+	for _, val := range vals {
+		valLower := strings.ToLower(val)
+		for _, s := range slice {
+			sLower := strings.ToLower(s)
+			if sLower == valLower || strings.Contains(sLower, valLower) {
+				return true
+			}
 		}
 	}
 	return false
@@ -980,83 +1340,101 @@ func getAllMockProperties() []Property {
 	return []Property{
 		// Residential Properties - Uttara Area
 		{
-			ID:        "mock-res-uttara-01",
-			Title:     "Luxury Apartment in Uttara Sec 7",
-			Address:   "House 12, Road 7, Sector 7, Uttara, Dhaka",
-			Price:     45000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/db6726f48a0bae50917980327e8ff5eb40ae871e.png"},
-			Badges:    []string{"To-let", "Verified", "Residential", "Fully Furnished"},
-			Bedrooms:  3,
-			Bathrooms: 3,
-			Area:      1800,
-			Parking:   2,
+			ID:          "mock-res-uttara-01",
+			Title:       "Luxury Apartment in Uttara Sec 7",
+			Address:     "House 12, Road 7, Sector 7, Uttara, Dhaka",
+			Price:       45000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/db6726f48a0bae50917980327e8ff5eb40ae871e.png"},
+			Badges:      []string{"To-let", "Verified", "Residential", "Fully Furnished"},
+			BuildYear:   2020,
+			ListingDate: "2024-09-18",
+			Description: "Spacious luxury apartment with modern finishes, abundant natural light, and easy access to Uttara's prime conveniences.",
+			Bedrooms:    3,
+			Bathrooms:   3,
+			Area:        1800,
+			Parking:     2,
 		},
 		{
-			ID:        "mock-res-uttara-02",
-			Title:     "Modern Family Home Uttara Sec 10",
-			Address:   "Plot 25, Uttara Sec 10, Dhaka",
-			Price:     8500000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/8abeccd3fd2f4096a7b4a66a184c5ae36074637a.png"},
-			Badges:    []string{"For Sale", "Verified", "Residential"},
-			Bedrooms:  4,
-			Bathrooms: 4,
-			Area:      2200,
-			Parking:   2,
+			ID:          "mock-res-uttara-02",
+			Title:       "Modern Family Home Uttara Sec 10",
+			Address:     "Plot 25, Uttara Sec 10, Dhaka",
+			Price:       8500000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/8abeccd3fd2f4096a7b4a66a184c5ae36074637a.png"},
+			Badges:      []string{"For Sale", "Verified", "Residential"},
+			BuildYear:   2018,
+			ListingDate: "2024-10-05",
+			Description: "Step into this spacious and thoughtfully planned 3-bedroom apartment, ideal for families seeking comfort, convenience, and style. Spanning 1450 square feet, this home features three generously sized bedrooms, each designed to ensure privacy and natural light. The four well-appointed bathrooms, including attached ones, offer added ease for busy households.",
+			Bedrooms:    4,
+			Bathrooms:   4,
+			Area:        2200,
+			Parking:     2,
 		},
 		{
-			ID:        "mock-res-uttara-03",
-			Title:     "Cozy Studio Apartment Uttara South",
-			Address:   "Uttara South, Sector 3, Dhaka",
-			Price:     18000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/1f002be890c252fab41bc52a14801210d4fa2535.png"},
-			Badges:    []string{"To-let", "Verified", "Residential", "Semi-Furnished"},
-			Bedrooms:  1,
-			Bathrooms: 1,
-			Area:      650,
-			Parking:   1,
+			ID:          "mock-res-uttara-03",
+			Title:       "Cozy Studio Apartment Uttara South",
+			Address:     "Uttara South, Sector 3, Dhaka",
+			Price:       18000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/1f002be890c252fab41bc52a14801210d4fa2535.png"},
+			Badges:      []string{"To-let", "Verified", "Residential", "Semi-Furnished"},
+			BuildYear:   2016,
+			ListingDate: "2024-08-12",
+			Description: "Efficient studio with smart layout, ideal for single living close to transport and retail.",
+			Bedrooms:    1,
+			Bathrooms:   1,
+			Area:        650,
+			Parking:     1,
 		},
 		{
-			ID:        "mock-res-uttara-04",
-			Title:     "Spacious 4BR Apartment Uttara Sec 12",
-			Address:   "Road 15, Sector 12, Uttara, Dhaka",
-			Price:     55000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/2f8fe8dfbde9fb83f633da9c0e8bdff775034700.png"},
-			Badges:    []string{"To-let", "Verified", "Residential", "Fully Furnished"},
-			Bedrooms:  4,
-			Bathrooms: 3,
-			Area:      2000,
-			Parking:   2,
+			ID:          "mock-res-uttara-04",
+			Title:       "Spacious 4BR Apartment Uttara Sec 12",
+			Address:     "Road 15, Sector 12, Uttara, Dhaka",
+			Price:       55000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/2f8fe8dfbde9fb83f633da9c0e8bdff775034700.png"},
+			Badges:      []string{"To-let", "Verified", "Residential", "Fully Furnished"},
+			BuildYear:   2019,
+			ListingDate: "2024-09-01",
+			Description: "Large four-bedroom with attached baths, ready-to-move furnishings, and cross-ventilation.",
+			Bedrooms:    4,
+			Bathrooms:   3,
+			Area:        2000,
+			Parking:     2,
 		},
 		// Commercial Properties
 		{
-			ID:        "mock-com-uttara-01",
-			Title:     "Premium Office Space Uttara Sec 11",
-			Address:   "Building: Crystal Tower, Sector 11, Uttara, Dhaka",
-			Price:     120000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/d466fbc3c6a3829176f4bf45c88ed96204288a39.png"},
-			Badges:    []string{"To-let", "Verified", "Commercial", "Office Space"},
-			Bedrooms:  0,
-			Bathrooms: 2,
-			Area:      2500,
-			Parking:   3,
+			ID:          "mock-com-uttara-01",
+			Title:       "Premium Office Space Uttara Sec 11",
+			Address:     "Building: Crystal Tower, Sector 11, Uttara, Dhaka",
+			Price:       120000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/d466fbc3c6a3829176f4bf45c88ed96204288a39.png"},
+			Badges:      []string{"To-let", "Verified", "Commercial", "Office Space"},
+			BuildYear:   2015,
+			ListingDate: "2024-07-20",
+			Description: "Grade-A office floor with open layout, ample light, and parking allocation.",
+			Bedrooms:    0,
+			Bathrooms:   2,
+			Area:        2500,
+			Parking:     3,
 		},
 		{
-			ID:        "mock-com-uttara-02",
-			Title:     "Retail Shop Space Uttara Sec 4",
-			Address:   "Shop 5, Ground Floor, Uttara Sec 4, Dhaka",
-			Price:     3500000,
-			Currency:  "৳",
-			Images:    []string{"/assets/images/mock-properties/8abeccd3fd2f4096a7b4a66a184c5ae36074637a.png"},
-			Badges:    []string{"For Sale", "Verified", "Commercial", "Retail"},
-			Bedrooms:  0,
-			Bathrooms: 1,
-			Area:      800,
-			Parking:   0,
+			ID:          "mock-com-uttara-02",
+			Title:       "Retail Shop Space Uttara Sec 4",
+			Address:     "Shop 5, Ground Floor, Uttara Sec 4, Dhaka",
+			Price:       3500000,
+			Currency:    "৳",
+			Images:      []string{"/assets/images/mock-properties/8abeccd3fd2f4096a7b4a66a184c5ae36074637a.png"},
+			Badges:      []string{"For Sale", "Verified", "Commercial", "Retail"},
+			BuildYear:   2014,
+			ListingDate: "2024-06-15",
+			Description: "Street-facing retail bay with steady footfall and clear frontage.",
+			Bedrooms:    0,
+			Bathrooms:   1,
+			Area:        800,
+			Parking:     0,
 		},
 		// Gulshan Area
 		{
@@ -1293,7 +1671,7 @@ func getAllMockProperties() []Property {
 // matchesMockFilters checks if a property matches the given filter criteria
 func matchesMockFilters(prop Property, q url.Values) bool {
 	// Text search (q parameter) - searches in title, address, and badges
-	if searchQuery := strings.TrimSpace(q.Get("q")); searchQuery != "" {
+	if searchQuery := cleanAnyValue(q.Get("q")); searchQuery != "" {
 		searchLower := strings.ToLower(searchQuery)
 		if !contains(prop.Title, searchLower) &&
 			!contains(prop.Address, searchLower) &&
@@ -1303,26 +1681,26 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 	}
 
 	// Location filter
-	if location := strings.TrimSpace(q.Get("location")); location != "" {
+	if location := cleanAnyValue(q.Get("location")); location != "" {
 		if !contains(prop.Address, location) && !contains(prop.Title, location) {
 			return false
 		}
 	}
 
 	// Area/Neighborhood filter
-	if area := strings.TrimSpace(q.Get("area")); area != "" {
+	if area := cleanAnyValue(q.Get("area")); area != "" {
 		if !contains(prop.Address, area) && !contains(prop.Title, area) {
 			return false
 		}
 	}
-	if neighborhood := strings.TrimSpace(q.Get("neighborhood")); neighborhood != "" {
+	if neighborhood := cleanAnyValue(q.Get("neighborhood")); neighborhood != "" {
 		if !contains(prop.Address, neighborhood) && !contains(prop.Title, neighborhood) {
 			return false
 		}
 	}
 
 	// Property type filter
-	if types := strings.TrimSpace(q.Get("types")); types != "" {
+	if types := cleanAnyValue(q.Get("types")); types != "" {
 		typeList := strings.Split(types, ",")
 		found := false
 		for _, t := range typeList {
@@ -1335,14 +1713,14 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 			return false
 		}
 	}
-	if propertyType := strings.TrimSpace(q.Get("type")); propertyType != "" {
+	if propertyType := cleanAnyValue(q.Get("type")); propertyType != "" {
 		if !containsAny(prop.Badges, propertyType) {
 			return false
 		}
 	}
 
 	// Status filter
-	if status := strings.TrimSpace(q.Get("status")); status != "" {
+	if status := cleanAnyValue(q.Get("status")); status != "" {
 		statusList := strings.Split(status, ",")
 		found := false
 		for _, s := range statusList {
@@ -1369,6 +1747,33 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 		}
 	}
 
+	// Parking filter
+	if parking := parseIntParam(q.Get("parking"), -1); parking >= 0 {
+		if parking >= 10 {
+			if prop.Parking < parking {
+				return false
+			}
+		} else if parking >= 3 {
+			if prop.Parking < parking {
+				return false
+			}
+		} else if prop.Parking != parking {
+			return false
+		}
+	}
+
+	// Area/Sqft filter
+	if areaMin := parseFloatParam(q.Get("area_min"), 0); areaMin > 0 && prop.Area > 0 {
+		if float64(prop.Area) < areaMin {
+			return false
+		}
+	}
+	if areaMax := parseFloatParam(q.Get("area_max"), 0); areaMax > 0 && prop.Area > 0 {
+		if float64(prop.Area) > areaMax {
+			return false
+		}
+	}
+
 	// Bedrooms filter
 	if bedrooms := parseIntParam(q.Get("bedrooms"), 0); bedrooms > 0 {
 		if prop.Bedrooms < bedrooms {
@@ -1384,7 +1789,7 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 	}
 
 	// Furnished filter
-	if furnished := strings.TrimSpace(q.Get("furnished")); furnished != "" {
+	if furnished := cleanAnyValue(q.Get("furnished")); furnished != "" {
 		furnishedLower := strings.ToLower(furnished)
 		if furnishedLower == "yes" || furnishedLower == "true" || furnishedLower == "1" {
 			if !containsAny(prop.Badges, "Furnished") {
@@ -1397,6 +1802,34 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 		}
 	}
 
+	// Serviced filter (basic heuristic on badges/title)
+	if serviced := cleanAnyValue(q.Get("serviced")); serviced != "" {
+		isServiced := containsAny(prop.Badges, "Serviced") || contains(prop.Title, "serviced")
+		if serviced == "true" || serviced == "yes" || serviced == "1" {
+			if !isServiced {
+				return false
+			}
+		} else if serviced == "false" || serviced == "no" || serviced == "0" {
+			if isServiced {
+				return false
+			}
+		}
+	}
+
+	// Shared room filter (hostel heuristic)
+	if shared := cleanAnyValue(firstNonEmpty(q.Get("shared_room"), q.Get("sharedRoom"))); shared != "" {
+		isShared := contains(prop.Title, "shared") || containsAny(prop.Badges, "Shared", "Shared Room")
+		if shared == "true" || shared == "yes" || shared == "1" {
+			if !isShared {
+				return false
+			}
+		} else if shared == "false" || shared == "no" || shared == "0" {
+			if isShared {
+				return false
+			}
+		}
+	}
+
 	return true
 }
 
@@ -1404,6 +1837,10 @@ func matchesMockFilters(prop Property, q url.Values) bool {
 func normalizeMockStatus(status string) string {
 	statusLower := strings.ToLower(strings.TrimSpace(status))
 	switch statusLower {
+	case "listed_rental":
+		return "To-let"
+	case "listed_sale":
+		return "For Sale"
 	case "ready_for_listing", "active", "available":
 		return "To-let"
 	case "for_sale", "sale":
@@ -1423,28 +1860,37 @@ func (c *Client) GetProperty(id string) (Property, error) {
 
 	// If mock mode is enabled, search in mock data
 	if c.mockEnabled {
-		mockList := c.getMockSearchResults(url.Values{})
-		for _, prop := range mockList.Items {
-			if prop.ID == id {
-				log.Printf("🎭 Mock: Found property with ID: %s", id)
-				return prop, nil
-			}
+		if prop, ok := mockPropertyByID(id); ok {
+			log.Printf("🎭 Mock: Found property with ID: %s", id)
+			return finalizeProperty(prop), nil
 		}
 		return out, fmt.Errorf("property not found: %s", id)
 	}
 
 	res, err := c.doGet(fmt.Sprintf("/assets/%s", id), nil)
 	if err != nil {
+		if prop, ok := mockPropertyByID(id); ok {
+			log.Printf("API: falling back to mock property for id=%s after error: %v", id, err)
+			return finalizeProperty(prop), nil
+		}
 		return out, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
+		if prop, ok := mockPropertyByID(id); ok {
+			log.Printf("API: status %s for id=%s; using mock data", res.Status, id)
+			return finalizeProperty(prop), nil
+		}
 		return out, fmt.Errorf("api: %s", res.Status)
 	}
 	var payload map[string]any
 	dec := json.NewDecoder(res.Body)
 	dec.UseNumber()
 	if err := dec.Decode(&payload); err != nil {
+		if prop, ok := mockPropertyByID(id); ok {
+			log.Printf("API: decode failed for id=%s: %v; using mock data", id, err)
+			return finalizeProperty(prop), nil
+		}
 		return out, err
 	}
 	prop := mapAssetToProperty(payload)
@@ -1454,11 +1900,71 @@ func (c *Client) GetProperty(id string) (Property, error) {
 	return prop, nil
 }
 
+func (c *Client) GetRequiredDocuments(assetType string) ([]Document, error) {
+	assetType = strings.TrimSpace(strings.ToLower(assetType))
+	if assetType == "" {
+		assetType = "default"
+	}
+
+	// Mock path
+	if c.mockEnabled {
+		return mockRequiredDocuments(assetType), nil
+	}
+
+	endpoint := fmt.Sprintf("/config/asset/%s/documents", assetType)
+	res, err := c.doGet(endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("documents: %s", res.Status)
+	}
+
+	var payload any
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		return nil, err
+	}
+
+	// Payload can be an array or { data: [] }
+	var rows []any
+	switch v := payload.(type) {
+	case []any:
+		rows = v
+	case map[string]any:
+		if data, ok := v["data"]; ok {
+			if arr, ok := data.([]any); ok {
+				rows = arr
+			}
+		}
+	}
+
+	docs := make([]Document, 0, len(rows))
+	for _, row := range rows {
+		if m, ok := row.(map[string]any); ok {
+			doc := mapToDocument(m)
+			if doc.Label == "" {
+				continue
+			}
+			if doc.ID == "" {
+				doc.ID = doc.Label
+			}
+			docs = append(docs, doc)
+		}
+	}
+	return docs, nil
+}
+
 type LeadReq struct {
 	Name         string `json:"name"`
 	Email        string `json:"email"`
 	Phone        string `json:"phone"`
 	PropertyID   string `json:"propertyId"`
+	Message      string `json:"message,omitempty"`
+	ContactEmail string `json:"contactEmail,omitempty"`
 	UTMSource    string `json:"utmSource,omitempty"`
 	UTMCampaign  string `json:"utmCampaign,omitempty"`
 	CaptchaToken string `json:"captchaToken,omitempty"`
@@ -1467,8 +1973,8 @@ type LeadReq struct {
 func (c *Client) SubmitLead(in LeadReq) error {
 	// If mock mode is enabled, just log and return success
 	if c.mockEnabled {
-		log.Printf("🎭 Mock: Lead submitted - Name: %s, Email: %s, Phone: %s, PropertyID: %s",
-			in.Name, in.Email, in.Phone, in.PropertyID)
+		log.Printf("🎭 Mock: Lead submitted - Name: %s, Email: %s, Phone: %s, PropertyID: %s, Message: %s, ContactEmail: %s",
+			in.Name, in.Email, in.Phone, in.PropertyID, in.Message, in.ContactEmail)
 		return nil
 	}
 

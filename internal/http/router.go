@@ -41,6 +41,10 @@ func NewRouter() *chi.Mux {
 	r.Get("/contact", handlers.ContactUsPage) // alias
 	r.Get("/properties/{id}", handlers.PropertyPage)
 
+	// search filter data
+	r.Get("/api/search/cities", handlers.CitiesJSON)
+	r.Get("/api/search/neighborhoods", handlers.NeighborhoodsJSON)
+
 	// htmx partials
 	// forms
 	r.Post("/lead", handlers.SubmitLead)

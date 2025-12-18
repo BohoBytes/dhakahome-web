@@ -1,0 +1,573 @@
+{{define "partials/search-advanced-box.html"}}
+{{$search := .Search}}
+{{$hasAdvanced := or (ne $search.SelectedListingType "") (ne $search.SelectedBedrooms "") (ne $search.SelectedBathrooms "") (ne $search.SelectedParking "") (ne $search.SelectedPriceMin "") (ne $search.SelectedMaxPrice "") (ne $search.SelectedServiced "") (ne $search.SelectedSharedRoom "") (ne $search.SelectedAreaMin "") (ne $search.SelectedAreaMax "")}}
+<div class="relative z-10">
+  <form
+    id="search-form"
+    action="/search"
+    method="get"
+    class="w-full max-w-[90rem] mx-auto rounded-2xl bg-white/80 backdrop-blur-md shadow-[0_12px_35px_rgba(0,0,0,0.18)] border border-white/60 px-4 py-5 md:px-6 md:py-6 space-y-4"
+    style="outline: 3px #ff4c4a solid; outline-offset: -3px;"
+    data-has-advanced="{{if $hasAdvanced}}true{{else}}false{{end}}"
+  >
+    <input type="hidden" name="status" id="status-field" value="{{if $search.SelectedListingType}}{{$search.SelectedListingType}}{{else}}listed_rental,listed_sale{{end}}" />
+    <input type="hidden" name="price_min" id="price_min" value="{{$search.SelectedPriceMin}}" />
+    <input type="hidden" name="price_max" id="price_max" value="{{$search.SelectedMaxPrice}}" />
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <label class="flex flex-col gap-2 text-sm text-[#3b3b3b] font-medium">
+        <span>Type</span>
+        <div class="relative">
+          <select
+            id="property-type"
+            name="type"
+            class="w-full h-[48px] rounded-lg border border-[#e5e5e5] bg-white px-3 pr-9 text-[16px] text-[#3b3b3b] shadow-[0_4px_10px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#f44335] focus:border-[#f44335] appearance-none"
+          >
+            {{range $search.TypeOptions}}
+              <option value="{{.Value}}" {{if eq $.Search.SelectedType .Value}}selected{{end}}>{{.Label}}</option>
+            {{end}}
+          </select>
+          <img src="/assets/icons/arrow_down.svg" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
+        </div>
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm text-[#3b3b3b] font-medium">
+        <span>City</span>
+        <div class="relative">
+          <select
+            id="search-city"
+            name="city"
+            data-search-city="true"
+            class="w-full h-[48px] rounded-lg border border-[#e5e5e5] bg-white px-3 pr-9 text-[16px] text-[#3b3b3b] shadow-[0_4px_10px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#f44335] focus:border-[#f44335] appearance-none"
+          >
+            {{range $search.CityOptions}}
+              <option value="{{.Value}}" {{if eq $.Search.SelectedCity .Value}}selected{{end}}>{{.Label}}</option>
+            {{end}}
+          </select>
+          <img src="/assets/icons/arrow_down.svg" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
+        </div>
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm text-[#3b3b3b] font-medium">
+        <span>Area</span>
+        <div class="relative">
+          <select
+            id="search-area"
+            name="area"
+            data-search-area="true"
+            data-fetch-url="/api/search/neighborhoods"
+            data-selected="{{$.Search.SelectedArea}}"
+            class="w-full h-[48px] rounded-lg border border-[#e5e5e5] bg-white px-3 pr-9 text-[16px] text-[#3b3b3b] shadow-[0_4px_10px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#f44335] focus:border-[#f44335] appearance-none"
+          >
+            {{range $search.AreaOptions}}
+              <option value="{{.Value}}" {{if eq $.Search.SelectedArea .Value}}selected{{end}}>{{.Label}}</option>
+            {{end}}
+          </select>
+          <img src="/assets/icons/arrow_down.svg" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
+        </div>
+      </label>
+
+      <label class="flex flex-col gap-2 text-sm text-[#3b3b3b] font-medium">
+        <span>Listing Type</span>
+        <div class="relative">
+          <select
+            id="listing-type"
+            name="listing_type"
+            class="w-full h-[48px] rounded-lg border border-[#e5e5e5] bg-white px-3 pr-9 text-[16px] text-[#3b3b3b] shadow-[0_4px_10px_rgba(0,0,0,0.08)] focus:ring-2 focus:ring-[#f44335] focus:border-[#f44335] appearance-none"
+          >
+            {{range $search.ListingTypeOptions}}
+              <option value="{{.Value}}" {{if eq $.Search.SelectedListingType .Value}}selected{{end}}>{{.Label}}</option>
+            {{end}}
+          </select>
+          <img src="/assets/icons/arrow_down.svg" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" />
+        </div>
+      </label>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <button
+        type="button"
+        id="advanced-toggle"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f44335] text-[#f44335] font-medium text-[15px] hover:bg-[#f44335] hover:text-white transition-colors"
+      >
+        <span class="text-lg leading-none">⚙️</span>
+        Advanced Filters
+      </button>
+
+      <div class="flex flex-wrap items-center gap-2 md:gap-3">
+        <button
+          type="button"
+          id="clear-search"
+          class="px-4 py-2 rounded-lg border border-[#d1d1d1] text-[#414141] text-[15px] font-medium hover:bg-[#f5f5f5]"
+        >
+          Clear
+        </button>
+        <button
+          type="submit"
+          class="inline-flex justify-center items-center gap-2 px-6 py-2 rounded-lg border-2 border-[#f44335] text-[#f44335] font-semibold text-[16px] leading-7 hover:bg-[#f44335] hover:text-white transition-colors cursor-pointer"
+        >
+          Search
+        </button>
+      </div>
+    </div>
+
+    <div id="advanced-panel" class="rounded-xl border border-[#f0f0f0] bg-white/90 shadow-[0_12px_35px_rgba(0,0,0,0.12)] px-4 py-4 md:px-5 md:py-5 space-y-4 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]">
+          <span class="font-medium">Price Range (৳)</span>
+          <div class="space-y-2">
+            <div class="relative">
+              <div id="price-range-track" class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-2 rounded-full bg-[#f1f1f1] overflow-hidden"></div>
+              <div class="relative h-6">
+                <input id="price-min-slider" type="range" min="0" max="500000" step="5000" value="{{if $search.SelectedPriceMin}}{{$search.SelectedPriceMin}}{{else}}0{{end}}" class="price-range-slider" />
+                <input id="price-max-slider" type="range" min="0" max="500000" step="5000" value="{{if $search.SelectedMaxPrice}}{{$search.SelectedMaxPrice}}{{else}}500000{{end}}" class="price-range-slider" />
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-sm text-[#555] font-medium">
+              <span id="price-summary">৳0 - ৳0</span>
+              <span class="text-[#8a8a8a] text-xs">Auto-updates with current results</span>
+            </div>
+            <div id="price-histogram" class="grid grid-cols-8 items-end gap-1 h-12"></div>
+          </div>
+        </label>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+            <span class="font-medium">Bedrooms</span>
+            <select name="bedrooms" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              {{range $search.BedroomOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedBedrooms .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+            <span class="font-medium">Bathrooms</span>
+            <select name="bathrooms" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              {{range $search.BathroomOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedBathrooms .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential commercial">
+            <span class="font-medium">Square Feet (min)</span>
+            <select name="area_min" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              {{range $search.SquareFootOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedAreaMin .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+            <span class="font-medium">Parking</span>
+            <select name="parking" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              {{range $search.ParkingOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedParking .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="commercial">
+            <span class="font-medium">Parking</span>
+            <select name="parking" data-commercial-parking="true" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              {{range $search.CommercialParkings}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedParking .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+            <span class="font-medium">Serviced</span>
+            <select name="serviced" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              <option value="" {{if eq $.Search.SelectedServiced ""}}selected{{end}}>Any</option>
+              <option value="true" {{if eq $.Search.SelectedServiced "true"}}selected{{end}}>Yes</option>
+              <option value="false" {{if eq $.Search.SelectedServiced "false"}}selected{{end}}>No</option>
+            </select>
+          </label>
+
+          <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="hostel">
+            <span class="font-medium">Shared Room</span>
+            <select name="shared_room" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+              <option value="" {{if eq $.Search.SelectedSharedRoom ""}}selected{{end}}>Any</option>
+              <option value="true" {{if eq $.Search.SelectedSharedRoom "true"}}selected{{end}}>Yes</option>
+              <option value="false" {{if eq $.Search.SelectedSharedRoom "false"}}selected{{end}}>No</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<style>
+  .price-range-slider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+  }
+  .price-range-slider::-webkit-slider-thumb {
+    pointer-events: all;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #f44335;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    -webkit-appearance: none;
+  }
+  .price-range-slider::-moz-range-thumb {
+    pointer-events: all;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #f44335;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  .price-range-slider::-webkit-slider-runnable-track {
+    height: 2px;
+  }
+  .price-range-slider::-moz-range-track {
+    height: 2px;
+  }
+</style>
+
+<script>
+  (function () {
+    const form = document.getElementById("search-form");
+    if (!form) return;
+
+    const advancedPanel = document.getElementById("advanced-panel");
+    const toggleBtn = document.getElementById("advanced-toggle");
+    const clearBtn = document.getElementById("clear-search");
+    const statusField = document.getElementById("status-field");
+    const listingType = document.getElementById("listing-type");
+    const typeSelect = document.getElementById("property-type");
+    const citySelect = document.querySelector("[data-search-city]");
+    const areaSelect = document.querySelector("[data-search-area]");
+    const priceMinHidden = document.getElementById("price_min");
+    const priceMaxHidden = document.getElementById("price_max");
+    const priceMinSlider = document.getElementById("price-min-slider");
+    const priceMaxSlider = document.getElementById("price-max-slider");
+    const priceTrack = document.getElementById("price-range-track");
+    const priceSummary = document.getElementById("price-summary");
+    const priceHistogram = document.getElementById("price-histogram");
+
+    const showPanel = () => {
+      advancedPanel.classList.remove("hidden");
+    };
+    const hidePanel = () => {
+      advancedPanel.classList.add("hidden");
+    };
+
+    const panelPrefKey = "dhaka-advanced-panel";
+    const setPanelVisibility = () => {
+      const saved = sessionStorage.getItem(panelPrefKey);
+      if (saved === "open") {
+        showPanel();
+        return;
+      }
+      if (saved === "closed") {
+        hidePanel();
+        return;
+      }
+      if (form.dataset.hasAdvanced === "true") {
+        showPanel();
+      }
+    };
+
+    const formatCurrency = (v) => {
+      if (Number.isNaN(v)) return "৳0";
+      return "৳" + v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    };
+
+    const syncStatus = () => {
+      if (!listingType || !statusField) return;
+      const val = listingType.value;
+      statusField.value = val && val.length > 0 ? val : "listed_rental,listed_sale";
+    };
+
+    const updateTypeSections = () => {
+      const current = (typeSelect?.value || "").toLowerCase();
+      const sectionFields = document.querySelectorAll("[data-type-section]");
+      sectionFields.forEach((field) => {
+        const allowed = (field.dataset.typeSection || "").toLowerCase().split(" ");
+        const shouldShow = allowed.includes(current) || (current === "" && allowed.includes("residential"));
+        field.classList.toggle("hidden", !shouldShow);
+        field.querySelectorAll("select, input").forEach((input) => {
+          input.disabled = !shouldShow;
+        });
+      });
+      const commercialParking = document.querySelector("[data-commercial-parking]");
+      if (commercialParking) {
+        commercialParking.name = current === "commercial" ? "parking" : "parking_unused";
+        commercialParking.disabled = current !== "commercial";
+      }
+    };
+
+    const clampSliderValues = (writeHidden = true) => {
+      if (!priceMinSlider || !priceMaxSlider) return;
+      const minVal = Math.min(Number(priceMinSlider.value || 0), Number(priceMaxSlider.value || 0));
+      const maxVal = Math.max(Number(priceMinSlider.value || 0), Number(priceMaxSlider.value || 0));
+      priceMinSlider.value = minVal;
+      priceMaxSlider.value = maxVal;
+      if (writeHidden) {
+        if (priceMinHidden) priceMinHidden.value = Math.round(minVal);
+        if (priceMaxHidden) priceMaxHidden.value = Math.round(maxVal);
+      }
+      renderPriceTrack();
+      renderPriceSummary();
+    };
+
+    const renderPriceTrack = () => {
+      if (!priceTrack || !priceMinSlider || !priceMaxSlider) return;
+      const min = Number(priceMinSlider.min || 0);
+      const max = Number(priceMinSlider.max || 0) || 1;
+      const low = Number(priceMinSlider.value || 0);
+      const high = Number(priceMaxSlider.value || 0);
+      const startPct = ((Math.min(low, high) - min) / (max - min)) * 100;
+      const endPct = ((Math.max(low, high) - min) / (max - min)) * 100;
+      priceTrack.style.background = `linear-gradient(90deg, #f1f1f1 ${startPct}%, #f44335 ${startPct}%, #f44335 ${endPct}%, #f1f1f1 ${endPct}%)`;
+    };
+
+    const renderPriceSummary = () => {
+      if (!priceSummary) return;
+      const minVal = Number(priceMinSlider?.value || 0);
+      const maxVal = Number(priceMaxSlider?.value || 0);
+      priceSummary.textContent = `${formatCurrency(minVal)} - ${formatCurrency(maxVal)}`;
+    };
+
+    const extractPrices = () => {
+      const nodes = document.querySelectorAll("[data-price]");
+      const prices = [];
+      nodes.forEach((node) => {
+        const v = Number(node.dataset.price);
+        if (!Number.isNaN(v) && v > 0) {
+          prices.push(v);
+        }
+      });
+      return prices;
+    };
+
+    const renderHistogram = (prices, maxBound) => {
+      if (!priceHistogram) return;
+      priceHistogram.innerHTML = "";
+      priceHistogram.className = "grid grid-cols-8 items-end gap-1 h-12";
+      if (!prices.length || !maxBound) {
+        const empty = document.createElement("div");
+        empty.className = "text-xs text-[#999]";
+        empty.textContent = "No price data";
+        priceHistogram.appendChild(empty);
+        return;
+      }
+      const buckets = new Array(8).fill(0);
+      const safeMax = Math.max(...prices);
+      prices.forEach((price) => {
+        const ratio = Math.min(price / maxBound, 1);
+        const idx = Math.min(buckets.length - 1, Math.floor(ratio * buckets.length));
+        buckets[idx] += 1;
+      });
+      const maxCount = Math.max(...buckets, 1);
+      buckets.forEach((count) => {
+        const bar = document.createElement("div");
+        bar.className = "w-full rounded-sm bg-[#f44335]";
+        bar.style.height = `${(count / maxCount) * 100}%`;
+        priceHistogram.appendChild(bar);
+      });
+      const maxVal = Math.ceil(safeMax / 10000) * 10000;
+      if (priceMaxSlider && priceMinSlider) {
+        priceMaxSlider.max = maxVal || 500000;
+        priceMinSlider.max = maxVal || 500000;
+      }
+    };
+
+    const updatePriceSliderFromResults = () => {
+      if (!priceMinSlider || !priceMaxSlider) return;
+      const prices = extractPrices();
+      const maxPrice = prices.length ? Math.max(...prices) : 0;
+      const roundedMax = maxPrice ? Math.ceil(maxPrice / 10000) * 10000 : Number(priceMaxSlider.max || 500000);
+
+      priceMinSlider.max = roundedMax;
+      priceMaxSlider.max = roundedMax;
+
+      priceMaxSlider.value = roundedMax;
+      priceMinSlider.value = 0;
+      clampSliderValues(false);
+      renderHistogram(prices, roundedMax);
+    };
+
+    const performSearch = async () => {
+      const params = new URLSearchParams(new FormData(form));
+      // Drop empty values so clear/reset truly empties filters
+      for (const [key, val] of Array.from(params.entries())) {
+        if (val === "" || val === null) {
+          params.delete(key);
+        }
+      }
+      // Only set status when explicitly chosen
+      if (!params.get("status") && params.get("listing_type")) {
+        params.set("status", "listed_rental,listed_sale");
+      }
+      const url = `${form.action}?${params.toString()}`;
+      try {
+        const res = await fetch(url, { headers: { "X-Requested-With": "fetch" } });
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const incoming = doc.querySelector("#search-results");
+        const current = document.querySelector("#search-results");
+        if (incoming && current) {
+          current.replaceWith(incoming);
+        }
+        history.replaceState({}, "", url);
+        updatePriceSliderFromResults();
+      } catch (err) {
+        console.error("Search fetch failed", err);
+      }
+    };
+
+    let searchTimer;
+    const triggerSearch = () => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => performSearch(), 220);
+    };
+
+    const resetAreas = () => {
+      if (!areaSelect) return;
+      areaSelect.innerHTML = "";
+      const anyOpt = document.createElement("option");
+      anyOpt.value = "";
+      anyOpt.textContent = "Any";
+      areaSelect.appendChild(anyOpt);
+    };
+
+    const populateAreas = (areas, preset) => {
+      if (!areaSelect) return;
+      areas.forEach((area) => {
+        if (!area) return;
+        const opt = document.createElement("option");
+        opt.value = area;
+        opt.textContent = area;
+        areaSelect.appendChild(opt);
+      });
+      if (preset) {
+        areaSelect.value = preset;
+      }
+    };
+
+    const fetchAreas = async (city, preset) => {
+      resetAreas();
+      if (!areaSelect || !city || !areaSelect.dataset.fetchUrl) {
+        return;
+      }
+      try {
+        const res = await fetch(`${areaSelect.dataset.fetchUrl}?city=${encodeURIComponent(city)}`);
+        if (!res.ok) throw new Error(`status ${res.status}`);
+        const payload = await res.json();
+        const rows = Array.isArray(payload) ? payload : payload.data || [];
+        populateAreas(rows, preset);
+      } catch (err) {
+        console.error("Unable to load areas", err);
+      }
+    };
+
+    const hasPrefetchedAreas = areaSelect && areaSelect.options.length > 1;
+    if (areaSelect && areaSelect.dataset.selected) {
+      if (!hasPrefetchedAreas && citySelect?.value) {
+        fetchAreas(citySelect.value, areaSelect.dataset.selected);
+      } else {
+        areaSelect.value = areaSelect.dataset.selected;
+      }
+    } else if (!hasPrefetchedAreas && citySelect?.value) {
+      fetchAreas(citySelect.value, "");
+    }
+
+    if (citySelect) {
+      citySelect.addEventListener("change", (event) => {
+        fetchAreas(event.target.value, "");
+        triggerSearch();
+      });
+    }
+
+    if (areaSelect) {
+      areaSelect.addEventListener("change", () => triggerSearch());
+    }
+
+    toggleBtn?.addEventListener("click", () => {
+      if (advancedPanel.classList.contains("hidden")) {
+        showPanel();
+        sessionStorage.setItem(panelPrefKey, "open");
+      } else {
+        hidePanel();
+        sessionStorage.setItem(panelPrefKey, "closed");
+      }
+    });
+
+    clearBtn?.addEventListener("click", () => {
+      form.reset();
+      form.dataset.hasAdvanced = "false";
+      if (statusField) statusField.value = "listed_rental,listed_sale";
+      sessionStorage.setItem(panelPrefKey, "closed");
+      if (priceMinHidden) priceMinHidden.value = "";
+      if (priceMaxHidden) priceMaxHidden.value = "";
+      if (priceMinSlider) priceMinSlider.value = 0;
+      if (priceMaxSlider) priceMaxSlider.value = priceMaxSlider?.max || 500000;
+      resetAreas();
+      updateTypeSections();
+      hidePanel();
+      clampSliderValues(false);
+      renderHistogram([], 0);
+      triggerSearch();
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+
+    const attachAutoSearch = (selector) => {
+      form.querySelectorAll(selector).forEach((el) => {
+        el.addEventListener("change", triggerSearch);
+        el.addEventListener("input", () => {
+          if (el.type === "range") {
+            clampSliderValues();
+          }
+          triggerSearch();
+        });
+      });
+    };
+
+    attachAutoSearch("select[name], input[name]:not([type='hidden'])");
+
+    if (listingType) {
+      listingType.addEventListener("change", () => {
+        syncStatus();
+      });
+    }
+
+    [priceMinSlider, priceMaxSlider].forEach((slider) => {
+      slider?.addEventListener("input", () => {
+        clampSliderValues();
+        triggerSearch();
+      });
+    });
+
+    if (typeSelect) {
+      typeSelect.addEventListener("change", () => {
+        updateTypeSections();
+      });
+      updateTypeSections();
+    }
+
+    syncStatus();
+    setPanelVisibility();
+    clampSliderValues(false);
+    updatePriceSliderFromResults();
+  })();
+</script>
+{{end}}

@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/htmx.org@2.0.3"></script>
     <style>
       :root {
-        --page-max-width: 85rem;
+        --page-max-width: 90rem;
         --page-gutter: 1rem;
         --page-gutter-lg: 2.5rem;
       }
@@ -40,7 +40,9 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-bg text-textprimary font-sans overflow-x-hidden flex flex-col">
+  <body
+    class="min-h-screen bg-bg text-textprimary font-sans overflow-x-hidden flex flex-col"
+  >
     <!-- Page -->
     <main class="page-shell flex-1 w-full">{{ template "content" . }}</main>
 

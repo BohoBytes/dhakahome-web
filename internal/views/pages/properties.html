@@ -4,48 +4,200 @@
 {{$status := .Query.Get "status"}}
 {{$ptype := .Query.Get "type"}}
 {{$priceMax := .Query.Get "price_max"}}
+{{$search := .Search}}
+{{$query := .Query}}
 <section class="bg-white">
   {{template "partials/page-header.html" .}}
 
   <div class="max-w-[85rem] mx-auto px-4 md:px-6 pb-16">
     <div class="flex flex-col gap-3 pt-6">
-      <div class="flex items-center justify-between gap-4">
-        <h1 class="text-[24px] md:text-[28px] leading-[33px] text-[#3b3b3b] font-medium" style="font-family: 'Poppins', sans-serif;">
-          Apartments for Sale
-        </h1>
-        <form method="get" class="flex flex-wrap items-center justify-end gap-2 text-[14px] leading-[18px] text-[#616161]">
-          <select name="location" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
-            onchange="this.form.submit()">
-            <option value="" {{if eq $location ""}}selected{{end}}>Dhaka</option>
-            <option value="Uttara" {{if eq $location "Uttara"}}selected{{end}}>Uttara</option>
-            <option value="Bashundhara" {{if eq $location "Bashundhara"}}selected{{end}}>Bashundhara</option>
-            <option value="Gulshan" {{if eq $location "Gulshan"}}selected{{end}}>Gulshan</option>
-          </select>
-          <select name="status" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
-            onchange="this.form.submit()">
-            <option value="" {{if eq $status ""}}selected{{end}}>All</option>
-            <option value="To-let" {{if eq $status "To-let"}}selected{{end}}>Rent</option>
-            <option value="For Sale" {{if eq $status "For Sale"}}selected{{end}}>Sale</option>
-          </select>
-          <select name="type" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
-            onchange="this.form.submit()">
-            <option value="" {{if eq $ptype ""}}selected{{end}}>All Types</option>
-            <option value="Residential" {{if eq $ptype "Residential"}}selected{{end}}>Residential</option>
-            <option value="Commercial" {{if eq $ptype "Commercial"}}selected{{end}}>Commercial</option>
-            <option value="Plot" {{if eq $ptype "Plot"}}selected{{end}}>Land</option>
-          </select>
-          <select name="price_max" class="bg-white border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none"
-            onchange="this.form.submit()">
-            <option value="" {{if eq $priceMax ""}}selected{{end}}>Any Price</option>
-            <option value="5000000" {{if eq $priceMax "5000000"}}selected{{end}}>৳ 50,00,000</option>
-            <option value="10000000" {{if eq $priceMax "10000000"}}selected{{end}}>৳ 1,00,00,000</option>
-            <option value="50000000" {{if eq $priceMax "50000000"}}selected{{end}}>৳ 5,00,00,000</option>
-          </select>
-        </form>
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-4">
+          {{$heading := "Properties"}}
+          {{if eq $ptype "Residential"}}{{$heading = "Residential Properties"}}{{else if eq $ptype "Commercial"}}{{$heading = "Commercial Properties"}}{{else if eq $ptype "Hostel"}}{{$heading = "Hostels"}}{{else if or (eq $ptype "Plot") (eq $ptype "Land")}}{{$heading = "Land Properties"}}{{end}}
+          <h1 class="text-[24px] md:text-[28px] leading-[33px] text-[#3b3b3b] font-medium" style="font-family: 'Poppins', sans-serif;">
+            {{$heading}}
+          </h1>
+          <form id="property-filter-form" action="/properties" method="get" class="relative flex flex-wrap items-center justify-end gap-2 text-[14px] leading-[18px] text-[#616161]">
+            <input type="hidden" name="sort_by" value="{{$query.Get "sort_by"}}" />
+            <input type="hidden" name="order" value="{{$query.Get "order"}}" />
+            <input type="hidden" name="limit" value="{{$query.Get "limit"}}" />
+            <input type="hidden" name="price_min" id="property-price-min" value="{{$search.SelectedPriceMin}}" />
+            <input type="hidden" name="price_max" id="property-price-max" value="{{$search.SelectedMaxPrice}}" />
+
+            <select
+              id="property-city"
+              name="city"
+              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
+              onchange="this.form.submit()"
+            >
+              {{range $search.CityOptions}}
+                <option value="{{.Value}}" {{if or (eq $.Search.SelectedCity .Value) (and (eq $.Search.SelectedCity "") (eq .Value "Dhaka"))}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <select
+              id="property-listing-type"
+              name="listing_type"
+              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[120px]"
+              onchange="this.form.submit()"
+            >
+              {{range $search.ListingTypeOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedListingType .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <select
+              id="property-type"
+              name="type"
+              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
+              onchange="this.form.submit()"
+            >
+              {{range $search.TypeOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedType .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <select
+              id="property-price-select"
+              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[150px]"
+            >
+              {{range $search.MaxPriceOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedMaxPrice .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <button
+              type="button"
+              id="property-advanced-toggle"
+              class="w-[46px] h-[39px] inline-flex items-center justify-center rounded-[6px] border border-[#dbdbdb] bg-[#eee] shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:bg-[#e4e4e4] transition"
+              aria-label="Open advanced filters"
+            >
+              <img src="/assets/icons/filter.svg" alt="Filter" class="w-5 h-5" />
+            </button>
+
+            <div
+              id="property-advanced-panel"
+              class="hidden absolute right-0 top-full mt-2 w-[400px] bg-[#f7f7f7] border border-[#dbdbdb] rounded-[10px] shadow-[0_8px_20px_rgba(0,0,0,0.15)] z-20"
+            >
+              <div class="flex items-center justify-end gap-2 px-4 pt-4">
+                <button
+                  type="button"
+                  id="property-advanced-clear"
+                  class="px-4 py-2 rounded-[5px] border border-[#cfcfcf] text-[#616161] text-[14px] leading-[18px] hover:bg-white"
+                >
+                  Clear
+                </button>
+                <button
+                  type="submit"
+                  class="px-5 py-2 rounded-[5px] bg-[#f44335] text-white text-[14px] leading-[18px] font-medium hover:bg-[#e63c2f] transition-colors"
+                >
+                  Apply
+                </button>
+              </div>
+
+              <div class="mt-3 border-t border-[#e1e1e1] px-4 pb-4 space-y-4">
+                <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]">
+                  <span class="font-medium">Price Range (৳)</span>
+                  <div class="space-y-2">
+                    <div class="relative">
+                      <div id="property-price-track" class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-2 rounded-full bg-[#f1f1f1] overflow-hidden"></div>
+                      <div class="relative h-6">
+                        <input
+                          id="property-price-min-slider"
+                          type="range"
+                          min="0"
+                          max="100000000"
+                          step="5000"
+                          value="{{if $search.SelectedPriceMin}}{{$search.SelectedPriceMin}}{{else}}0{{end}}"
+                          class="property-price-slider"
+                        />
+                        <input
+                          id="property-price-max-slider"
+                          type="range"
+                          min="0"
+                          max="100000000"
+                          step="5000"
+                          value="{{if $search.SelectedMaxPrice}}{{$search.SelectedMaxPrice}}{{else}}100000000{{end}}"
+                          class="property-price-slider"
+                        />
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-[#555] font-medium">
+                      <span id="property-price-summary">৳0 - ৳0</span>
+                      <span class="text-[#8a8a8a] text-[11px]">Drag to set your budget</span>
+                    </div>
+                  </div>
+                </label>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+                    <span class="font-medium">Bedrooms</span>
+                    <select name="bedrooms" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      {{range $search.BedroomOptions}}
+                        <option value="{{.Value}}" {{if eq $.Search.SelectedBedrooms .Value}}selected{{end}}>{{.Label}}</option>
+                      {{end}}
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+                    <span class="font-medium">Bathrooms</span>
+                    <select name="bathrooms" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      {{range $search.BathroomOptions}}
+                        <option value="{{.Value}}" {{if eq $.Search.SelectedBathrooms .Value}}selected{{end}}>{{.Label}}</option>
+                      {{end}}
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential commercial">
+                    <span class="font-medium">Square Feet (min)</span>
+                    <select name="area_min" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      {{range $search.SquareFootOptions}}
+                        <option value="{{.Value}}" {{if eq $.Search.SelectedAreaMin .Value}}selected{{end}}>{{.Label}}</option>
+                      {{end}}
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+                    <span class="font-medium">Parking</span>
+                    <select name="parking" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      {{range $search.ParkingOptions}}
+                        <option value="{{.Value}}" {{if eq $.Search.SelectedParking .Value}}selected{{end}}>{{.Label}}</option>
+                      {{end}}
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="commercial">
+                    <span class="font-medium">Parking</span>
+                    <select name="parking" data-commercial-parking="true" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      {{range $search.CommercialParkings}}
+                        <option value="{{.Value}}" {{if eq $.Search.SelectedParking .Value}}selected{{end}}>{{.Label}}</option>
+                      {{end}}
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="residential">
+                    <span class="font-medium">Serviced</span>
+                    <select name="serviced" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      <option value="" {{if eq $.Search.SelectedServiced ""}}selected{{end}}>Any</option>
+                      <option value="true" {{if eq $.Search.SelectedServiced "true"}}selected{{end}}>Yes</option>
+                      <option value="false" {{if eq $.Search.SelectedServiced "false"}}selected{{end}}>No</option>
+                    </select>
+                  </label>
+
+                  <label class="flex flex-col gap-1 text-sm text-[#3b3b3b]" data-type-section="hostel">
+                    <span class="font-medium">Shared Room</span>
+                    <select name="shared_room" class="h-[44px] rounded-lg border border-[#e5e5e5] px-3 text-[15px] shadow-sm">
+                      <option value="" {{if eq $.Search.SelectedSharedRoom ""}}selected{{end}}>Any</option>
+                      <option value="true" {{if eq $.Search.SelectedSharedRoom "true"}}selected{{end}}>Yes</option>
+                      <option value="false" {{if eq $.Search.SelectedSharedRoom "false"}}selected{{end}}>No</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
-    <div class="mt-4 grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-4">
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-4 min-h-0">
       <div class="relative bg-[#f3f3f3] border border-[#dbdbdb] rounded-[18px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] overflow-hidden h-[760px]">
         <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{$mapImage}}');"></div>
         <div class="absolute left-4 top-4 bg-white/90 text-[#414141] text-xs px-3 py-1 rounded-full border border-[#dbdbdb] shadow-sm">
@@ -58,76 +210,391 @@
         </div>
       </div>
 
-      <div class="bg-white border border-[#dbdbdb] rounded-[18px] shadow-[0_2px_8.1px_rgba(0,0,0,0.15)] p-3 flex flex-col h-[760px]">
-        <div class="flex items-center justify-between bg-[#f4f4f4] border border-[#dbdbdb] rounded-[5px] px-3 py-2">
-          <span class="text-[13px] leading-[18px] text-[#616161]" style="font-family: 'Poppins', sans-serif;">{{.List.Total}} Results Found</span>
-          <svg class="w-5 h-5 text-[#616161]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M3 7h18v2H3V7zm4 4h10v2H7v-2zm-2 4h14v2H5v-2z" />
-          </svg>
+      {{$currentOrder := or (.Query.Get "order") "desc"}}
+      {{$currentSort := or (.Query.Get "sort_by") "price"}}
+      <div class="bg-white border border-[#dbdbdb] rounded-[18px] shadow-[0_2px_8.1px_rgba(0,0,0,0.15)] p-3 flex flex-col h-[760px] max-w-[760px] min-h-0">
+        <div class="flex items-center justify-between gap-2 flex-shrink-0">
+          <div class="inline-flex items-center gap-2 bg-[#f4f4f4] border border-[#dbdbdb] rounded-[5px] px-4 py-2">
+            <span class="text-[14px] leading-[18px] text-[#616161]" style="font-family: 'Poppins', sans-serif;">{{.List.Total}} Results Found</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" data-view-btn="grid" class="view-toggle w-9 h-9 flex items-center justify-center border rounded-[5px] transition" aria-label="Grid view" aria-pressed="true">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4 4h6v6H4V4zm0 10h6v6H4v-6zm10-10h6v6h-6V4zm0 10h6v6h-6v-6z" />
+              </svg>
+            </button>
+            <button type="button" data-view-btn="list" class="view-toggle w-9 h-9 flex items-center justify-center border rounded-[5px] transition" aria-label="List view" aria-pressed="false">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              data-sort-toggle
+              data-sort-order="{{$currentOrder}}"
+              data-sort-by="{{$currentSort}}"
+              class="w-9 h-9 flex items-center justify-center bg-[#f4f4f4] border border-[#dbdbdb] rounded-[5px] hover:bg-[#eaeaea] transition"
+              aria-label="Sort by price"
+              aria-pressed="false"
+            >
+              <svg class="w-5 h-5 text-[#616161]" style="{{if eq $currentOrder "asc"}}transform: scaleY(-1);{{end}}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M3 7h14v2H3V7zm0 5h10v2H3v-2zm0 5h6v2H3v-2zM18 4l3 3h-2v10h-2V7h-2l3-3z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
-        <div class="mt-3 space-y-3 overflow-y-auto flex-1 pr-1">
-          {{if and .List (gt (len .List.Items) 0)}}
-            {{range .List.Items}}
-              <a href="/properties/{{.ID}}" class="flex gap-3 bg-[#f6f6f6] border border-[#dbdbdb] rounded-[10px] p-3 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:-translate-y-[1px] transition-transform duration-200">
-                <div class="relative w-[165px] h-[125px] rounded-[10px] overflow-hidden flex-shrink-0 bg-white">
-                  {{if .Images}}
-                    <img src="{{index .Images 0}}" alt="{{.Title}}" class="absolute inset-0 w-full h-full object-cover" />
-                  {{else}}
-                    <div class="absolute inset-0 flex items-center justify-center text-[#a2a2a2] text-sm bg-[#efefef]">No Image</div>
-                  {{end}}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex flex-wrap items-center gap-2">
-                    {{range .Badges}}
-                      {{if or (eq . "Residential") (eq . "Commercial") (eq . "Plot") (eq . "To-let") (eq . "For Sale")}}
-                        <span class="inline-flex items-center gap-1 bg-[#ffd8d5] text-[#f44335] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">{{.}}</span>
+        <div class="mt-3 flex-1 min-h-0 w-full overflow-hidden">
+          <div class="h-full w-full overflow-y-auto pr-1" data-property-results data-view="grid">
+            <div data-results-track class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {{if and .List (gt (len .List.Items) 0)}}
+                {{range .List.Items}}
+                  <a href="/properties/{{.ID}}" data-property-card class="flex flex-col bg-[#f9f9f9] border border-[#dbdbdb] rounded-[10px] shadow-[0_0_4px_rgba(0,0,0,0.07)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200">
+                    <div data-card-image class="relative w-full h-[182px] bg-white">
+                      {{if .Images}}
+                        <img src="{{index .Images 0}}" alt="{{.Title}}" class="absolute inset-0 w-full h-full object-cover" />
+                      {{else}}
+                        <div class="absolute inset-0 flex items-center justify-center text-[#a2a2a2] text-sm bg-[#efefef]">No Image</div>
                       {{end}}
-                    {{end}}
-                    {{if .Bedrooms}}
-                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
-                      <img src="/assets/icons/bedroom.svg" alt="" class="w-3.5 h-3.5" />
-                      {{.Bedrooms}}
-                    </span>
-                    {{end}}
-                    {{if .Bathrooms}}
-                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
-                      <img src="/assets/icons/bathroom.svg" alt="" class="w-3.5 h-3.5" />
-                      {{.Bathrooms}}
-                    </span>
-                    {{end}}
-                    {{if .Area}}
-                    <span class="inline-flex items-center gap-1 bg-[#d5f9ff] text-[#2a8fb3] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">
-                      <img src="/assets/icons/area.svg" alt="" class="w-3.5 h-3.5" />
-                      {{.Area}} ft
-                    </span>
-                    {{end}}
-                  </div>
-                  <div class="mt-3 space-y-1">
-                    <p class="text-[16px] leading-[22px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Title}}</p>
-                    <p class="text-[13px] leading-[18px] text-[#a2a2a2]" style="font-family: 'Poppins', sans-serif;">{{.Address}}</p>
-                  </div>
-                  <div class="mt-2 flex items-center justify-between">
-                    <p class="text-[18px] leading-[24px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Currency}}{{formatPrice .Price}}</p>
-                    <span class="w-5 h-5 text-[#a2a2a2]" aria-hidden="true">
-                      <svg class="w-full h-full rotate-[-90deg]" viewBox="0 0 10 20" fill="currentColor">
-                        <path d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z" />
-                      </svg>
-                    </span>
-                  </div>
+                    </div>
+                    <div data-card-body class="p-3 flex flex-col gap-2 flex-1">
+                      <div class="flex flex-wrap items-center gap-2">
+                        {{range .Badges}}
+                          {{if or (eq . "Residential") (eq . "Commercial") (eq . "Plot") (eq . "To-let") (eq . "For Sale")}}
+                            <span class="inline-flex items-center gap-1 bg-[#ffd8d5] text-[#f44335] text-[12px] leading-[14px] px-2 py-1 rounded-[5px]" style="font-family: 'Poppins', sans-serif;">{{.}}</span>
+                          {{end}}
+                        {{end}}
+                      </div>
+                      <p class="text-[16px] leading-[22px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Title}}</p>
+                      <p class="text-[13px] leading-[18px] text-[#a2a2a2]" style="font-family: 'Poppins', sans-serif;">{{.Address}}</p>
+                    <div class="mt-auto flex items-center justify-between gap-3 pt-1">
+                      <p class="text-[18px] leading-[24px] text-[#414141]" style="font-family: 'Poppins', sans-serif;">{{.Currency}}{{formatPrice .Price}}</p>
+                      <span class="w-5 h-5 text-[#a2a2a2]" aria-hidden="true">
+                        <svg class="w-full h-full rotate-[-90deg]" viewBox="0 0 10 20" fill="currentColor">
+                          <path d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z" />
+                        </svg>
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                {{end}}
+              {{else}}
+                <div class="bg-white rounded-[10px] border border-[#e4e4e4] p-6 text-center text-[#414141] col-span-full">
+                  No properties found. Adjust filters to see more options.
                 </div>
-              </a>
-            {{end}}
-          {{else}}
-            <div class="bg-white rounded-[10px] border border-[#e4e4e4] p-6 text-center text-[#414141]">
-              No properties found. Adjust filters to see more options.
+              {{end}}
             </div>
-          {{end}}
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .property-price-slider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    pointer-events: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+  }
+  .property-price-slider::-webkit-slider-thumb {
+    pointer-events: all;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #f44335;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    -webkit-appearance: none;
+  }
+  .property-price-slider::-moz-range-thumb {
+    pointer-events: all;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #f44335;
+    border: 2px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  .property-price-slider::-webkit-slider-runnable-track {
+    height: 2px;
+  }
+  .property-price-slider::-moz-range-track {
+    height: 2px;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('property-filter-form');
+    const priceSelect = document.getElementById('property-price-select');
+    const priceMinHidden = document.getElementById('property-price-min');
+    const priceMaxHidden = document.getElementById('property-price-max');
+    const priceMinSlider = document.getElementById('property-price-min-slider');
+    const priceMaxSlider = document.getElementById('property-price-max-slider');
+    const priceTrack = document.getElementById('property-price-track');
+    const priceSummary = document.getElementById('property-price-summary');
+    const advancedPanel = document.getElementById('property-advanced-panel');
+    const advancedToggle = document.getElementById('property-advanced-toggle');
+    const advancedClear = document.getElementById('property-advanced-clear');
+    const typeSelect = document.getElementById('property-type');
+
+    let priceDirty = Boolean((priceMinHidden?.value || '').length || (priceMaxHidden?.value || '').length);
+
+    const formatCurrency = (v) => {
+      const num = Number(v || 0);
+      if (Number.isNaN(num)) return '৳0';
+      return '৳' + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    };
+
+    const renderPriceTrack = () => {
+      if (!priceTrack || !priceMinSlider || !priceMaxSlider) return;
+      const min = Number(priceMinSlider.min || 0);
+      const max = Number(priceMinSlider.max || 1);
+      const low = Number(priceMinSlider.value || 0);
+      const high = Number(priceMaxSlider.value || 0);
+      const startPct = ((Math.min(low, high) - min) / (max - min)) * 100;
+      const endPct = ((Math.max(low, high) - min) / (max - min)) * 100;
+      priceTrack.style.background = `linear-gradient(90deg, #f1f1f1 ${startPct}%, #f44335 ${startPct}%, #f44335 ${endPct}%, #f1f1f1 ${endPct}%)`;
+    };
+
+    const syncPriceSummary = () => {
+      if (!priceSummary || !priceMinSlider || !priceMaxSlider) return;
+      const minVal = Number(priceMinSlider.value || 0);
+      const maxVal = Number(priceMaxSlider.value || 0);
+      priceSummary.textContent = `${formatCurrency(minVal)} - ${formatCurrency(maxVal)}`;
+    };
+
+    const clampPrice = (writeHidden = true) => {
+      if (!priceMinSlider || !priceMaxSlider) return;
+      const minVal = Math.min(Number(priceMinSlider.value || 0), Number(priceMaxSlider.value || 0));
+      const maxVal = Math.max(Number(priceMinSlider.value || 0), Number(priceMaxSlider.value || 0));
+      priceMinSlider.value = minVal;
+      priceMaxSlider.value = maxVal;
+      if (writeHidden) {
+        if (priceMinHidden) priceMinHidden.value = Math.round(minVal);
+        if (priceMaxHidden) priceMaxHidden.value = Math.round(maxVal);
+      }
+      renderPriceTrack();
+      syncPriceSummary();
+    };
+
+    const syncSelectFromHidden = () => {
+      if (!priceSelect) return;
+      const hiddenVal = (priceMaxHidden?.value || '').trim();
+      let matched = false;
+      priceSelect.querySelectorAll('option').forEach((opt) => {
+        if (opt.value === hiddenVal) {
+          matched = true;
+          opt.selected = true;
+        } else if (!hiddenVal && opt.value === '') {
+          matched = true;
+          opt.selected = true;
+        } else {
+          opt.selected = false;
+        }
+      });
+      if (!matched && priceSelect.options.length > 0) {
+        priceSelect.selectedIndex = 0;
+      }
+    };
+
+    const syncHiddenFromSelect = () => {
+      if (!priceSelect) return;
+      const selected = priceSelect.value;
+      if (priceMaxHidden) priceMaxHidden.value = selected;
+      if (selected) {
+        if (priceMaxSlider) priceMaxSlider.value = selected;
+        priceDirty = true;
+      } else if (priceMaxSlider) {
+        priceMaxSlider.value = priceMaxSlider.max || priceMaxSlider.value;
+        priceDirty = false;
+      }
+      clampPrice(Boolean(selected));
+    };
+
+    const updateTypeSections = () => {
+      const current = (typeSelect?.value || '').toLowerCase();
+      const sectionFields = document.querySelectorAll('[data-type-section]');
+      sectionFields.forEach((field) => {
+        const allowed = (field.dataset.typeSection || '').toLowerCase().split(' ');
+        const shouldShow = allowed.includes(current) || (current === '' && allowed.includes('residential'));
+        field.classList.toggle('hidden', !shouldShow);
+        field.querySelectorAll('select, input').forEach((input) => {
+          input.disabled = !shouldShow;
+        });
+      });
+      const commercialParking = document.querySelector('[data-commercial-parking]');
+      if (commercialParking) {
+        commercialParking.name = current === 'commercial' ? 'parking' : 'parking_unused';
+        commercialParking.disabled = current !== 'commercial';
+      }
+    };
+
+    const hideAdvanced = () => {
+      advancedPanel?.classList.add('hidden');
+    };
+
+    const showAdvanced = () => {
+      advancedPanel?.classList.remove('hidden');
+    };
+
+    advancedToggle?.addEventListener('click', () => {
+      if (advancedPanel?.classList.contains('hidden')) {
+        showAdvanced();
+      } else {
+        hideAdvanced();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!advancedPanel || advancedPanel.classList.contains('hidden')) return;
+      const target = event.target;
+      if (advancedPanel.contains(target) || advancedToggle?.contains(target)) return;
+      hideAdvanced();
+    });
+
+    advancedClear?.addEventListener('click', () => {
+      if (!filterForm) return;
+      filterForm.querySelectorAll('select').forEach((select) => {
+        const firstOption = select.querySelector('option');
+        if (firstOption) {
+          select.value = firstOption.value;
+        }
+      });
+      if (priceMinSlider) priceMinSlider.value = 0;
+      if (priceMaxSlider) priceMaxSlider.value = priceMaxSlider?.max || 100000000;
+      if (priceMinHidden) priceMinHidden.value = '';
+      if (priceMaxHidden) priceMaxHidden.value = '';
+      priceDirty = false;
+      syncSelectFromHidden();
+      clampPrice(false);
+      updateTypeSections();
+      hideAdvanced();
+      filterForm.submit();
+    });
+
+    filterForm?.addEventListener('submit', () => {
+      if (priceDirty) {
+        clampPrice();
+      } else {
+        renderPriceTrack();
+        syncPriceSummary();
+        if (priceMinHidden) priceMinHidden.value = '';
+        if (priceMaxHidden) priceMaxHidden.value = '';
+      }
+    });
+
+    priceSelect?.addEventListener('change', () => {
+      syncHiddenFromSelect();
+      filterForm?.submit();
+    });
+
+    [priceMinSlider, priceMaxSlider].forEach((slider) => {
+      slider?.addEventListener('input', () => {
+        if (priceSelect && priceSelect.value) {
+          priceSelect.value = '';
+        }
+        priceDirty = true;
+        clampPrice();
+      });
+      slider?.addEventListener('change', () => {
+        if (priceSelect && priceSelect.value) {
+          priceSelect.value = '';
+        }
+        priceDirty = true;
+        clampPrice();
+      });
+    });
+
+    typeSelect?.addEventListener('change', () => {
+      updateTypeSections();
+    });
+
+    syncSelectFromHidden();
+    clampPrice(false);
+    updateTypeSections();
+
+    const resultsContainer = document.querySelector('[data-property-results]');
+    const resultsTrack = resultsContainer ? resultsContainer.querySelector('[data-results-track]') : null;
+    const gridBtn = document.querySelector('[data-view-btn="grid"]');
+    const listBtn = document.querySelector('[data-view-btn="list"]');
+    const sortBtn = document.querySelector('[data-sort-toggle]');
+    const sortIcon = sortBtn ? sortBtn.querySelector('svg') : null;
+
+    const applyToggleStyles = (activeBtn, inactiveBtn) => {
+      if (activeBtn) {
+        activeBtn.classList.add('bg-[#f44335]', 'border-[#f44335]', 'text-white');
+        activeBtn.classList.remove('bg-[#f4f4f4]', 'border-[#dbdbdb]', 'text-[#616161]');
+        const svg = activeBtn.querySelector('svg');
+        if (svg) svg.classList.add('text-white');
+      }
+      if (inactiveBtn) {
+        inactiveBtn.classList.remove('bg-[#f44335]', 'border-[#f44335]', 'text-white');
+        inactiveBtn.classList.add('bg-[#f4f4f4]', 'border-[#dbdbdb]', 'text-[#616161]');
+        const svg = inactiveBtn.querySelector('svg');
+        if (svg) svg.classList.remove('text-white');
+      }
+    };
+
+    const setView = (mode) => {
+      if (!resultsContainer || !resultsTrack) return;
+      resultsContainer.dataset.view = mode;
+      const gridClasses = ['grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-3', 'flex', 'flex-col', 'space-y-3'];
+      resultsTrack.classList.remove(...gridClasses);
+      if (mode === 'grid') {
+        resultsTrack.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-3');
+      } else {
+        resultsTrack.classList.add('flex', 'flex-col', 'space-y-3');
+      }
+      const cards = resultsTrack.querySelectorAll('[data-property-card]');
+      cards.forEach((card) => {
+        const img = card.querySelector('[data-card-image]');
+        if (mode === 'grid') {
+          card.classList.remove('md:flex-row', 'items-start');
+          card.classList.add('flex-col');
+          if (img) {
+            img.classList.remove('md:w-[165px]', 'md:h-[125px]', 'flex-shrink-0');
+            img.classList.add('w-full', 'h-[182px]');
+          }
+        } else {
+          card.classList.remove('flex-col');
+          card.classList.add('md:flex-row', 'items-start');
+          if (img) {
+            img.classList.add('md:w-[165px]', 'md:h-[125px]', 'flex-shrink-0');
+          }
+        }
+      });
+
+      if (gridBtn && listBtn) {
+        gridBtn.setAttribute('aria-pressed', mode === 'grid');
+        listBtn.setAttribute('aria-pressed', mode === 'list');
+        applyToggleStyles(mode === 'grid' ? gridBtn : listBtn, mode === 'grid' ? listBtn : gridBtn);
+      }
+    };
+
+    gridBtn?.addEventListener('click', () => setView('grid'));
+    listBtn?.addEventListener('click', () => setView('list'));
+    sortBtn?.addEventListener('click', () => {
+      const current = (sortBtn.dataset.sortOrder || 'desc').toLowerCase();
+      const next = current === 'desc' ? 'asc' : 'desc';
+      if (sortIcon) {
+        sortIcon.style.transform = next === 'asc' ? 'scaleY(-1)' : '';
+      }
+      const url = new URL(window.location.href);
+      url.searchParams.set('sort_by', 'price');
+      url.searchParams.set('order', next);
+      window.location.href = url.toString();
+    });
+    // initialize view to grid to ensure layout is correct after DOM load
+    setView('grid');
+  });
+</script>
 {{end}}
 
 {{define "pages/properties.html"}}{{template "layouts/base.html" .}}{{end}}

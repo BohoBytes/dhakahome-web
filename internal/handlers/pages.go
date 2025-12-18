@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -53,11 +55,12 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 func Home(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Home handler called")
 	w.Header().Set("Content-Type", "text/html")
-	render(w, "pages/home.html", "home.html", map[string]any{
+	data := withSearchData(r, map[string]any{
 		"List":        api.PropertyList{},
 		"ShowResults": false,
 		"ActivePage":  "home",
 	})
+	render(w, "pages/home.html", "home.html", data)
 }
 
 func SearchPage(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +81,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/header.html",
 		"internal/views/partials/hero.html",
 		"internal/views/partials/search-box.html",
+		"internal/views/partials/search-advanced-box.html",
 		"internal/views/partials/common-sections.html",
 		"internal/views/partials/services.html",
 		"internal/views/partials/why-dhakahome.html",
@@ -89,12 +93,13 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/property-badge.html",
 		"internal/views/partials/pagination.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/search-results.html", map[string]any{
+	data := withSearchData(r, map[string]any{
 		"List":        list,
 		"Query":       q,
-		"ActivePage":  "home",
+		"ActivePage":  "search",
 		"ShowResults": true,
-	}); err != nil {
+	})
+	if err := t.ExecuteTemplate(w, "pages/search-results.html", data); err != nil {
 		log.Printf("search page template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -102,20 +107,67 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 
 func PropertiesPage(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
+	if strings.TrimSpace(q.Get("limit")) == "" {
+		q.Set("limit", "24")
+	}
+	if strings.TrimSpace(q.Get("sort_by")) == "" {
+		q.Set("sort_by", "price")
+	}
+	if strings.TrimSpace(q.Get("order")) == "" {
+		q.Set("order", "desc")
+	}
 	cl := api.New()
 	list, _ := cl.SearchProperties(q) // mock-backed in dev
+	sortBy := strings.ToLower(strings.TrimSpace(q.Get("sort_by")))
+	order := strings.ToLower(strings.TrimSpace(q.Get("order")))
+	if sortBy == "price" && len(list.Items) > 1 {
+		sort.SliceStable(list.Items, func(i, j int) bool {
+			if order == "asc" {
+				return list.Items[i].Price < list.Items[j].Price
+			}
+			return list.Items[i].Price > list.Items[j].Price
+		})
+	}
 	w.Header().Set("Content-Type", "text/html")
-	render(w, "pages/properties.html", "properties.html", map[string]any{
+	data := withSearchData(r, map[string]any{
 		"ActivePage": "properties",
 		"List":       list,
 		"Query":      q,
 	})
+	render(w, "pages/properties.html", "properties.html", data)
 }
 
 func PropertyPage(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	cl := api.New()
 	p, _ := cl.GetProperty(id) // TODO: handle error
+
+	docs, _ := cl.GetRequiredDocuments(p.Type)
+
+	enquiryEmail := strings.TrimSpace(os.Getenv("PROPERY_ENQUIRY_EMAIL"))
+	if enquiryEmail == "" {
+		enquiryEmail = "enquiry@dhakahome.com"
+	}
+
+	contactEmail := enquiryEmail
+	if candidate := strings.TrimSpace(p.ContactEmail); candidate != "" {
+		contactEmail = candidate
+	}
+
+	contactPhone := defaultContactPhone(p.ListingType)
+	if contactPhone == "" {
+		contactPhone = strings.TrimSpace(p.ContactPhone)
+		if contactPhone != "" {
+			if normalized, err := normalizeBDPhone(contactPhone); err == nil {
+				contactPhone = normalized
+			}
+		}
+	}
+	if contactPhone == "" {
+		if normalized, err := normalizeBDPhone("01877-721-579"); err == nil {
+			contactPhone = normalized
+		}
+	}
 
 	similarQuery := url.Values{}
 	if p.Type != "" {
@@ -158,7 +210,7 @@ func PropertyPage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	render(w, "pages/property.html", "property.html", map[string]any{
+	data := withSearchData(r, map[string]any{
 		"P":               p,
 		"Similar":         similar,
 		"SearchBoxLayout": "static",
@@ -166,7 +218,11 @@ func PropertyPage(w http.ResponseWriter, r *http.Request) {
 		"ActivePage":      "home",
 		"SimilarType":     p.Type,
 		"SimilarListing":  p.ListingType,
+		"Documents":       docs,
+		"ContactEmail":    contactEmail,
+		"ContactPhone":    contactPhone,
 	})
+	render(w, "pages/property.html", "property.html", data)
 }
 
 func FAQPage(w http.ResponseWriter, r *http.Request) {
@@ -223,6 +279,7 @@ func HotelsPage(w http.ResponseWriter, r *http.Request) {
 func ContactUsPage(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Contact Us page handler called")
 	w.Header().Set("Content-Type", "text/html")
+	contactEmail := defaultContactEmail()
 	t := template.Must(template.New("pages/contact-us.html").Funcs(template.FuncMap{
 		"eq": func(a, b any) bool { return a == b },
 	}).ParseFiles(
@@ -231,7 +288,11 @@ func ContactUsPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/contact-us.html", map[string]any{"ActivePage": "contact"}); err != nil {
+	data := map[string]any{
+		"ActivePage":   "contact",
+		"ContactEmail": contactEmail,
+	}
+	if err := t.ExecuteTemplate(w, "pages/contact-us.html", data); err != nil {
 		log.Printf("Contact Us template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}

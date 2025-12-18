@@ -1,6 +1,6 @@
 {{define "partials/header.html"}}
 <!-- Header -->
-<header class="z-30">
+<header class="relative z-[999]">
   <div
     class="mx-auto max-w-[85rem] px-4 py-3 flex items-center justify-between gap-4"
   >
@@ -23,10 +23,12 @@
       </button>
 
       {{- $active := .ActivePage -}}
+      {{- $selectedType := "" -}}
+      {{- with .Search }}{{- $selectedType = .SelectedType -}}{{- end -}}
 
       <!-- Desktop Navigation menu -->
       <nav
-        class="hidden lg:flex relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[28px] px-[20px] pr-[22px] py-[11px] h-[50px]"
+        class="hidden lg:flex relative z-[1000] bg-[#F3F3F3] rounded-[10px] overflow-visible items-center gap-[28px] px-[20px] pr-[22px] py-[11px] h-[50px]"
         style="box-shadow: 0px 4px 16.1px rgba(0, 0, 0, 0.15)"
       >
         <a
@@ -37,7 +39,11 @@
         >
 
         <!-- Properties with dropdown -->
-        <div class="relative flex items-center">
+        <div
+          class="relative flex items-center"
+          data-property-menu
+          data-selected-type="{{$selectedType}}"
+        >
           <a
             href="/properties"
             class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
@@ -45,7 +51,14 @@
             >Properties</a
           >
           <!-- Dropdown arrow -->
-          <div class="ml-[10px] flex items-center justify-center w-[20px] h-[10px]">
+          <button
+            type="button"
+            class="ml-[10px] flex items-center justify-center w-[20px] h-[10px] focus:outline-none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            data-property-trigger
+            aria-label="Toggle property menu"
+          >
             <svg
               width="10"
               height="20"
@@ -59,6 +72,50 @@
                 fill="{{if eq $active `properties`}}#F44335{{else}}#ACACAC{{end}}"
               />
             </svg>
+          </button>
+          <!-- Dropdown panel -->
+          <div
+            data-property-dropdown
+            class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-[14px] w-[170px] bg-[#f3f3f3] border border-[#cacaca] rounded-[10px] shadow-[0px_4px_16.1px_rgba(0,0,0,0.15)] overflow-hidden z-[1001]"
+          >
+            <div class="flex flex-col divide-y divide-[#d4d4d4]">
+              <a
+                href="/properties?type=Residential"
+                data-property-option
+                data-type="residential"
+                class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Residential
+              </a>
+              <a
+                href="/properties?type=Commercial"
+                data-property-option
+                data-type="commercial"
+                class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Commercial
+              </a>
+              <a
+                href="/properties?type=Hostel"
+                data-property-option
+                data-type="hostel"
+                class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Hostel
+              </a>
+              <a
+                href="/properties?type=Plot"
+                data-property-option
+                data-type="land"
+                class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Land
+              </a>
+            </div>
           </div>
         </div>
 
@@ -97,7 +154,7 @@
 
       <!-- Tablet Navigation menu (simplified) -->
       <nav
-        class="hidden md:flex lg:hidden relative bg-[#F3F3F3] rounded-[10px] overflow-hidden items-center gap-[16px] px-[14px] pr-[16px] py-[9px] h-[44px]"
+        class="hidden md:flex lg:hidden relative z-[1000] bg-[#F3F3F3] rounded-[10px] overflow-visible items-center gap-[16px] px-[14px] pr-[16px] py-[9px] h-[44px]"
         style="box-shadow: 0px 4px 16.1px rgba(0, 0, 0, 0.15)"
       >
         <a
@@ -108,7 +165,11 @@
         >
 
         <!-- Properties with dropdown -->
-        <div class="relative flex items-center">
+        <div
+          class="relative flex items-center"
+          data-property-menu
+          data-selected-type="{{$selectedType}}"
+        >
           <a
             href="/properties"
             class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
@@ -116,7 +177,14 @@
             >Properties</a
           >
           <!-- Dropdown arrow -->
-          <div class="ml-[8px] flex items-center justify-center w-[16px] h-[8px]">
+          <button
+            type="button"
+            class="ml-[8px] flex items-center justify-center w-[16px] h-[8px] focus:outline-none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            data-property-trigger
+            aria-label="Toggle property menu"
+          >
             <svg
               width="8"
               height="16"
@@ -130,6 +198,50 @@
                 fill="{{if eq $active `properties`}}#F44335{{else}}#ACACAC{{end}}"
               />
             </svg>
+          </button>
+          <!-- Dropdown panel -->
+          <div
+            data-property-dropdown
+            class="hidden absolute left-1/2 -translate-x-1/2 top-full mt-[12px] w-[160px] bg-[#f3f3f3] border border-[#cacaca] rounded-[10px] shadow-[0px_4px_16.1px_rgba(0,0,0,0.15)] overflow-hidden z-[1001]"
+          >
+            <div class="flex flex-col divide-y divide-[#d4d4d4]">
+              <a
+                href="/properties?type=Residential"
+                data-property-option
+                data-type="residential"
+                class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Residential
+              </a>
+              <a
+                href="/properties?type=Commercial"
+                data-property-option
+                data-type="commercial"
+                class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Commercial
+              </a>
+              <a
+                href="/properties?type=Hostel"
+                data-property-option
+                data-type="hostel"
+                class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Hostel
+              </a>
+              <a
+                href="/properties?type=Plot"
+                data-property-option
+                data-type="land"
+                class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
+                style="font-family: 'Poppins', sans-serif;"
+              >
+                Land
+              </a>
+            </div>
           </div>
         </div>
 
@@ -195,12 +307,47 @@
               style="font-family: 'Poppins', sans-serif; font-weight: 500;"
               >Home</a
             >
-            <a
-              href="/properties"
-              class="{{if eq $active `properties`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif; font-weight: 400;"
-              >Properties</a
-            >
+            <div class="border-b border-gray-200 pb-2">
+              <button
+                type="button"
+                class="flex w-full items-center justify-between text-[18px] leading-[26px] {{if eq $active `properties`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}}"
+                style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                data-mobile-property-toggle
+                aria-expanded="false"
+                aria-controls="mobile-property-menu"
+              >
+                <span>Properties</span>
+                <svg class="w-4 h-4 transition-transform" viewBox="0 0 10 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(-90deg);">
+                  <path d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z" fill="currentColor" />
+                </svg>
+              </button>
+              <div id="mobile-property-menu" class="mt-2 pl-2 space-y-2 hidden" data-mobile-property-panel>
+                <a
+                  href="/properties?type=Residential"
+                  class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  >Residential</a
+                >
+                <a
+                  href="/properties?type=Commercial"
+                  class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  >Commercial</a
+                >
+                <a
+                  href="/properties?type=Hostel"
+                  class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  >Hostel</a
+                >
+                <a
+                  href="/properties?type=Plot"
+                  class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  >Land</a
+                >
+              </div>
+            </div>
             <a
               href="/hotels"
               class="{{if eq $active `hotels`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
@@ -250,6 +397,9 @@
     const menuToggle = document.getElementById('mobile-menu-toggle');
     const menuClose = document.getElementById('mobile-menu-close');
     const mobileMenu = document.getElementById('mobile-menu');
+    const propertyMenus = document.querySelectorAll('[data-property-menu]');
+    const mobilePropertyToggle = document.querySelector('[data-mobile-property-toggle]');
+    const mobilePropertyPanel = document.querySelector('[data-mobile-property-panel]');
 
     if (menuToggle) {
       menuToggle.addEventListener('click', function() {
@@ -260,6 +410,76 @@
     if (menuClose) {
       menuClose.addEventListener('click', function() {
         mobileMenu.classList.add('hidden');
+      });
+    }
+
+    const normalizeType = (val) => {
+      const clean = (val || '').toString().trim().toLowerCase();
+      if (clean === 'plot') return 'land';
+      return clean;
+    };
+
+    propertyMenus.forEach((menu) => {
+      const trigger = menu.querySelector('[data-property-trigger]');
+      const dropdown = menu.querySelector('[data-property-dropdown]');
+      const options = dropdown ? dropdown.querySelectorAll('[data-property-option]') : [];
+      const activeType = normalizeType(menu.dataset.selectedType);
+      let closeTimer;
+
+      if (activeType) {
+        options.forEach((option) => {
+          const optType = normalizeType(option.dataset.type);
+          if (optType === activeType) {
+            option.classList.remove('text-[#acacac]');
+            option.classList.add('text-[#f44335]', 'font-medium', 'bg-white');
+          }
+        });
+      }
+
+      const openMenu = () => {
+        if (!dropdown) return;
+        clearTimeout(closeTimer);
+        dropdown.classList.remove('hidden');
+        trigger?.setAttribute('aria-expanded', 'true');
+      };
+
+      const closeMenu = () => {
+        if (!dropdown) return;
+        dropdown.classList.add('hidden');
+        trigger?.setAttribute('aria-expanded', 'false');
+      };
+
+      trigger?.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (dropdown.classList.contains('hidden')) {
+          openMenu();
+        } else {
+          closeMenu();
+        }
+      });
+
+      menu.addEventListener('mouseenter', openMenu);
+      menu.addEventListener('mouseleave', () => {
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(closeMenu, 120);
+      });
+
+      document.addEventListener('click', (event) => {
+        if (!menu.contains(event.target)) {
+          closeMenu();
+        }
+      });
+    });
+
+    if (mobilePropertyToggle && mobilePropertyPanel) {
+      mobilePropertyToggle.addEventListener('click', () => {
+        const isOpen = !mobilePropertyPanel.classList.contains('hidden');
+        mobilePropertyPanel.classList.toggle('hidden');
+        mobilePropertyToggle.setAttribute('aria-expanded', (!isOpen).toString());
+        const chevron = mobilePropertyToggle.querySelector('svg');
+        if (chevron) {
+          chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+        }
       });
     }
   });

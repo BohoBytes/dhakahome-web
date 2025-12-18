@@ -4,11 +4,13 @@
 {{template "partials/page-header.html" .}}
 
 <!-- Search box -->
-<section class="relative isolate full-bleed h-[16rem]">
-  <div class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10 h-[16rem]"></div>
+<section class="relative isolate full-bleed py-10">
+  <div
+    class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10"
+  ></div>
   <div class="absolute inset-0 bg-white/65 -z-10"></div>
-  <div class="max-w-[1100px] mx-auto px-4 md:px-6 py-14">
-    {{template "partials/search-box.html" .}}
+  <div class="max-w-[1200px] mx-auto px-4 md:px-6">
+    {{template "partials/search-advanced-box.html" .}}
   </div>
 </section>
 
@@ -18,7 +20,5 @@
 </section>
 
 <!-- Properties by Area -->
-{{template "partials/properties-by-area.html" .}}
-{{end}}
-
-{{define "pages/search-results.html"}}{{template "layouts/base.html" .}}{{end}}
+{{template "partials/properties-by-area.html" .}} {{end}} {{define
+"pages/search-results.html"}}{{template "layouts/base.html" .}}{{end}}

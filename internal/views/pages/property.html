@@ -1,95 +1,271 @@
+{{define "property-contact-form"}}
+<form
+  action="/lead"
+  method="post"
+  class="space-y-6"
+  id="property-contact-form"
+  data-enquiry-form
+  data-property-title="{{.P.Title}}"
+  data-enquiry-email="{{.ContactEmail}}"
+  data-call-number="{{.ContactPhone}}"
+>
+  <div>
+    <label
+      class="text-[16px] font-normal text-[#535353] mb-2 block"
+      style="font-family: 'Poppins', sans-serif"
+      >Name</label
+    >
+    <input
+      type="text"
+      name="name"
+      placeholder=""
+      required
+      class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]"
+      style="font-family: 'Poppins', sans-serif"
+    />
+    <p class="mt-1 text-[13px] text-[#f44335] hidden" data-error-for="name"></p>
+  </div>
+  <div class="grid gap-6 sm:grid-cols-2">
+    <div>
+      <label
+        class="text-[16px] font-normal text-[#535353] mb-2 block"
+        style="font-family: 'Poppins', sans-serif"
+        >Phone</label
+      >
+      <input
+        type="tel"
+        name="phone"
+        placeholder=""
+        required
+        class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]"
+        style="font-family: 'Poppins', sans-serif"
+      />
+      <p class="mt-1 text-[13px] text-[#f44335] hidden" data-error-for="phone"></p>
+    </div>
+    <div>
+      <label
+        class="text-[16px] font-normal text-[#535353] mb-2 block"
+        style="font-family: 'Poppins', sans-serif"
+        >Email</label
+      >
+      <input
+        type="email"
+        name="email"
+        placeholder=""
+        required
+        class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]"
+        style="font-family: 'Poppins', sans-serif"
+      />
+      <p class="mt-1 text-[13px] text-[#f44335] hidden" data-error-for="email"></p>
+    </div>
+  </div>
+  <div>
+    <label
+      class="text-[16px] font-normal text-[#535353] mb-2 block"
+      style="font-family: 'Poppins', sans-serif"
+      >Message</label
+    >
+    <textarea
+      name="message"
+      rows="3"
+      data-message-field
+      required
+      class="w-full rounded-[5px] border border-[#535353] bg-white px-3 py-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px] resize-none"
+      style="font-family: 'Poppins', sans-serif"
+    >Hello, I am interested in {{.P.Title}}</textarea>
+    <p class="mt-1 text-[13px] text-[#f44335] hidden" data-error-for="message"></p>
+  </div>
+  <input type="hidden" name="propertyId" value="{{.P.ID}}" />
+  <p class="text-[13px] text-[#f44335] hidden" data-error-for="form"></p>
+  <div class="flex flex-col sm:flex-row gap-3 pt-2">
+    <button
+      type="button"
+      data-contact-call
+      class="flex items-center justify-center gap-2 rounded-[5px] border border-[#f44335] px-6 py-3 hover:bg-[#f44335] hover:text-white transition-colors group text-[#f44335]"
+    >
+      <svg
+        class="w-7 h-7 text-[#f44335] group-hover:text-white"
+        viewBox="0 0 27.718 27.6651"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        stroke="currentColor"
+      >
+        <path
+          d="M13.94,0.005c0.06,0 0.11,0 0.17,0c3.45,0.01 6.67,1.3 9.2,3.64c0.12,0.1 0.12,0.1 0.24,0.18c0.12,0.1 0.18,0.21 0.26,0.35c0.08,0.08 0.16,0.16 0.24,0.24c0.34,0.33 0.62,0.69 0.9,1.06c0.02,0.03 0.04,0.06 0.07,0.09c0.57,0.76 1.03,1.59 1.44,2.45c0.02,0.05 0.05,0.11 0.08,0.17c0.44,0.98 0.74,2.02 0.94,3.07c0.02,0.06 0.02,0.06 0.03,0.13c0.32,1.62 0.26,3.49 -0.08,5.1c-0.02,0.09 -0.02,0.09 -0.04,0.17c-0.42,1.97 -1.28,3.89 -2.55,5.45c-0.04,0.05 -0.08,0.1 -0.12,0.14c-2.24,2.83 -5.62,4.72 -9.21,5.14c-0.04,0 -0.08,0.01 -0.12,0.01c-0.04,0.01 -0.09,0.01 -0.13,0.02c-0.46,0.04 -0.93,0.05 -1.39,0.05c-0.04,0 -0.09,0 -0.13,0c-0.76,0 -1.49,-0.05 -2.24,-0.18c-0.05,-0.01 -0.1,-0.02 -0.15,-0.02c-1.19,-0.22 -2.33,-0.6 -3.41,-1.11c-0.04,-0.02 -0.08,-0.04 -0.12,-0.06c-0.1,-0.05 -0.1,-0.05 -0.26,-0.15c-0.39,-0.15 -0.87,0.02 -1.26,0.13c-0.06,0.01 -0.11,0.03 -0.16,0.04c-0.18,0.05 -0.35,0.09 -0.53,0.14c-0.12,0.03 -0.24,0.06 -0.37,0.09c-0.32,0.09 -0.64,0.17 -0.96,0.26c-0.33,0.08 -0.65,0.17 -0.98,0.25c-0.42,0.11 -0.85,0.22 -1.27,0.33c-0.11,0.03 -0.22,0.06 -0.33,0.09c-0.25,0.07 -0.51,0.13 -0.76,0.2c-0.05,0.01 -0.09,0.03 -0.14,0.04c-0.09,0.02 -0.18,0.05 -0.27,0.07c-0.18,0.05 -0.34,0.08 -0.53,0.08c0.03,-0.31 0.09,-0.59 0.17,-0.88c0.01,-0.05 0.03,-0.09 0.04,-0.13c0.04,-0.15 0.08,-0.29 0.12,-0.43c0.02,-0.1 0.05,-0.2 0.08,-0.3c0.07,-0.27 0.15,-0.53 0.22,-0.8c0.07,-0.26 0.15,-0.52 0.22,-0.78c0.01,-0.06 0.03,-0.11 0.04,-0.16c0.07,-0.26 0.14,-0.51 0.22,-0.77c0.02,-0.1 0.05,-0.2 0.08,-0.3c0.01,-0.05 0.03,-0.1 0.04,-0.15c0.08,-0.28 0.16,-0.56 0.24,-0.84c0.04,-0.16 0.09,-0.33 0.14,-0.49c0.02,-0.08 0.04,-0.15 0.06,-0.23c0.03,-0.1 0.06,-0.21 0.09,-0.31c0.02,-0.09 0.02,-0.09 0.05,-0.17c0.06,-0.36 -0.05,-0.63 -0.22,-0.93c-0.58,-1.14 -1,-2.3 -1.26,-3.55c-0.01,-0.05 -0.02,-0.1 -0.03,-0.16c-0.16,-0.86 -0.21,-1.71 -0.21,-2.58c0,-0.05 0,-0.1 0,-0.15c0.01,-2.08 0.46,-4.05 1.37,-5.92c0.02,-0.04 0.04,-0.08 0.06,-0.12c0.58,-1.18 1.35,-2.23 2.26,-3.18c0.03,-0.03 0.07,-0.07 0.1,-0.1c0.47,-0.49 0.94,-0.94 1.48,-1.34c0.09,-0.07 0.18,-0.13 0.27,-0.2c0.76,-0.57 1.61,-1.03 2.47,-1.43c0.04,-0.02 0.07,-0.04 0.11,-0.06c1.17,-0.53 2.4,-0.88 3.67,-1.08c0.06,-0.01 0.12,-0.02 0.19,-0.03c0.62,-0.09 1.24,-0.1 1.87,-0.09zM6.53,4.985c-0.04,0.04 -0.08,0.08 -0.13,0.12c-2.24,1.97 -3.66,4.73 -3.92,7.71c-0.01,0.29 -0.01,0.58 -0.01,0.87c0,0.04 0,0.08 0,0.12c0.01,2.1 0.59,4.39 1.88,6.08c0.21,0.44 -0.08,1.07 -0.21,1.52c-0.02,0.08 -0.04,0.16 -0.06,0.24c-0.06,0.22 -0.13,0.44 -0.19,0.65c-0.06,0.22 -0.12,0.45 -0.18,0.67c-0.12,0.43 -0.24,0.86 -0.36,1.3c0.17,0.08 0.29,0.01 0.47,-0.04c0.04,-0.01 0.08,-0.02 0.12,-0.03c0.08,-0.02 0.16,-0.04 0.25,-0.06c0.13,-0.04 0.26,-0.07 0.39,-0.11c0.32,-0.08 0.65,-0.17 0.97,-0.25c0.27,-0.08 0.55,-0.15 0.82,-0.22c0.13,-0.04 0.26,-0.07 0.39,-0.11c0.08,-0.02 0.15,-0.04 0.23,-0.06c0.07,-0.02 0.14,-0.04 0.21,-0.05c0.27,-0.06 0.54,-0.1 0.77,0.06c0.04,0.02 0.07,0.04 0.11,0.06c0.04,0.03 0.07,0.05 0.11,0.08c2.51,1.54 5.59,1.86 8.43,1.2c2.96,-0.74 5.55,-2.66 7.13,-5.26c1.55,-2.63 1.95,-5.7 1.22,-8.66c-0.52,-2 -1.58,-3.69 -2.99,-5.18c-0.05,-0.05 -0.05,-0.05 -0.1,-0.11c-2.05,-2.11 -5.03,-3.16 -7.92,-3.24c-2.7,-0.03 -5.38,0.93 -7.43,2.7z"
+        />
+        <path
+          d="M9.38,7.295c0.07,0 0.07,0 0.14,0c0.3,0 0.52,0.01 0.74,0.24c0.13,0.19 0.23,0.39 0.32,0.61c0.02,0.05 0.04,0.09 0.06,0.14c0.3,0.68 0.58,1.36 0.86,2.05c0.02,0.05 0.04,0.09 0.06,0.14c0.09,0.25 0.09,0.45 0,0.69c-0.23,0.46 -0.57,0.82 -0.91,1.2c-0.1,0.11 -0.12,0.18 -0.14,0.33c0.02,0.24 0.12,0.38 0.25,0.58c0.03,0.04 0.05,0.08 0.08,0.11c1.03,1.58 2.43,2.76 4.15,3.54c0.04,0.01 0.07,0.03 0.11,0.05c0.21,0.09 0.38,0.13 0.61,0.11c0.4,-0.26 0.68,-0.7 0.97,-1.07c0.03,-0.03 0.05,-0.07 0.08,-0.1c0.05,-0.07 0.1,-0.14 0.16,-0.2c0.11,-0.15 0.2,-0.26 0.36,-0.36c0.38,-0.02 0.7,0.1 1.04,0.26c0.04,0.02 0.09,0.04 0.14,0.07c0.25,0.12 0.51,0.24 0.76,0.37c0.08,0.04 0.08,0.04 0.16,0.08c0.1,0.06 0.21,0.11 0.31,0.16c0.24,0.13 0.44,0.21 0.72,0.25c0.12,0.06 0.12,0.06 0.23,0.13c0.04,0.02 0.08,0.05 0.11,0.07c0.09,0.07 0.09,0.07 0.15,0.18c0.07,0.72 -0.07,1.58 -0.54,2.16c-0.62,0.66 -1.53,1.14 -2.44,1.19c-2.46,0.08 -4.99,-1.27 -6.8,-2.87c-0.03,-0.02 -0.05,-0.05 -0.08,-0.08c-0.64,-0.56 -1.22,-1.17 -1.75,-1.83c-0.12,-0.15 -0.25,-0.3 -0.37,-0.45c-1.17,-1.4 -2.21,-3.03 -2.06,-4.93c0.12,-0.96 0.63,-1.97 1.41,-2.58c0.34,-0.22 0.72,-0.25 1.11,-0.24z"
+          fill="currentColor"
+        />
+      </svg>
+      <span
+        class="text-[22px] font-medium leading-[28px] text-[#f44335] group-hover:text-white"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Call
+      </span>
+    </button>
+    <button
+      type="submit"
+      data-contact-submit
+      class="bg-[#f44335] text-white text-[24px] font-medium leading-[28px] px-6 py-3 rounded-[5px] hover:bg-[#d63a2e] transition-colors"
+      style="font-family: 'Poppins', sans-serif"
+    >
+      Send E-mail
+    </button>
+  </div>
+</form>
+{{end}}
+
 {{define "content"}}
 <div class="min-h-screen bg-white">
   <!-- Header -->
   {{template "partials/page-header.html" .}}
 
   <!-- Search band -->
-  <section class="full-bleed relative isolate overflow-hidden mt-6 mb-6">
-    <div class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10"></div>
+  <section
+    class="full-bleed relative isolate overflow-hidden mt-6 mb-6 md:mb-10"
+  >
+    <div
+      class="absolute inset-0 bg-[url('/assets/images/backgrounds/search-hero-bg.png')] bg-cover bg-center opacity-80 -z-10"
+    ></div>
     <div class="absolute inset-0 bg-white/55 -z-10"></div>
-    <div class="max-w-[1100px] mx-auto py-7">
+    <div class="max-w-[1200px] mx-auto py-7">
       {{template "partials/search-box.html" .}}
     </div>
   </section>
 
   <!-- Property Details Section -->
-  <section class="pb-16">
-    <div class="bg-[#f1f1f1] rounded-[20px] shadow-[0_4px_4px_rgba(0,0,0,0.15)] p-6 md:p-10">
+  <section class="pb-16 md:pb-20">
+    <div
+      class="bg-[#f1f1f1] rounded-[20px] shadow-[0_4px_4px_rgba(0,0,0,0.15)] p-6 md:p-10"
+    >
       <!-- Header with Back Button, Title -->
-      <div class="relative mb-4">   
-        <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between pl-14 md:pl-0">
-          <button
-          onclick="history.back()"
-          class="w-[40px] h-[40px] flex items-center justify-center rounded-full hover:bg-[#e8e8e8] transition mt-1 absolute left-0 top-0 md:static"
-        >
-          <svg width="10" height="16" viewBox="0 0 19 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16.5 3L3 16.5L16.5 30" stroke="#383838" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div class="flex flex-col items-center md:items-start gap-1">
-            <h1 class="text-[20px] md:text-[24px] font-normal leading-[54px] text-[#414141] text-center md:text-left" style="font-family: 'Poppins', sans-serif;">
-              {{.P.Title}}
-            </h1>
-          </div>
+      <div class="relative mb-16">
+        <div class="flex flex-col md:flex-row md:gap-10">
+          <button onclick="history.back()" class="w-[12px] md:w-[16px]">
+            <img src="/assets/icons/arrow_back.svg" alt="Arrow Back" />
+          </button>
+          <h1
+            class="text-[28px] md:text-[32px] font-normal leading-[54px] text-[#414141] text-center md:text-left"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            {{.P.Title}}
+          </h1>
         </div>
       </div>
 
       <!-- Badges and Price-->
-      <div class="relative mb-4">
-      <div class="flex flex-wrap gap-2 mb-6">
-        {{range .P.Badges}}
-        {{template "partials/property-badge.html" .}}
-        {{end}}
+      <div class="flex gap-10 justify-between items-center">
+        <div class="flex flex-wrap gap-2 mb-0">
+          {{range .P.Badges}} {{template "partials/property-badge.html" .}}
+          {{end}}
+        </div>
+        <div
+          class="text-[22px] md:text-[28px] font-semibold leading-[54px] text-[#414141] text-center md:text-right"
+          style="font-family: 'Poppins', sans-serif"
+        >
+          {{.P.Currency}}{{formatPrice .P.Price}}
+        </div>
       </div>
-      <div class="text-[25px] md:text-[30px] font-normal leading-[54px] text-[#414141] text-center md:text-right" style="font-family: 'Poppins', sans-serif;">
-        {{.P.Currency}}{{formatPrice .P.Price}}
-      </div>
-      </div>
-
 
       <!-- Property Images with Overlay Stats -->
-      {{if .P.HasImages}}
-      {{$count := len .P.Gallery}}
+      {{$count := len .P.Gallery}} {{if gt $count 0}}
       <div class="mb-6">
         {{if eq $count 1}}
         <div class="relative">
-          <button type="button" class="relative block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="0">
-            <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+          <button
+            type="button"
+            class="relative block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+            data-gallery-index="0"
+          >
+            <img
+              src="{{index .P.Gallery 0}}"
+              alt="{{.P.Title}}"
+              class="w-full h-full object-cover"
+            />
           </button>
           <!-- Stats Overlay -->
-            {{template "partials/property-stats.html" .P}}
+          {{template "partials/property-stats.html" .P}}
         </div>
         {{else if eq $count 2}}
         <div class="grid grid-cols-3 gap-4">
           <div class="col-span-2 relative">
-            <button type="button" class="block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="0">
-              <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+            <button
+              type="button"
+              class="block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+              data-gallery-index="0"
+            >
+              <img
+                src="{{index .P.Gallery 0}}"
+                alt="{{.P.Title}}"
+                class="w-full h-full object-cover"
+              />
             </button>
             <!-- Stats Overlay -->
-              {{template "partials/property-stats.html" .P}}
+            {{template "partials/property-stats.html" .P}}
           </div>
-          <button type="button" class="col-span-1 h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="1">
-            <img src="{{index .P.Gallery 1}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+          <button
+            type="button"
+            class="col-span-1 h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+            data-gallery-index="1"
+          >
+            <img
+              src="{{index .P.Gallery 1}}"
+              alt="{{.P.Title}}"
+              class="w-full h-full object-cover"
+            />
           </button>
         </div>
         {{else}}
         <div class="grid grid-cols-3 gap-4">
           <div class="col-span-2 relative">
-            <button type="button" class="block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="0">
-              <img src="{{index .P.Gallery 0}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+            <button
+              type="button"
+              class="block w-full h-[420px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+              data-gallery-index="0"
+            >
+              <img
+                src="{{index .P.Gallery 0}}"
+                alt="{{.P.Title}}"
+                class="w-full h-full object-cover"
+              />
             </button>
             <!-- Stats Overlay -->
-              {{template "partials/property-stats.html" .P}}
+            {{template "partials/property-stats.html" .P}}
           </div>
           <div class="grid grid-rows-2 gap-4">
-            <button type="button" class="h-[200px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="1">
-              <img src="{{index .P.Gallery 1}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+            <button
+              type="button"
+              class="h-[200px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+              data-gallery-index="1"
+            >
+              <img
+                src="{{index .P.Gallery 1}}"
+                alt="{{.P.Title}}"
+                class="w-full h-full object-cover"
+              />
             </button>
-            <button type="button" class="relative h-[200px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]" data-gallery-index="2">
-              <img src="{{index .P.Gallery 2}}" alt="{{.P.Title}}" class="w-full h-full object-cover" />
+            <button
+              type="button"
+              class="relative h-[200px] rounded-[10px] overflow-hidden shadow-[0_4px_11.8px_rgba(0,0,0,0.25)]"
+              data-gallery-index="2"
+            >
+              <img
+                src="{{index .P.Gallery 2}}"
+                alt="{{.P.Title}}"
+                class="w-full h-full object-cover"
+              />
               {{if gt $count 3}}
-              <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <span class="text-white text-[92px] font-normal" style="font-family: 'Poppins', sans-serif;">+{{sub $count 3}}</span>
+              <div
+                class="absolute inset-0 bg-black/50 flex items-center justify-center"
+              >
+                <span
+                  class="text-white text-[92px] font-normal"
+                  style="font-family: 'Poppins', sans-serif"
+                  >+{{sub $count 3}}</span
+                >
               </div>
               {{end}}
             </button>
@@ -100,163 +276,242 @@
       {{end}}
 
       <!-- Amenities -->
+      {{with $p := index . "P"}} {{with $amenities := $p.Amenities}}
       <div class="bg-[#dadada] rounded-[5px] p-4 mb-6">
         <div class="flex flex-wrap gap-x-6 gap-y-3">
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Gas Supply</span>
+          {{range $amenities}}
+          <div
+            class="flex items-center gap-2 text-[16px] md:text-[18px] font-normal leading-[26.4px] text-[#535353]"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            <img
+              src="/assets/icons/check-circle.svg"
+              alt="Amenity"
+              class="w-6 h-6"
+            />
+            <span>{{.}}</span>
           </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Boundary Wall</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Kitchen Cabinet</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Power Backup</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Parking</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Lift</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Servant Room</span>
-          </div>
-          <div class="flex items-center gap-2 text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">
-            <img src="/assets/icons/check-circle.svg" alt="Amenity" class="w-6 h-6" />
-            <span>Furnished</span>
-          </div>
+          {{end}}
         </div>
       </div>
+      {{end}} {{end}}
 
       <!-- Description Section (Full Width) -->
-      <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] p-6 mb-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
-          <h2 class="text-[34px] font-medium text-[#383838]" style="font-family: 'Poppins', sans-serif;">Description</h2>
-          <div class="flex items-center gap-4 bg-[#d9d9d9] rounded-[5px] px-4 py-2">
+      <div
+        class="bg-[#f3f3f3] rounded-[10px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] p-6 mb-6"
+      >
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4"
+        >
+          <h2
+            class="text-[24px] md:text-[28px] font-medium text-[#383838]"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            Description
+          </h2>
+          {{if or .P.BuildYear .P.ListingDate}}
+          <div
+            class="flex items-center gap-4 bg-[#d9d9d9] rounded-[5px] px-4 py-1"
+          >
+            {{if .P.BuildYear}}
             <div class="flex items-center gap-2">
-              <img src="/assets/icons/calendar.svg" alt="Year" class="w-[30px] h-[30px]" />
-              <span class="text-[22px] font-medium leading-[26.4px] text-[#737373]" style="font-family: 'Poppins', sans-serif;">2023</span>
+              <img
+                src="/assets/icons/calendar.svg"
+                alt="Build Year"
+                class="h-[20px]"
+              />
+              <span
+                class="text-[14px] md:text-[16px] font-medium leading-[0px] text-[#737373]"
+                style="font-family: 'Poppins', sans-serif"
+              >
+                {{.P.BuildYear}}
+              </span>
             </div>
-            <div class="w-px h-11 border-l border-[#9d9d9d]"></div>
+            {{end}} {{if and .P.BuildYear .P.ListingDate}}
+            <div class="w-px h-8 border-l border-[#9d9d9d]"></div>
+            {{end}} {{if .P.ListingDate}}
             <div class="flex items-center gap-2">
-              <img src="/assets/icons/date.svg" alt="Date" class="w-[29px] h-[29px]" />
-              <span class="text-[22px] font-medium leading-[26.4px] text-[#737373]" style="font-family: 'Poppins', sans-serif;">Jan 12, 2025</span>
+              <img
+                src="/assets/icons/date.svg"
+                alt="Listing Date"
+                class="h-[20px]"
+              />
+              <span
+                class="text-[14px] md:text-[16px] font-medium leading-[0px] text-[#737373]"
+                style="font-family: 'Poppins', sans-serif"
+              >
+                {{.P.ListingDate}}
+              </span>
             </div>
+            {{end}}
           </div>
+          {{end}}
         </div>
 
-        <div class="border-t border-[#a3a3a3] pt-4 space-y-4">
-          <h3 class="text-[24px] font-medium leading-[26.4px] text-[#272727]" style="font-family: 'Poppins', sans-serif;">
-            Modern 3BHK Apartment with 4 Bathrooms | 1450 sq ft | 1 Parking
+        {{if or .P.Title .P.Address .P.Description}}
+        <div class="border-t border-[#a3a3a3] pt-4">
+          {{if .P.Title}}
+          <h3
+            class="text-[20px] md:text-[22px] font-medium text-[#272727] pb-1"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            {{.P.Title}}
           </h3>
-          <p class="text-[22px] font-medium leading-[26.4px] text-[#7d7d7d]" style="font-family: 'Poppins', sans-serif;">
-            House 12, Road 5, Block C, Bashundhara, Dhaka
+          {{end}} {{if .P.Address}}
+          <p
+            class="text-[16px] md:text-[18px] font-medium text-[#7d7d7d] pb-8"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            {{.P.Address}}
           </p>
+          {{end}} {{if .P.Description}}
           <div class="bg-white rounded-[5px] p-4">
-            <p class="text-[22px] font-normal leading-[39px] text-[#4c4c4c]" style="font-family: 'Poppins', sans-serif;">
-              Step into this spacious and thoughtfully planned 3-bedroom apartment, ideal for families seeking comfort, convenience, and style. Spanning 1450 square feet, this home features three generously sized bedrooms, each designed to ensure privacy and natural light. The four well-appointed bathrooms, including attached ones, offer added ease for busy households.
+            <p
+              class="text-[18px] md:text-[20px] font-normal leading-[39px] text-[#4c4c4c]"
+              style="font-family: 'Poppins', sans-serif"
+            >
+              {{.P.Description}}
             </p>
           </div>
+          {{end}}
         </div>
+        {{end}}
       </div>
+      <script>
+        // Debugging aid: log property payload even when gallery is empty
+        console.debug("Property data debug", {
+          id: "{{.P.ID}}",
+          title: {{printf "%q" .P.Title}},
+          price: {{printf "%v" .P.Price}},
+          galleryCount: {{len .P.Gallery}},
+          imagesCount: {{len .P.Images}},
+          hasImagesFlag: {{if .P.HasImages}}true{{else}}false{{end}},
+          gallery: [{{range $i, $img := .P.Gallery}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+          images: [{{range $i, $img := .P.Images}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+        });
+      </script>
 
-      <!-- Required Documents and Contact Form (Side by Side) -->
+      <!-- Required Documents and Contact Form -->
+      {{if .Documents}}
       <div class="grid lg:grid-cols-[1fr,2fr] gap-6">
-        <!-- Required Documents -->
-        <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
-          <h2 class="text-[34px] font-medium text-[#383838] mb-4" style="font-family: 'Poppins', sans-serif;">Required Documents</h2>
+        <div
+          class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6"
+        >
+          <h2
+            class="text-[24px] md:text-[28px] font-medium text-[#383838] mb-4"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            Required Documents
+          </h2>
           <div class="border-t border-[#aeaeae] pt-4 space-y-6">
+            {{range .Documents}}
             <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">NID Copy</span>
+              <img
+                src="/assets/icons/check-circle.svg"
+                alt="Check"
+                class="w-6 h-6 flex-shrink-0"
+              />
+              <span
+                class="text-[16px] md:text-[18px] font-normal leading-[26.4px] text-[#535353]"
+                style="font-family: 'Poppins', sans-serif"
+              >
+                {{.Label}}{{if not .IsRequired}} (Optional){{end}}
+              </span>
             </div>
-            <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">Employment Letter</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <img src="/assets/icons/check-circle.svg" alt="Check" class="w-6 h-6 flex-shrink-0" />
-              <span class="text-[22px] font-normal leading-[26.4px] text-[#535353]" style="font-family: 'Poppins', sans-serif;">Security Deposit Agreement</span>
-            </div>
+            {{end}}
           </div>
         </div>
 
-        <!-- Contact Form -->
-        <div class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6">
-          <h2 class="text-[34px] font-medium text-[#383838] mb-4" style="font-family: 'Poppins', sans-serif;">Contact Dhaka Home about this property</h2>
+        <div
+          class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6"
+        >
+          <h2
+            class="text-[24px] md:text-[28px] font-medium text-[#383838] mb-4"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            Contact Us about this property
+          </h2>
           <div class="border-t border-[#aeaeae] pt-4">
-            <form action="/lead" method="post" class="space-y-6">
-              <div>
-                <label class="text-[16px] font-normal text-[#535353] mb-2 block" style="font-family: 'Poppins', sans-serif;">Name</label>
-                <input 
-                  type="text" 
-                  name="name"
-                  placeholder=""
-                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]" 
-                  style="font-family: 'Poppins', sans-serif;"
-                />
-              </div>
-              <div>
-                <label class="text-[16px] font-normal text-[#535353] mb-2 block" style="font-family: 'Poppins', sans-serif;">Phone</label>
-                <input 
-                  type="tel" 
-                  name="phone"
-                  placeholder=""
-                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]" 
-                  style="font-family: 'Poppins', sans-serif;"
-                />
-              </div>
-              <div>
-                <label class="text-[16px] font-normal text-[#535353] mb-2 block" style="font-family: 'Poppins', sans-serif;">Message</label>
-                <input 
-                  type="text" 
-                  name="message"
-                  placeholder=""
-                  class="w-full border-b border-[#535353] bg-transparent pb-2 focus:outline-none focus:border-[#f44335] text-[#3b3b3b] text-[16px]" 
-                  style="font-family: 'Poppins', sans-serif;"
-                />
-              </div>
-              <input type="hidden" name="propertyId" value="{{.P.ID}}" />
-              <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                <button 
-                  type="button"
-                  class="flex items-center justify-center gap-2 rounded-[5px] border border-[#f44335] px-6 py-3 hover:bg-[#f44335] hover:text-white transition-colors group"
-                >
-                  <img src="/assets/icons/phone-call.svg" alt="Call" class="w-7 h-7" />
-                  <span class="text-[22px] font-medium leading-[28px] text-[#f44335] group-hover:text-white" style="font-family: 'Poppins', sans-serif;">Call</span>
-                </button>
-                <button 
-                  type="submit"
-                  class="bg-[#f44335] text-white text-[24px] font-medium leading-[28px] px-6 py-3 rounded-[5px] hover:bg-[#d63a2e] transition-colors"
-                  style="font-family: 'Poppins', sans-serif;"
-                >
-                  Send E-mail
-                </button>
-              </div>
-            </form>
+            {{template "property-contact-form" .}}
           </div>
         </div>
       </div>
+      {{else}}
+      <div
+        class="bg-[#f3f3f3] rounded-[10px] shadow-[0_4px_6.9px_rgba(0,0,0,0.10)] p-6"
+      >
+        <h2
+          class="text-[24px] md:text-[28px] font-medium text-[#383838] mb-4"
+          style="font-family: 'Poppins', sans-serif"
+        >
+          Contact Us about this property
+        </h2>
+        <div class="border-t border-[#aeaeae] pt-4">
+          {{template "property-contact-form" .}}
+        </div>
+      </div>
+      {{end}}
     </div>
   </section>
 
+  <div
+    id="contact-success-overlay"
+    class="fixed inset-0 w-screen bg-black/70 z-50 hidden items-center justify-center px-4"
+  >
+    <div
+      class="relative w-full max-w-[430px] rounded-[10px] bg-[#fafafa] px-8 py-10 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+    >
+      <button
+        type="button"
+        class="absolute right-4 top-4 text-[#767676] hover:text-[#111] text-3xl"
+        data-overlay-close
+        aria-label="Close"
+      >
+        &times;
+      </button>
+      <div
+        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#2fd073] text-white"
+      >
+        <svg
+          class="h-9 w-9"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+      <h3
+        class="text-[32px] font-medium leading-[40px] text-[#353535]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Message Sent
+      </h3>
+      <p
+        class="mt-3 text-[18px] leading-[28px] text-[#767676]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Our team will contact you shortly with more details about the property.
+      </p>
+    </div>
+  </div>
+
   <!-- Similar Listings Section -->
   <section class="pb-20">
-    <h2 class="text-[40px] font-medium leading-[51.6px] text-[#383838] mb-8" style="font-family: 'Poppins', sans-serif;">Similar Listings</h2>
-    
+    <h2
+      class="text-[28px] md:text-[35px] font-medium leading-[51.6px] text-[#383838] mb-8"
+      style="font-family: 'Poppins', sans-serif"
+    >
+      Similar Listings
+    </h2>
+
     {{if gt (len .Similar.Items) 0}}
     <div class="space-y-5">
-      {{range .Similar.Items}}
-      {{template "partials/property-card.html" .}}
+      {{range .Similar.Items}} {{template "partials/property-card.html" .}}
       {{end}}
     </div>
     {{else}}
@@ -267,17 +522,236 @@
   </section>
 </div>
 
-{{if .P.HasImages}}
+<script>
+  (function () {
+    const form = document.querySelector('[data-enquiry-form]');
+    if (!form) return;
+
+    const callNumber = form.dataset.callNumber || '';
+    const propertyTitle = form.dataset.propertyTitle || 'this property';
+    const messageField = form.querySelector('[data-message-field]');
+    const overlay = document.getElementById('contact-success-overlay');
+    const propertyIdInput = form.querySelector('input[name="propertyId"]');
+    const callButton = form.querySelector('[data-contact-call]');
+    const nameInput = form.querySelector('input[name="name"]');
+    const emailInput = form.querySelector('input[name="email"]');
+    const phoneInput = form.querySelector('input[name="phone"]');
+
+    const setDefaultMessage = () => {
+      if (!messageField) return;
+      const preset = `Hello, I am interested in ${propertyTitle}`;
+      if (!messageField.value.trim()) {
+        messageField.value = preset;
+      }
+    };
+    setDefaultMessage();
+
+    const clearErrors = () => {
+      form.querySelectorAll('[data-error-for]').forEach((el) => {
+        el.textContent = '';
+        el.classList.add('hidden');
+      });
+      form.querySelectorAll('input, textarea').forEach((el) => {
+        el.classList.remove('border-[#f44335]');
+      });
+    };
+
+    const showError = (field, message) => {
+      const errorEl = form.querySelector(`[data-error-for="${field}"]`);
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
+      const inputEl =
+        form.querySelector(`[name="${field}"]`) ||
+        (field === 'message' ? messageField : null);
+      if (inputEl) {
+        inputEl.classList.add('border-[#f44335]');
+      }
+    };
+
+    if (callButton) {
+      if (callNumber) {
+        callButton.addEventListener('click', () => {
+          window.location.href = `tel:${callNumber}`;
+        });
+      } else {
+        callButton.setAttribute('disabled', 'true');
+        callButton.classList.add('opacity-60', 'cursor-not-allowed');
+      }
+    }
+
+    const normalizePhone = (phone) => {
+      let clean = (phone || '').trim();
+      if (!clean) return null;
+      clean = clean.replace(/[^0-9+]/g, '');
+      if (clean.startsWith('+')) clean = clean.slice(1);
+      if (clean.startsWith('88')) clean = clean.slice(2);
+      if (!clean.startsWith('01')) return null;
+      if (clean.length !== 11) return null;
+      const operator = clean.charAt(2);
+      if (operator < '3' || operator > '9') return null;
+      return `+880${clean.slice(1)}`;
+    };
+
+    const showOverlay = () => {
+      if (!overlay) return;
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+      document.body.classList.add('overflow-hidden');
+    };
+
+    const hideOverlay = () => {
+      if (!overlay) return;
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+      document.body.classList.remove('overflow-hidden');
+    };
+
+    overlay?.addEventListener('click', (event) => {
+      if (event.target === overlay) hideOverlay();
+    });
+    overlay
+      ?.querySelectorAll('[data-overlay-close]')
+      .forEach((btn) => btn.addEventListener('click', hideOverlay));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearErrors();
+
+      const name = (nameInput?.value || '').trim();
+      const email = (emailInput?.value || '').trim();
+      const message = (messageField?.value || '').trim();
+      const phoneRaw = (phoneInput?.value || '').trim();
+      const phone = normalizePhone(phoneRaw);
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      let valid = true;
+
+      if (name.length < 2) {
+        showError('name', 'Please enter your name.');
+        valid = false;
+      }
+      if (!emailPattern.test(email)) {
+        showError('email', 'Please enter a valid email.');
+        valid = false;
+      }
+      if (!phone) {
+        showError('phone', 'Use a valid Bangladesh phone number.');
+        valid = false;
+      }
+      if (!message) {
+        showError('message', 'Please include a message.');
+        valid = false;
+      }
+      if (!valid) return;
+
+      const payload = {
+        name,
+        email,
+        phone,
+        message,
+        propertyId: propertyIdInput?.value || '',
+      };
+
+      try {
+        const res = await fetch('/lead', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          if (data && data.errors) {
+            Object.entries(data.errors).forEach(([field, msg]) =>
+              showError(field, msg)
+            );
+          } else {
+            showError('form', 'Could not send your request. Please try again.');
+          }
+          return;
+        }
+      } catch (err) {
+        showError('form', 'Network issue, please retry.');
+        return;
+      }
+
+      showOverlay();
+      form.reset();
+      setDefaultMessage();
+    });
+  })();
+</script>
+
+<script>
+  // Debug the property payload even when gallery is empty
+  console.debug("Property data debug", {
+    id: "{{.P.ID}}",
+    title: {{printf "%q" .P.Title}},
+    price: {{printf "%v" .P.Price}},
+    galleryCount: {{len .P.Gallery}},
+    imagesCount: {{len .P.Images}},
+    hasImagesFlag: {{if .P.HasImages}}true{{else}}false{{end}},
+    gallery: [{{range $i, $img := .P.Gallery}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+    images: [{{range $i, $img := .P.Images}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+  });
+</script>
+
+{{if gt (len .P.Gallery) 0}}
 <!-- Lightbox -->
-<div id="gallery-lightbox" class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center px-4">
-  <button type="button" class="absolute top-6 right-6 text-white text-2xl" data-lightbox-close>&times;</button>
-  <button type="button" class="absolute left-4 md:left-10 text-white text-3xl font-semibold" data-lightbox-prev aria-label="Previous photo">&#10094;</button>
-  <img id="lightbox-image" src="" alt="Gallery" class="max-h-[80vh] max-w-[90vw] object-contain rounded-[12px] shadow-[0_10px_25px_rgba(0,0,0,0.4)]" />
-  <button type="button" class="absolute right-4 md:right-10 text-white text-3xl font-semibold" data-lightbox-next aria-label="Next photo">&#10095;</button>
+<div
+  id="gallery-lightbox"
+  class="fixed inset-0 bg-black/80 z-50 hidden items-center justify-center px-4"
+>
+  <button
+    type="button"
+    class="absolute top-6 right-6 text-white text-2xl"
+    data-lightbox-close
+  >
+    &times;
+  </button>
+  <button
+    type="button"
+    class="absolute left-4 md:left-10 text-white text-3xl font-semibold"
+    data-lightbox-prev
+    aria-label="Previous photo"
+  >
+    &#10094;
+  </button>
+  <img
+    id="lightbox-image"
+    src=""
+    alt="Gallery"
+    class="max-h-[80vh] max-w-[90vw] object-contain rounded-[12px] shadow-[0_10px_25px_rgba(0,0,0,0.4)]"
+  />
+  <button
+    type="button"
+    class="absolute right-4 md:right-10 text-white text-3xl font-semibold"
+    data-lightbox-next
+    aria-label="Next photo"
+  >
+    &#10095;
+  </button>
 </div>
 
 <script>
   (function() {
+    // Debug surface to trace empty/zero states
+    console.debug("Property page data", {
+      id: "{{.P.ID}}",
+      title: {{printf "%q" .P.Title}},
+      price: {{printf "%v" .P.Price}},
+      galleryCount: {{len .P.Gallery}},
+      imagesCount: {{len .P.Images}},
+      hasImagesFlag: {{if .P.HasImages}}true{{else}}false{{end}},
+      gallery: [{{range $i, $img := .P.Gallery}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+      images: [{{range $i, $img := .P.Images}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}],
+    });
+
     const galleryImages = [{{range $i, $img := .P.Gallery}}{{if $i}},{{end}}{{printf "%q" $img}}{{end}}];
     const lightbox = document.getElementById('gallery-lightbox');
     if (!lightbox || galleryImages.length === 0) return;
@@ -334,7 +808,5 @@
     });
   })();
 </script>
-{{end}}
-{{end}}
-
-{{define "pages/property.html"}}{{template "layouts/base.html" .}}{{end}}
+{{end}} {{end}} {{define "pages/property.html"}}{{template "layouts/base.html"
+.}}{{end}}
