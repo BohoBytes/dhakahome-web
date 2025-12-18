@@ -28,7 +28,7 @@
             <select
               id="property-city"
               name="city"
-              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
+              class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
               onchange="this.form.submit()"
             >
               {{range $search.CityOptions}}
@@ -38,7 +38,7 @@
             <select
               id="property-listing-type"
               name="listing_type"
-              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[120px]"
+              class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[120px]"
               onchange="this.form.submit()"
             >
               {{range $search.ListingTypeOptions}}
@@ -48,7 +48,7 @@
             <select
               id="property-type"
               name="type"
-              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
+              class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[140px]"
               onchange="this.form.submit()"
             >
               {{range $search.TypeOptions}}
@@ -57,7 +57,7 @@
             </select>
             <select
               id="property-price-select"
-              class="bg-[#eee] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[150px]"
+              class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[150px]"
             >
               {{range $search.MaxPriceOptions}}
                 <option value="{{.Value}}" {{if eq $.Search.SelectedMaxPrice .Value}}selected{{end}}>{{.Label}}</option>
@@ -66,7 +66,7 @@
             <button
               type="button"
               id="property-advanced-toggle"
-              class="w-[46px] h-[39px] inline-flex items-center justify-center rounded-[6px] border border-[#dbdbdb] bg-[#eee] shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:bg-[#e4e4e4] transition"
+              class="w-[46px] h-[40px] inline-flex items-center justify-center rounded-[6px] border border-[#dbdbdb] bg-[#eee] shadow-[0_2px_8px_rgba(0,0,0,0.1)] hover:bg-[#e4e4e4] transition"
               aria-label="Open advanced filters"
             >
               <img src="/assets/icons/filter.svg" alt="Filter" class="w-5 h-5" />
@@ -526,6 +526,23 @@
     const listBtn = document.querySelector('[data-view-btn="list"]');
     const sortBtn = document.querySelector('[data-sort-toggle]');
     const sortIcon = sortBtn ? sortBtn.querySelector('svg') : null;
+    const viewPrefKey = 'dh-prop-view';
+
+    const getSavedView = () => {
+      try {
+        return localStorage.getItem(viewPrefKey) || 'grid';
+      } catch (err) {
+        return 'grid';
+      }
+    };
+
+    const saveView = (mode) => {
+      try {
+        localStorage.setItem(viewPrefKey, mode);
+      } catch (err) {
+        // ignore
+      }
+    };
 
     const applyToggleStyles = (activeBtn, inactiveBtn) => {
       if (activeBtn) {
@@ -576,6 +593,7 @@
         listBtn.setAttribute('aria-pressed', mode === 'list');
         applyToggleStyles(mode === 'grid' ? gridBtn : listBtn, mode === 'grid' ? listBtn : gridBtn);
       }
+      saveView(mode);
     };
 
     gridBtn?.addEventListener('click', () => setView('grid'));
@@ -591,8 +609,8 @@
       url.searchParams.set('order', next);
       window.location.href = url.toString();
     });
-    // initialize view to grid to ensure layout is correct after DOM load
-    setView('grid');
+    // initialize view from saved preference to keep selection consistent after actions like sorting
+    setView(getSavedView());
   });
 </script>
 {{end}}
