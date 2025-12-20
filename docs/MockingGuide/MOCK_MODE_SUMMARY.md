@@ -13,14 +13,10 @@ A comprehensive mock system that allows the application to run without any backe
 - **Location**: `.env`, `.env.local`, or any environment file
 
 ### 2. Comprehensive Mock Dataset
-- **23 Properties** covering various types and locations:
-  - 17 Residential properties (studio to 6-bedroom)
-  - 4 Commercial properties (offices, retail)
-  - 2 Hostels (student, professional)
-  - 2 Short-term rentals
-- **8 Areas**: Uttara, Gulshan, Banani, Dhanmondi, Mirpur, Bashundhara, Mohammadpur
-- **Price Range**: ৳3,500 to ৳25M
-- **Real images** using existing assets
+- **25 properties** across Dhaka (residential, commercial, hostel, short-term)
+- Coverage includes Uttara, Gulshan, Banani, Dhanmondi, Mirpur, Bashundhara, Mohammadpur
+- Price bands from budget rentals to multi-million sales
+- Real images using existing assets
 
 ### 3. Full Search Functionality
 All search features work identically in mock mode:
@@ -56,7 +52,7 @@ When mock mode is active, logs show:
    - Updated `SearchProperties()` to check mock flag
    - Updated `GetProperty()` to check mock flag
    - Updated `SubmitLead()` to check mock flag
-   - Added `getAllMockProperties()` with 23 properties
+   - Added `getAllMockProperties()` with 25 properties
    - Added `getMockSearchResults()` with pagination
    - Added `matchesMockFilters()` with full filter support
    - Added helper functions: `parseIntParam()`, `parseFloatParam()`, etc.
@@ -91,7 +87,7 @@ When mock mode is active, logs show:
 ```bash
 # In .env or .env.local
 MOCK_ENABLED=true
-go run cmd/web/main.go
+go run ./cmd/web
 ```
 
 ### Disable Mock Mode (Default)
@@ -99,34 +95,20 @@ go run cmd/web/main.go
 # In .env or .env.local
 MOCK_ENABLED=false
 # or simply omit the variable
-go run cmd/web/main.go
+go run ./cmd/web
 ```
 
 ### Inline Usage
 ```bash
-MOCK_ENABLED=true go run cmd/web/main.go
+MOCK_ENABLED=true go run ./cmd/web
 ```
 
 ## Testing Performed
 
-All tests passed successfully:
-
-1. ✅ **Homepage**: Returns first 9 properties (default pagination)
-2. ✅ **Location Filter**: `?location=Gulshan` returns 4 Gulshan properties
-3. ✅ **Type Filter**: `?type=Commercial` returns 4 commercial properties
-4. ✅ **Pagination**: `?page=2&limit=5` returns correct page
-5. ✅ **Price Range**: Filtering works correctly
-6. ✅ **Bedroom Filter**: Returns properties with minimum bedrooms
-7. ✅ **Build**: `go build` completes without errors
-
-### Test Results
-```
-Total Properties: 23
-- Search all: 9 returned (first page)
-- Search Gulshan: 4 returned
-- Search Commercial: 4 returned
-- Page 2 (limit 5): 5 returned
-```
+- ✅ Search renders with mock data (location/type/price/bedroom filters)
+- ✅ Pagination works (`page`/`limit` with ordering)
+- ✅ Property details render from mock IDs (e.g., `mock-res-uttara-01`)
+- ✅ `go build ./cmd/web` completes without errors
 
 ## Benefits
 
@@ -143,7 +125,7 @@ Total Properties: 23
 1. **Static Data**: Mock data doesn't change (by design)
 2. **No Persistence**: Submissions are logged but not saved
 3. **Simplified Behavior**: Some complex backend logic may differ
-4. **Fixed Dataset**: Always 23 properties (can be extended)
+4. **Fixed Dataset**: Static dataset (currently 25 properties; extendable)
 
 ## Future Enhancements (Optional)
 

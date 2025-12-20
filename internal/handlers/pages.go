@@ -3,16 +3,27 @@ package handlers
 import (
 	"html/template"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
+	"unicode"
 
 	"github.com/BohoBytes/dhakahome-web/internal/api"
 	"github.com/go-chi/chi/v5"
 )
+
+type FeaturedArea struct {
+	Neighborhood string
+	City         string
+	Count        int
+	Image        string
+	SearchURL    string
+}
 
 // render parses ONLY the base layout + the requested page (+ partials as needed),
 // so each page can define its own "content" without collisions.
@@ -60,6 +71,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		"ShowResults": false,
 		"ActivePage":  "home",
 	})
+	data = withTopAreas(data)
 	render(w, "pages/home.html", "home.html", data)
 }
 
@@ -99,6 +111,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"ActivePage":  "search",
 		"ShowResults": true,
 	})
+	data = withTopAreas(data)
 	if err := t.ExecuteTemplate(w, "pages/search-results.html", data); err != nil {
 		log.Printf("search page template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -295,6 +308,145 @@ func ContactUsPage(w http.ResponseWriter, r *http.Request) {
 	if err := t.ExecuteTemplate(w, "pages/contact-us.html", data); err != nil {
 		log.Printf("Contact Us template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+func withTopAreas(data map[string]any) map[string]any {
+	if data == nil {
+		data = map[string]any{}
+	}
+	if _, exists := data["TopAreas"]; exists {
+		return data
+	}
+
+	if areas := loadTopAreas(); len(areas) >= 4 {
+		data["TopAreas"] = areas
+	}
+
+	return data
+}
+
+func loadTopAreas() []FeaturedArea {
+	cl := api.New()
+	stats, err := cl.GetTopNeighborhoods(10, defaultTopAreasCity())
+	if err != nil {
+		log.Printf("top areas: %v", err)
+	}
+
+	filtered := make([]api.NeighborhoodStat, 0, len(stats))
+	for _, stat := range stats {
+		if strings.TrimSpace(stat.Neighborhood) == "" {
+			continue
+		}
+		filtered = append(filtered, stat)
+	}
+
+	if len(filtered) < 4 {
+		log.Printf("top areas: insufficient data to render section (got %d)", len(filtered))
+		return nil
+	}
+
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+	rng.Shuffle(len(filtered), func(i, j int) {
+		filtered[i], filtered[j] = filtered[j], filtered[i]
+	})
+
+	selected := filtered
+	if len(selected) > 4 {
+		selected = selected[:4]
+	}
+
+	images := areaImagePool()
+	areas := make([]FeaturedArea, 0, len(selected))
+	for _, stat := range selected {
+		city := stat.City
+		if strings.TrimSpace(city) == "" {
+			city = defaultTopAreasCity()
+		}
+		areas = append(areas, FeaturedArea{
+			Neighborhood: stat.Neighborhood,
+			City:         city,
+			Count:        stat.Count,
+			Image:        pickAreaImage(stat.Neighborhood, images),
+			SearchURL:    buildAreaSearchURL(city, stat.Neighborhood),
+		})
+	}
+
+	if len(areas) < 4 {
+		log.Printf("top areas: unable to build 4 featured areas (got %d)", len(areas))
+		return nil
+	}
+
+	return areas
+}
+
+func buildAreaSearchURL(city, neighborhood string) string {
+	params := url.Values{}
+	if strings.TrimSpace(city) != "" {
+		params.Set("city", city)
+	}
+	if strings.TrimSpace(neighborhood) != "" {
+		params.Set("area", neighborhood)
+		params.Set("neighborhood", neighborhood)
+	}
+	if len(params) == 0 {
+		return "/search"
+	}
+	return "/search?" + params.Encode()
+}
+
+func pickAreaImage(name string, pool []string) string {
+	key := normalizeAreaKey(name)
+	if img := areaImageByName()[key]; img != "" {
+		return img
+	}
+
+	if len(pool) == 0 {
+		return ""
+	}
+	sum := 0
+	for _, r := range strings.ToLower(name) {
+		sum += int(r)
+	}
+	return pool[sum%len(pool)]
+}
+
+func areaImagePool() []string {
+	return []string{
+		"/assets/images/areas/area1.png",
+		"/assets/images/areas/area2.png",
+		"/assets/images/areas/area3.png",
+		"/assets/images/areas/area4.png",
+	}
+}
+
+func defaultTopAreasCity() string {
+	return "Dhaka"
+}
+
+func normalizeAreaKey(name string) string {
+	var b strings.Builder
+	for _, r := range strings.ToLower(strings.TrimSpace(name)) {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+func areaImageByName() map[string]string {
+	return map[string]string{
+		"gulshan":     "/assets/images/areas/gulshan.png",
+		"banani":      "/assets/images/areas/banani.png",
+		"bashundhara": "/assets/images/areas/bashundhara.png",
+		"dhanmondi":   "/assets/images/areas/dhanmondi.png",
+		"mirpur":      "/assets/images/areas/mirpur.png",
+		"uttara":      "/assets/images/areas/uttara.png",
+		"baridhara":   "/assets/images/areas/baridhara.png",
+		"niketon":     "/assets/images/areas/niketon.png",
+		"mohakhali":   "/assets/images/areas/mohakhali.png",
+		"motijheel":   "/assets/images/areas/motijheel.png",
+		"agargaon":    "/assets/images/areas/agargaon.png",
 	}
 }
 

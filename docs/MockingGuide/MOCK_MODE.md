@@ -24,7 +24,7 @@ MOCK_ENABLED=true
 Then start your application normally:
 
 ```bash
-go run cmd/web/main.go
+go run ./cmd/web
 ```
 
 ### Method 2: Inline Environment Variable
@@ -32,7 +32,7 @@ go run cmd/web/main.go
 Start the application with the environment variable inline:
 
 ```bash
-MOCK_ENABLED=true go run cmd/web/main.go
+MOCK_ENABLED=true go run ./cmd/web
 ```
 
 ### Method 3: Export Environment Variable
@@ -41,7 +41,7 @@ Export the variable in your shell session:
 
 ```bash
 export MOCK_ENABLED=true
-go run cmd/web/main.go
+go run ./cmd/web
 ```
 
 ## Supported Values
@@ -55,42 +55,13 @@ Any other value (including empty string) will disable mock mode and use the real
 
 ## Mock Data
 
-When mock mode is enabled, the application uses a comprehensive dataset of **23 properties** including:
+When mock mode is enabled, the application serves a curated dataset of **25 properties** that mirrors the live API shape.
 
-### Property Types
-- **Residential Properties** (17 properties)
-  - Apartments in Uttara, Gulshan, Banani, Dhanmondi, Mirpur, Bashundhara, Mohammadpur
-  - Ranging from budget-friendly to luxury
-  - Studio to 6-bedroom options
-
-- **Commercial Properties** (4 properties)
-  - Office spaces
-  - Retail shops
-  - Various locations and sizes
-
-- **Hostels** (2 properties)
-  - Student hostels
-  - Professional hostels
-  - Shared accommodations
-
-- **Short Term Rentals** (2 properties)
-  - Serviced apartments
-  - Daily/monthly rentals
-
-### Areas Covered
-- Uttara (North & South)
-- Gulshan (1 & 2)
-- Banani (including DOHS)
-- Dhanmondi
-- Mirpur (10 & 11)
-- Bashundhara R/A
-- Mohammadpur
-
-### Price Range
-- Budget: ৳3,500 - ৳22,000/month
-- Mid-range: ৳35,000 - ৳75,000/month
-- Luxury: ৳95,000 - ৳250,000/month
-- Sale: ৳3.5M - ৳25M
+### Coverage
+- Residential, commercial, hostel, and short-term listings
+- Neighborhoods across Dhaka (Uttara, Gulshan, Banani, Dhanmondi, Mirpur, Bashundhara, Mohammadpur, etc.)
+- Rentals and sales spanning budget to luxury price bands
+- Images and metadata shaped to match the live card/detail templates
 
 ## Supported Features
 
@@ -118,55 +89,41 @@ All API operations work seamlessly in mock mode:
 
 ## Testing Examples
 
-### 1. Basic Search (All Properties)
+Use a browser for the full experience; the `curl` calls below return HTML you can skim for matching cards/headings.
+
+1) Default search page  
 ```bash
-curl "http://localhost:5173/"
-# Returns: First 9 properties (default pagination)
+curl -I "http://localhost:5173/search"
 ```
 
-### 2. Search by Location
+2) City + area filter  
 ```bash
-curl "http://localhost:5173/search?location=Gulshan"
-# Returns: 4 properties in Gulshan area
+curl "http://localhost:5173/search?city=Dhaka&neighborhood=Gulshan"
 ```
 
-### 3. Search by Property Type
+3) Commercial listings  
 ```bash
 curl "http://localhost:5173/search?type=Commercial"
-# Returns: 4 commercial properties
 ```
 
-### 4. Search with Multiple Filters
-```bash
-curl "http://localhost:5173/search?location=Uttara&type=Residential&price_max=50000"
-# Returns: Residential properties in Uttara under ৳50,000
-```
-
-### 5. Pagination
-```bash
-# Page 1 with 5 items per page
-curl "http://localhost:5173/search?page=1&limit=5"
-
-# Page 2 with 5 items per page
-curl "http://localhost:5173/search?page=2&limit=5"
-```
-
-### 6. Price Range
+4) Price band  
 ```bash
 curl "http://localhost:5173/search?price_min=20000&price_max=60000"
-# Returns: Properties between ৳20,000 and ৳60,000
 ```
 
-### 7. Bedroom Filter
+5) Bedrooms + listing type  
 ```bash
-curl "http://localhost:5173/search?bedrooms=3"
-# Returns: Properties with 3 or more bedrooms
+curl "http://localhost:5173/search?bedrooms=3&listing_type=listed_rental"
 ```
 
-### 8. Furnished Properties
+6) Pagination + ordering  
 ```bash
-curl "http://localhost:5173/search?furnished=yes"
-# Returns: Only furnished properties
+curl "http://localhost:5173/search?page=2&limit=5&sort_by=price&order=desc"
+```
+
+7) Property details  
+```bash
+curl "http://localhost:5173/properties/mock-res-uttara-01"
 ```
 
 ## Log Output
@@ -205,17 +162,19 @@ The mock system is implemented directly in the API client ([internal/api/client.
 ### Filter Support
 
 All standard search parameters are fully supported:
-- `q` - Text search
-- `location` - Location filter
-- `area` / `neighborhood` - Area filter
-- `types` / `type` - Property type filter
-- `status` - Status filter (ready_for_listing, active, for_sale, etc.)
-- `price_min` / `price_max` - Price range
-- `bedrooms` - Minimum bedrooms
-- `bathrooms` - Minimum bathrooms
-- `furnished` - Furnished status (yes/no)
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 9)
+- `q` (or `location`/`area`) for text search seeds
+- `city`
+- `area` / `neighborhood`
+- `types` / `type`
+- `listing_type` / `listingType` (rent vs sale)
+- `status` (overrides the default `listed_rental,listed_sale`)
+- `price_min` / `price_max`
+- `bedrooms`, `bathrooms`
+- `parking`
+- `serviced`, `shared_room`, `furnished`
+- `area_min`, `area_max`
+- `sort_by` (e.g., `price`) and `order` (`asc`/`desc`)
+- `page` (default 1) and `limit` (default 9)
 
 ## Benefits
 
@@ -231,7 +190,7 @@ All standard search parameters are fully supported:
 1. **Static Data** - Mock data doesn't change unless code is updated
 2. **No Persistence** - Lead submissions are logged but not saved
 3. **Simplified Logic** - Some complex backend behaviors may not be replicated
-4. **Fixed Dataset** - Always returns the same 23 properties
+4. **Fixed Dataset** - Always returns the same dataset (currently 25 properties)
 
 ## Extending Mock Data
 

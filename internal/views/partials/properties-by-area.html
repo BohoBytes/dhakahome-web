@@ -1,4 +1,5 @@
-{{define "partials/properties-by-area.html"}}
+{{define "partials/properties-by-area.html"}} {{$areas := .TopAreas}} {{if and
+$areas (ge (len $areas) 4)}}
 <!-- Properties by Area -->
 <section class="mt-16 mb-16">
   <div class="mx-auto max-w-[85rem] px-4">
@@ -10,55 +11,32 @@
     </div>
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 h-[350px]">
-      <a href="/search" class="relative rounded-xl overflow-hidden block group">
-        <img
-          src="/assets/images/areas/area1.png"
-          class="h-full w-full object-cover transition group-hover:scale-105"
-          alt="Gulshan 2"
-        />
-        <div class="absolute inset-0 bg-black/40"></div>
+      {{range $areas}}
+      <a
+        href="{{.SearchURL}}"
+        class="relative rounded-xl overflow-hidden block group"
+      >
+        <img src="{{or .Image "/assets/images/areas/area1.png"}}" class="h-full
+        w-full object-cover transition group-hover:scale-105"
+        alt="{{.Neighborhood}}" />
+        <div
+          class="absolute inset-0 bg-black/30 transition group-hover:bg-black/10"
+        ></div>
         <div class="absolute bottom-0 p-4 text-white">
-          <div class="font-semibold text-[27px]">Gulshan</div>
-          <div class="text-subtext text-white/80">15 Properties</div>
+          <div
+            class="font-semibold text-[27px] transition group-hover:text-white group-hover:drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]"
+          >
+            {{.Neighborhood}}
+          </div>
+          <div
+            class="text-subtext text-white/80 transition group-hover:text-primary"
+          >
+            {{.Count}} Properties
+          </div>
         </div>
       </a>
-      <a href="/search" class="relative rounded-xl overflow-hidden block group">
-        <img
-          src="/assets/images/areas/area2.png"
-          class="h-full w-full object-cover transition group-hover:scale-105"
-          alt="Bashundhara R/A"
-        />
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="absolute bottom-0 p-4 text-white">
-          <div class="font-semibold text-[27px]">Bashundhara</div>
-          <div class="text-subtext text-white/80">56 Properties</div>
-        </div>
-      </a>
-      <a href="/search" class="relative rounded-xl overflow-hidden block group">
-        <img
-          src="/assets/images/areas/area3.png"
-          class="h-full w-full object-cover transition group-hover:scale-105"
-          alt="Malibagh"
-        />
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="absolute bottom-0 p-4 text-white">
-          <div class="font-semibold text-[27px]">Malibagh</div>
-          <div class="text-subtext text-white/80">25 Properties</div>
-        </div>
-      </a>
-      <a href="/search" class="relative rounded-xl overflow-hidden block group">
-        <img
-          src="/assets/images/areas/area4.png"
-          class="h-full w-full object-cover transition group-hover:scale-105"
-          alt="Uttara"
-        />
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="absolute bottom-0 p-4 text-white">
-          <div class="font-semibold text-[27px]">Uttara</div>
-          <div class="text-subtext text-white/80">17 Properties</div>
-        </div>
-      </a>
+      {{end}}
     </div>
   </div>
 </section>
-{{end}}
+{{end}} {{end}}

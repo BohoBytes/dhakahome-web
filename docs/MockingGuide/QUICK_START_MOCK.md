@@ -16,7 +16,7 @@ MOCK_ENABLED=true
 npm run css:dev
 
 # Terminal 2: Start Go server
-go run cmd/web/main.go
+go run ./cmd/web
 ```
 
 ## 3. Verify Mock Mode
@@ -32,7 +32,7 @@ Visit: http://localhost:5173
 
 ## What You Get
 
-✅ **23 Properties** across 8 areas
+✅ **25 properties** across key Dhaka neighborhoods
 ✅ **All search features** work perfectly
 ✅ **Pagination** supported
 ✅ **Zero backend** required
@@ -41,11 +41,11 @@ Visit: http://localhost:5173
 ## Try These URLs
 
 ```bash
-# All properties
-http://localhost:5173/
+# Default search page
+http://localhost:5173/search
 
 # Gulshan properties
-http://localhost:5173/search?location=Gulshan
+http://localhost:5173/search?city=Dhaka&neighborhood=Gulshan
 
 # Commercial properties
 http://localhost:5173/search?type=Commercial
@@ -59,8 +59,11 @@ http://localhost:5173/search?price_min=80000
 # 3+ bedrooms
 http://localhost:5173/search?bedrooms=3
 
-# Page 2
-http://localhost:5173/search?page=2&limit=5
+# Page 2, sorted by price desc
+http://localhost:5173/search?page=2&limit=5&sort_by=price&order=desc
+
+# Property details
+http://localhost:5173/properties/mock-res-uttara-01
 ```
 
 ## Switch to Real API

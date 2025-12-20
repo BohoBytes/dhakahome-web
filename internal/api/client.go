@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,6 +26,7 @@ type PropertyService interface {
 	SearchProperties(q url.Values) (PropertyList, error)
 	GetProperty(id string) (Property, error)
 	GetRequiredDocuments(assetType string) ([]Document, error)
+	GetTopNeighborhoods(limit int, city string) ([]NeighborhoodStat, error)
 	SubmitLead(in LeadReq) error
 }
 
@@ -140,6 +142,12 @@ type Document struct {
 	ID         string `json:"id"`
 	Label      string `json:"label"`
 	IsRequired bool   `json:"isRequired"`
+}
+
+type NeighborhoodStat struct {
+	Neighborhood string `json:"neighborhood"`
+	City         string `json:"city"`
+	Count        int    `json:"count"`
 }
 
 type PropertyList struct {
@@ -484,6 +492,66 @@ func (c *Client) GetNeighborhoods(city string) ([]string, error) {
 	}
 
 	return areas, nil
+}
+
+func (c *Client) GetTopNeighborhoods(limit int, city string) ([]NeighborhoodStat, error) {
+	if limit <= 0 {
+		limit = 10
+	}
+	city = cleanAnyValue(city)
+
+	if c.mockEnabled {
+		return mockTopNeighborhoods(limit, city), nil
+	}
+
+	params := url.Values{}
+	params.Set("limit", strconv.Itoa(limit))
+	params.Set("status", defaultStatusFilter)
+	if city != "" {
+		params.Set("city", city)
+	}
+
+	res, err := c.doGet("/assets/neighborhoods/top", params)
+	if err != nil {
+		log.Printf("API: top neighborhoods request failed: %v - using mock data", err)
+		return mockTopNeighborhoods(limit, city), nil
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		log.Printf("API: top neighborhoods status %s - using mock data", res.Status)
+		return mockTopNeighborhoods(limit, city), nil
+	}
+
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	var payload []NeighborhoodStat
+	if err := dec.Decode(&payload); err != nil {
+		log.Printf("API: top neighborhoods decode failed: %v - using mock data", err)
+		return mockTopNeighborhoods(limit, city), nil
+	}
+
+	cleaned := make([]NeighborhoodStat, 0, len(payload))
+	for _, item := range payload {
+		if strings.TrimSpace(item.Neighborhood) == "" {
+			continue
+		}
+		if item.City == "" {
+			item.City = city
+		}
+		cleaned = append(cleaned, item)
+	}
+
+	if len(cleaned) == 0 {
+		log.Printf("API: top neighborhoods response empty - using mock data")
+		return mockTopNeighborhoods(limit, city), nil
+	}
+
+	if len(cleaned) > limit {
+		cleaned = cleaned[:limit]
+	}
+
+	return cleaned, nil
 }
 
 func (c *Client) doGet(path string, params url.Values) (*http.Response, error) {
@@ -857,6 +925,58 @@ func mockNeighborhoods(city string) []string {
 	default:
 		return []string{"Central", "North", "South"}
 	}
+}
+
+func mockTopNeighborhoods(limit int, city string) []NeighborhoodStat {
+	if limit <= 0 {
+		limit = 10
+	}
+
+	city = titleize(firstNonEmpty(cleanAnyValue(city), "Dhaka"))
+	areas := mockNeighborhoods(city)
+
+	counts := map[string]int{}
+	for _, area := range areas {
+		if clean := strings.TrimSpace(area); clean != "" {
+			counts[clean] = 0
+		}
+	}
+
+	for _, prop := range getAllMockProperties() {
+		address := strings.ToLower(strings.TrimSpace(prop.Address))
+		title := strings.ToLower(strings.TrimSpace(prop.Title))
+		for area := range counts {
+			areaLower := strings.ToLower(area)
+			if strings.Contains(address, areaLower) || strings.Contains(title, areaLower) {
+				counts[area]++
+			}
+		}
+	}
+
+	stats := make([]NeighborhoodStat, 0, len(counts))
+	for area, count := range counts {
+		if count == 0 {
+			continue
+		}
+		stats = append(stats, NeighborhoodStat{
+			Neighborhood: area,
+			City:         city,
+			Count:        count,
+		})
+	}
+
+	sort.Slice(stats, func(i, j int) bool {
+		if stats[i].Count == stats[j].Count {
+			return stats[i].Neighborhood < stats[j].Neighborhood
+		}
+		return stats[i].Count > stats[j].Count
+	})
+
+	if len(stats) > limit {
+		stats = stats[:limit]
+	}
+
+	return stats
 }
 
 func mockPropertyByID(id string) (Property, bool) {
