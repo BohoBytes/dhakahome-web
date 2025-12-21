@@ -76,6 +76,7 @@
     <p class="mt-1 text-[13px] text-[#f44335] hidden" data-error-for="message"></p>
   </div>
   <input type="hidden" name="propertyId" value="{{.P.ID}}" />
+  <input type="hidden" name="listingType" value="{{.P.ListingType}}" />
   <p class="text-[13px] text-[#f44335] hidden" data-error-for="form"></p>
   <div class="flex flex-col sm:flex-row gap-3 pt-2">
     <button
@@ -532,6 +533,7 @@
     const messageField = form.querySelector('[data-message-field]');
     const overlay = document.getElementById('contact-success-overlay');
     const propertyIdInput = form.querySelector('input[name="propertyId"]');
+    const listingTypeInput = form.querySelector('input[name="listingType"]');
     const callButton = form.querySelector('[data-contact-call]');
     const nameInput = form.querySelector('input[name="name"]');
     const emailInput = form.querySelector('input[name="email"]');
@@ -651,6 +653,7 @@
         phone,
         message,
         propertyId: propertyIdInput?.value || '',
+        listingType: listingTypeInput?.value || '',
       };
 
       try {

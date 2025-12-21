@@ -47,6 +47,7 @@ func NewRouter() *chi.Mux {
 
 	// htmx partials
 	// forms
+	r.Post("/api/auth/login", handlers.Login)
 	r.Post("/lead", handlers.SubmitLead)
 
 	// health

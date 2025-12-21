@@ -58,14 +58,6 @@ func New() *Client {
 	mockEnabled := strings.ToLower(strings.TrimSpace(os.Getenv("MOCK_ENABLED")))
 	useMock := mockEnabled == "true" || mockEnabled == "1" || mockEnabled == "yes"
 
-	if useMock {
-		log.Printf("🎭 API Client: MOCK MODE ENABLED - All API calls will use mock data")
-		return &Client{
-			mockEnabled: true,
-			HC:          &http.Client{Timeout: 10 * time.Second},
-		}
-	}
-
 	base := getenv("API_BASE_URL", "http://localhost:3000/api/v1")
 	scope := strings.TrimSpace(getenv("API_TOKEN_SCOPE", "assets.read"))
 	if scope == "" {
@@ -76,6 +68,10 @@ func New() *Client {
 	clientID := strings.TrimSpace(os.Getenv("API_CLIENT_ID"))
 	clientSecret := strings.TrimSpace(os.Getenv("API_CLIENT_SECRET"))
 	tokenURL := strings.TrimSpace(getenv("API_AUTH_URL", deriveTokenURL(base)))
+
+	if useMock {
+		log.Printf("🎭 API Client: MOCK MODE ENABLED - property searches use mock data; leads will still call Nestlo APIs")
+	}
 
 	log.Printf("API Client initialized:")
 	log.Printf("  Base URL: %s", base)
@@ -91,7 +87,7 @@ func New() *Client {
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		scope:        scope,
-		mockEnabled:  false,
+		mockEnabled:  useMock,
 	}
 }
 
@@ -2172,14 +2168,34 @@ type LeadReq struct {
 	CaptchaToken string `json:"captchaToken,omitempty"`
 }
 
-func (c *Client) SubmitLead(in LeadReq) error {
-	// If mock mode is enabled, just log and return success
-	if c.mockEnabled {
-		log.Printf("🎭 Mock: Lead submitted - Name: %s, Email: %s, Phone: %s, PropertyID: %s, Message: %s, ContactEmail: %s",
-			in.Name, in.Email, in.Phone, in.PropertyID, in.Message, in.ContactEmail)
-		return nil
-	}
+type NestloLeadClientInfo struct {
+	Name                   string `json:"name"`
+	Email                  string `json:"email,omitempty"`
+	Phone                  string `json:"phone,omitempty"`
+	PreferredContactMethod string `json:"preferred_contact_method,omitempty"`
+}
 
+type NestloLeadRequirements struct {
+	PropertyTypes []string `json:"property_types,omitempty"`
+	Locations     []string `json:"locations,omitempty"`
+	BudgetMin     float64  `json:"budget_min,omitempty"`
+	BudgetMax     float64  `json:"budget_max,omitempty"`
+	Bedrooms      int      `json:"bedrooms,omitempty"`
+	Bathrooms     int      `json:"bathrooms,omitempty"`
+	Amenities     []string `json:"amenities,omitempty"`
+	MoveInDate    string   `json:"move_in_date,omitempty"`
+}
+
+type NestloLeadPayload struct {
+	LeadType     string                  `json:"lead_type"`
+	Source       string                  `json:"source"`
+	ClientInfo   NestloLeadClientInfo    `json:"client_info"`
+	Requirements *NestloLeadRequirements `json:"requirements,omitempty"`
+	Notes        string                  `json:"notes,omitempty"`
+	AssetID      string                  `json:"asset_id,omitempty"`
+}
+
+func (c *Client) SubmitLead(in LeadReq) error {
 	endp := c.buildURL("/leads", nil)
 	b, _ := json.Marshal(in)
 	req, err := http.NewRequest(http.MethodPost, endp, bytes.NewReader(b))
@@ -2197,5 +2213,38 @@ func (c *Client) SubmitLead(in LeadReq) error {
 	if res.StatusCode >= http.StatusMultipleChoices {
 		return fmt.Errorf("lead: %s", res.Status)
 	}
+	return nil
+}
+
+func (c *Client) CreateNestloLead(in NestloLeadPayload) error {
+	if strings.TrimSpace(in.LeadType) == "" {
+		in.LeadType = "tenant"
+	}
+	if strings.TrimSpace(in.Source) == "" {
+		in.Source = "web"
+	}
+
+	endp := c.buildURL("/admin/leads", nil)
+	body, _ := json.Marshal(in)
+	req, err := http.NewRequest(http.MethodPost, endp, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+	c.decorateRequest(req)
+	req.Header.Set("Content-Type", "application/json")
+
+	start := time.Now()
+	res, err := c.HC.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return fmt.Errorf("nestlo lead: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	log.Printf("Nestlo lead created for asset %s in %dms", in.AssetID, time.Since(start).Milliseconds())
 	return nil
 }

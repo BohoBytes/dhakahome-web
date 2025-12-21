@@ -2,37 +2,73 @@
 <!-- Header -->
 {{template "partials/page-header.html" .}}
 
-<!-- Hotels Content -->
-<section class="py-10 min-h-[70vh]">
-  <div class="space-y-6">
-    <h1 class="text-[26px] md:text-[30px] lg:text-[34px] font-normal leading-[1.2] text-black">
-      Our Hotel at Cox's Bazar
-    </h1>
+<!-- Search box -->
+<section class="relative isolate full-bleed py-10 text-center">
+  <div
+    class="absolute inset-0 bg-[url('/assets/images/backgrounds/hotel-hero-bg.png')] bg-cover bg-center opacity-80 -z-10"
+  ></div>
+  <h1
+    class="text-[26px] md:text-[30px] lg:text-[34px] font-normal leading-[1.2] text-black"
+  >
+    Our Hotel at Cox's Bazar
+  </h1>
+  <div class="mx-auto px-4 md:px-6 flex justify-center">
+    <img
+      src="/assets/images/logos/hotels-logos-combined.png"
+      alt="Hotel Logos"
+      class="object-cover"
+    />
+  </div>
+</section>
 
+<!-- Hotels Content -->
+<section class="py-10 min-h-[48vh]">
+  <div class="space-y-6">
     <div class="bg-[#f3f3f3] rounded-[10px] p-4 sm:p-5 lg:p-6">
-      <div class="grid gap-4 lg:gap-6 lg:grid-cols-[300px_1fr_260px] xl:grid-cols-[320px_1fr_280px] items-stretch min-h-[420px]">
+      <div
+        class="grid gap-4 lg:gap-6 lg:grid-cols-[300px_1fr_260px] xl:grid-cols-[320px_1fr_280px] items-stretch min-h-[420px]"
+      >
         <!-- Left column -->
         <div class="flex flex-col gap-4 h-full">
-          <div class="inline-flex items-center gap-3 bg-[#0098d4] text-white rounded-[10px] px-3 py-2 shadow-[0_4px_16.1px_rgba(0,0,0,0.15)]">
-            <div class="w-[38px] h-[38px] rounded-full border-2 border-white overflow-hidden flex-shrink-0">
-              <img src="/assets/images/mock-properties/property-office-1.png" alt="Hotel icon" class="w-full h-full object-cover" />
+          <div
+            class="inline-flex items-center gap-3 bg-[#0098d4] text-white rounded-[10px] px-3 py-2 shadow-[0_4px_16.1px_rgba(0,0,0,0.15)]"
+          >
+            <div
+              class="w-[38px] h-[38px] rounded-full border-2 border-white overflow-hidden flex-shrink-0"
+            >
+              <img
+                src="/assets/images/logos/logo-cox-vacation.png"
+                alt="Hotel icon"
+                class="w-full h-full object-cover"
+              />
             </div>
-            <span class="text-[16px] md:text-[18px] leading-[25px] whitespace-nowrap">Hotel Cox Vacation</span>
+            <span
+              class="text-[16px] md:text-[18px] leading-[25px] whitespace-nowrap"
+              >Hotel Cox Vacation</span
+            >
           </div>
 
-          <div class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden flex-1 min-h-[210px]">
+          <div
+            class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden flex-1 min-h-[210px]"
+          >
             <img
-              src="/assets/images/mock-properties/property-interior.png"
+              src="/assets/images/placeholders/hotel1.png"
               alt="Living area"
               class="w-full h-full object-cover"
             />
           </div>
 
-          <div class="bg-white border-2 border-[#5db9e3] rounded-[10px] p-4 space-y-3 mt-auto">
-            <div class="bg-[#5db9e3] text-white rounded-[6px] px-3 py-2 text-[18px] leading-[25px]">
+          <div
+            class="bg-white border-2 border-[#5db9e3] rounded-[10px] p-4 space-y-3 mt-auto"
+          >
+            <div
+              class="bg-[#5db9e3] text-white rounded-[6px] px-3 py-2 text-[18px] leading-[25px]"
+            >
               Room Types &amp; Starting Price
             </div>
-            <div class="text-[#0098d4] text-[16px] md:text-[18px] leading-[25px] space-y-2">
+            <div
+              class="text-[#0098d4] text-[16px] md:text-[18px] leading-[25px] space-y-2"
+            >
               <p>Deluxe Room — ৳2,500 / night</p>
               <p>Couple Room — ৳3,000 / night</p>
               <p>Family Room — ৳4,500 / night</p>
@@ -42,9 +78,11 @@
 
         <!-- Center image -->
         <div class="w-full h-full">
-          <div class="relative w-full h-full min-h-[360px] rounded-[10px] overflow-hidden bg-white">
+          <div
+            class="relative w-full h-full min-h-[360px] rounded-[10px] overflow-hidden bg-white"
+          >
             <img
-              src="/assets/images/mock-properties/1f002be890c252fab41bc52a14801210d4fa2535.png"
+              src="/assets/images/placeholders/hotel2.png"
               alt="Oceanfront terrace"
               class="absolute inset-0 w-full h-full object-cover"
             />
@@ -53,42 +91,76 @@
 
         <!-- Right column -->
         <div class="flex flex-col gap-4 h-full">
-          <div class="bg-[#5db9e3] rounded-[10px] text-white p-4 md:p-5 space-y-3 flex-1 min-h-[230px] flex flex-col justify-center">
-            <div class="flex flex-col gap-3 text-[16px] md:text-[18px] leading-[25px]">
+          <div
+            class="bg-[#5db9e3] rounded-[10px] text-white p-4 md:p-5 space-y-3 flex-1 min-h-[230px] flex flex-col justify-center"
+          >
+            <div
+              class="flex flex-col gap-3 text-[16px] md:text-[18px] leading-[25px]"
+            >
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>Free Wi-Fi</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>Balcony View</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>AC Rooms</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>Room Service</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>LED TV</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>+12</span>
               </div>
               <div class="flex items-center gap-2">
-                <img src="/assets/icons/check-circle.svg" alt="" class="w-[18px] h-[18px] filter brightness-0 invert" />
+                <img
+                  src="/assets/icons/check-circle.svg"
+                  alt=""
+                  class="w-[18px] h-[18px] filter brightness-0 invert"
+                />
                 <span>24/7 Room Service</span>
               </div>
             </div>
           </div>
 
-          <div class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden h-[140px] md:h-[160px]">
+          <div
+            class="bg-white border border-[#e0e0e0] rounded-[10px] overflow-hidden h-[140px] md:h-[160px]"
+          >
             <img
-              src="/assets/images/mock-properties/property-office-2.png"
+              src="/assets/images/placeholders/hotel3.png"
               alt="Bedroom"
               class="w-full h-full object-cover"
             />
@@ -98,6 +170,17 @@
     </div>
   </div>
 </section>
-{{end}}
 
-{{define "pages/hotels.html"}}{{template "layouts/base.html" .}}{{end}}
+<!-- Booking CTA-->
+<div class="flex justify-center pb-[5rem]">
+  <a
+    href="https://www.facebook.com/coxvacation"
+    class="px-[14px] py-[8px] md:px-[18px] md:py-[10px] rounded-[10px] border-2 border-[#F44335] text-[#F44335] text-[15px] md:text-[16px] font-medium leading-[22px] md:leading-[24px] hover:bg-[#F44335] hover:text-white transition-colors whitespace-nowrap"
+    style="font-family: 'Poppins', sans-serif; font-weight: 500"
+    target="_blank"
+  >
+    Contact For Booking
+  </a>
+</div>
+
+{{end}} {{define "pages/hotels.html"}}{{template "layouts/base.html" .}}{{end}}

@@ -64,6 +64,22 @@ func SubmitLead(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Create Nestlo lead for admin follow-up (skip when mock enabled)
+	if err := client.CreateNestloLead(api.NestloLeadPayload{
+		LeadType: deriveLeadType(clean.ListingType),
+		Source:   "web",
+		ClientInfo: api.NestloLeadClientInfo{
+			Name:                   clean.Name,
+			Email:                  clean.Email,
+			Phone:                  clean.Phone,
+			PreferredContactMethod: preferredContactMethod(clean.Phone, clean.Email),
+		},
+		Notes:   clean.Message,
+		AssetID: clean.PropertyID,
+	}); err != nil {
+		log.Printf("nestlo lead creation failed (non-blocking): %v", err)
+	}
+
 	if respondJSON {
 		writeLeadJSON(w, http.StatusOK, map[string]any{"status": "ok"})
 		return
@@ -79,6 +95,7 @@ type leadPayload struct {
 	Message      string `json:"message"`
 	PropertyID   string `json:"propertyId"`
 	ContactEmail string `json:"contactEmail"`
+	ListingType  string `json:"listingType"`
 }
 
 var emailRegex = regexp.MustCompile(`^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$`)
@@ -114,6 +131,7 @@ func parseLeadPayload(r *http.Request) (leadPayload, error) {
 		Message:      r.FormValue("message"),
 		PropertyID:   r.FormValue("propertyId"),
 		ContactEmail: r.FormValue("contactEmail"),
+		ListingType:  r.FormValue("listingType"),
 	}, nil
 }
 
@@ -126,6 +144,7 @@ func validateLead(in leadPayload) (leadPayload, map[string]string) {
 	in.Message = strings.TrimSpace(in.Message)
 	in.PropertyID = strings.TrimSpace(in.PropertyID)
 	in.ContactEmail = strings.TrimSpace(in.ContactEmail)
+	in.ListingType = strings.TrimSpace(in.ListingType)
 
 	if in.ContactEmail == "" {
 		in.ContactEmail = defaultContactEmail()
@@ -152,6 +171,35 @@ func validateLead(in leadPayload) (leadPayload, map[string]string) {
 	}
 
 	return in, errs
+}
+
+func preferredContactMethod(phone, email string) string {
+	phone = strings.TrimSpace(phone)
+	email = strings.TrimSpace(email)
+	switch {
+	case phone != "" && email != "":
+		return "phone"
+	case phone != "":
+		return "phone"
+	case email != "":
+		return "email"
+	default:
+		return ""
+	}
+}
+
+func deriveLeadType(listingType string) string {
+	lt := strings.ToLower(strings.TrimSpace(listingType))
+	lt = strings.ReplaceAll(lt, " ", "_")
+	lt = strings.ReplaceAll(lt, "-", "_")
+	switch lt {
+	case "listed_sale", "sale", "sell", "buyer", "buy":
+		return "buyer"
+	case "listed_rental", "rent", "rental", "lease", "tenant":
+		return "tenant"
+	default:
+		return "tenant"
+	}
 }
 
 func normalizeBDPhone(phone string) (string, error) {

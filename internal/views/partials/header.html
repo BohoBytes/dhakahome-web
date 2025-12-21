@@ -6,7 +6,11 @@
   >
     <!-- Logo left -->
     <a href="/" class="flex items-center gap-2">
-      <img src="/assets/icons/logo.svg" class="w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[130px] lg:h-[130px]" alt="DhakaHome" />
+      <img
+        src="/assets/icons/logo.svg"
+        class="w-[80px] h-[80px] md:w-[100px] md:h-[100px] lg:w-[130px] lg:h-[130px]"
+        alt="DhakaHome"
+      />
     </a>
 
     <!-- Right side: Menu + Login button -->
@@ -17,14 +21,23 @@
         class="lg:hidden p-2 rounded-md text-[#F44335] hover:bg-[#F3F3F3] transition-colors"
         aria-label="Toggle menu"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
         </svg>
       </button>
 
-      {{- $active := .ActivePage -}}
-      {{- $selectedType := "" -}}
-      {{- with .Search }}{{- $selectedType = .SelectedType -}}{{- end -}}
+      {{- $active := .ActivePage -}} {{- $selectedType := "" -}} {{- with
+      .Search }}{{- $selectedType = .SelectedType -}}{{- end -}}
 
       <!-- Desktop Navigation menu -->
       <nav
@@ -34,7 +47,7 @@
         <a
           href="/"
           class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >Home</a
         >
 
@@ -47,7 +60,7 @@
           <a
             href="/properties"
             class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-            style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+            style="font-family: 'Poppins', sans-serif; font-weight: 400"
             >Properties</a
           >
           <!-- Dropdown arrow -->
@@ -65,7 +78,7 @@
               viewBox="0 0 10 20"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              style="transform: rotate(270deg);"
+              style="transform: rotate(270deg)"
             >
               <path
                 d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z"
@@ -84,7 +97,7 @@
                 data-property-option
                 data-type="residential"
                 class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Residential
               </a>
@@ -93,7 +106,7 @@
                 data-property-option
                 data-type="commercial"
                 class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Commercial
               </a>
@@ -102,7 +115,7 @@
                 data-property-option
                 data-type="hostel"
                 class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Hostel
               </a>
@@ -111,7 +124,7 @@
                 data-property-option
                 data-type="land"
                 class="px-4 py-3 text-[20px] leading-[28px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Land
               </a>
@@ -123,7 +136,7 @@
         <a
           href="/hotels"
           class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >Our Hotels</a
         >
 
@@ -131,7 +144,7 @@
         <a
           href="/faq"
           class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `faq`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >FAQs</a
         >
 
@@ -139,7 +152,7 @@
         <a
           href="/about-us"
           class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >About Us</a
         >
 
@@ -147,7 +160,7 @@
         <a
           href="/contact-us"
           class="relative text-[20px] leading-[26px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+          style="font-family: 'Poppins', sans-serif; font-weight: 400"
           >Contact Us</a
         >
       </nav>
@@ -160,7 +173,7 @@
         <a
           href="/"
           class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `home`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >Home</a
         >
 
@@ -173,7 +186,7 @@
           <a
             href="/properties"
             class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `properties`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-            style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+            style="font-family: 'Poppins', sans-serif; font-weight: 400"
             >Properties</a
           >
           <!-- Dropdown arrow -->
@@ -191,7 +204,7 @@
               viewBox="0 0 10 20"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              style="transform: rotate(270deg);"
+              style="transform: rotate(270deg)"
             >
               <path
                 d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z"
@@ -210,7 +223,7 @@
                 data-property-option
                 data-type="residential"
                 class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Residential
               </a>
@@ -219,7 +232,7 @@
                 data-property-option
                 data-type="commercial"
                 class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Commercial
               </a>
@@ -228,7 +241,7 @@
                 data-property-option
                 data-type="hostel"
                 class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Hostel
               </a>
@@ -237,7 +250,7 @@
                 data-property-option
                 data-type="land"
                 class="px-4 py-2.5 text-[18px] leading-[24px] text-[#acacac] hover:bg-white hover:text-[#f44335]"
-                style="font-family: 'Poppins', sans-serif;"
+                style="font-family: 'Poppins', sans-serif"
               >
                 Land
               </a>
@@ -249,43 +262,19 @@
         <a
           href="/hotels"
           class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `hotels`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
           >Our Hotels</a
-        >
-
-        <!-- FAQs -->
-        <a
-          href="/faq"
-          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `faq`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
-          >FAQs</a
-        >
-
-        <!-- About Us -->
-        <a
-          href="/about-us"
-          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `about`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
-          >About Us</a
-        >
-
-        <!-- Contact Us -->
-        <a
-          href="/contact-us"
-          class="relative text-[16px] leading-[22px] whitespace-nowrap {{if eq $active `contact`}}text-[#F44335] font-medium border-b-2 border-[#F44335] pb-[2px]{{else}}text-[#ACACAC] font-normal{{end}}"
-          style="font-family: 'Poppins', sans-serif;"
-          >Contact Us</a
         >
       </nav>
 
       <!-- Mobile/Tablet Menu Overlay -->
       <div
         id="mobile-menu"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-[5000] lg:hidden"
         onclick="document.getElementById('mobile-menu').classList.add('hidden')"
       >
         <div
-          class="absolute right-0 top-0 h-full w-[280px] bg-white shadow-lg overflow-y-auto"
+          class="absolute right-0 top-0 h-full w-[280px] bg-white shadow-lg overflow-y-auto z-[5001]"
           onclick="event.stopPropagation()"
         >
           <div class="p-4 flex justify-between items-center border-b">
@@ -295,55 +284,116 @@
               class="p-2 rounded-md text-gray-600 hover:bg-gray-100"
               aria-label="Close menu"
             >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
               </svg>
             </button>
           </div>
           <nav class="flex flex-col p-4 gap-4">
+            <div
+              class="flex items-center justify-between gap-3 pb-3 border-b border-gray-200"
+              data-auth-zone
+            >
+              <div class="hidden items-center gap-3 flex" data-authenticated>
+                <div
+                  class="flex items-center justify-center w-10 h-10 rounded-full bg-[#F44335] text-white text-[15px] font-semibold uppercase"
+                  style="font-family: 'Poppins', sans-serif"
+                  data-user-initial
+                >
+                  U
+                </div>
+                <div class="flex flex-col leading-[1.2]">
+                  <span
+                    class="text-[#353535] text-[15px] font-semibold"
+                    style="font-family: 'Poppins', sans-serif"
+                    data-user-name
+                    >Signed in</span
+                  >
+                  <button
+                    type="button"
+                    data-logout-trigger
+                    class="text-left text-[#F44335] text-[13px] font-semibold leading-[18px] hover:underline focus:outline-none whitespace-nowrap"
+                    style="font-family: 'Poppins', sans-serif"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+              <button
+                type="button"
+                data-login-trigger
+                class="inline-flex items-center justify-center px-[12px] py-[8px] rounded-[10px] border border-[#F44335] text-[#F44335] text-[14px] font-semibold leading-[20px] hover:bg-[#F44335] hover:text-white transition-colors"
+                style="font-family: 'Poppins', sans-serif"
+              >
+                Login
+              </button>
+            </div>
             <a
               href="/"
               class="text-[#F44335] text-[18px] font-medium leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif; font-weight: 500;"
+              style="font-family: 'Poppins', sans-serif; font-weight: 500"
               >Home</a
             >
             <div class="border-b border-gray-200 pb-2">
               <button
                 type="button"
                 class="flex w-full items-center justify-between text-[18px] leading-[26px] {{if eq $active `properties`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}}"
-                style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                style="font-family: 'Poppins', sans-serif; font-weight: 400"
                 data-mobile-property-toggle
                 aria-expanded="false"
                 aria-controls="mobile-property-menu"
               >
                 <span>Properties</span>
-                <svg class="w-4 h-4 transition-transform" viewBox="0 0 10 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(-90deg);">
-                  <path d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z" fill="currentColor" />
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  viewBox="0 0 10 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style="transform: rotate(-90deg)"
+                >
+                  <path
+                    d="M10 1.50743L5 10L0 1.50743L0.8875 -2.49281e-07L5 6.98514L9.1125 -3.49949e-07L10 1.50743Z"
+                    fill="currentColor"
+                  />
                 </svg>
               </button>
-              <div id="mobile-property-menu" class="mt-2 pl-2 space-y-2 hidden" data-mobile-property-panel>
+              <div
+                id="mobile-property-menu"
+                class="mt-2 pl-2 space-y-2 hidden"
+                data-mobile-property-panel
+              >
                 <a
                   href="/properties?type=Residential"
                   class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
-                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400"
                   >Residential</a
                 >
                 <a
                   href="/properties?type=Commercial"
                   class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
-                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400"
                   >Commercial</a
                 >
                 <a
                   href="/properties?type=Hostel"
                   class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
-                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400"
                   >Hostel</a
                 >
                 <a
                   href="/properties?type=Plot"
                   class="block text-[16px] leading-[22px] text-[#ACACAC] hover:text-[#F44335]"
-                  style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+                  style="font-family: 'Poppins', sans-serif; font-weight: 400"
                   >Land</a
                 >
               </div>
@@ -351,78 +401,351 @@
             <a
               href="/hotels"
               class="{{if eq $active `hotels`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif;"
+              style="font-family: 'Poppins', sans-serif"
               >Our Hotels</a
             >
             <a
               href="/faq"
               class="{{if eq $active `faq`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif;"
+              style="font-family: 'Poppins', sans-serif"
               >FAQs</a
             >
             <a
               href="/about-us"
               class="{{if eq $active `about`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+              style="font-family: 'Poppins', sans-serif; font-weight: 400"
               >About Us</a
             >
             <a
               href="/contact-us"
               class="{{if eq $active `contact`}}text-[#F44335] font-medium{{else}}text-[#ACACAC] font-normal{{end}} text-[18px] leading-[26px] py-2 border-b border-gray-200"
-              style="font-family: 'Poppins', sans-serif; font-weight: 400;"
+              style="font-family: 'Poppins', sans-serif; font-weight: 400"
               >Contact Us</a
             >
           </nav>
         </div>
       </div>
 
-      <!-- Login button -->
-      <div class="flex items-center gap-3">
-        <a
-          href="/login"
+      <!-- Login / Account -->
+      <div class="flex items-center gap-2 md:gap-3" data-auth-zone>
+        <button
+          type="button"
+          data-login-trigger
           class="inline-flex justify-center items-center gap-2 px-[14px] py-[8px] md:px-[18px] md:py-[10px] lg:px-[20px] lg:py-[11px] rounded-[10px] border-2 border-[#F44335] text-[#F44335] text-[15px] md:text-[16px] lg:text-[18px] font-medium leading-[22px] md:leading-[24px] lg:leading-[24px] hover:bg-[#F44335] hover:text-white transition-colors whitespace-nowrap"
-          style="font-family: 'Poppins', sans-serif; font-weight: 500;"
+          style="font-family: 'Poppins', sans-serif; font-weight: 500"
         >
           <span class="hidden sm:inline">Login</span>
           <span class="sm:hidden">Log</span>
-        </a>
+        </button>
+
+        <div class="hidden items-center gap-2 md:gap-3" data-authenticated>
+          <div
+            class="flex items-center gap-2 px-3 py-2 rounded-[12px] border border-[#E4E4E4] bg-white shadow-[0px_4px_18px_rgba(0,0,0,0.06)]"
+          >
+            <div
+              class="flex items-center justify-center w-9 h-9 rounded-full bg-[#F44335] text-white text-[14px] font-semibold uppercase"
+              style="font-family: 'Poppins', sans-serif"
+              data-user-initial
+            >
+              U
+            </div>
+            <div class="hidden md:flex flex-col leading-[1.2]">
+              <span
+                class="text-[#353535] text-[14px] font-semibold"
+                style="font-family: 'Poppins', sans-serif"
+                data-user-name
+                >Signed in</span
+              >
+              <button
+                type="button"
+                data-logout-trigger
+                class="inline-flex items-center text-[#F44335] text-[13px] md:text-[14px] font-semibold leading-[18px] hover:underline focus:outline-none whitespace-nowrap"
+                style="font-family: 'Poppins', sans-serif"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </header>
 
+<!-- Login overlay -->
+<div
+  id="auth-login-overlay"
+  class="fixed inset-0 z-[9999] hidden bg-black/70 items-center justify-center px-4"
+>
+  <div
+    class="relative w-full max-w-[520px] rounded-[14px] bg-[#fafafa] px-6 py-8 md:px-8 md:py-10 shadow-[0_12px_40px_rgba(0,0,0,0.25)]"
+  >
+    <button
+      type="button"
+      class="absolute right-4 top-4 text-[#767676] hover:text-[#111] text-3xl"
+      data-auth-close
+      aria-label="Close"
+    >
+      &times;
+    </button>
+    <div class="space-y-2 md:space-y-3" data-login-panel>
+      <p
+        class="text-[#F44335] text-[18px] md:text-[20px] font-semibold leading-[26px]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Welcome back
+      </p>
+      <h3
+        class="text-[26px] md:text-[30px] font-semibold leading-[34px] text-[#353535]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Sign in to DhakaHome
+      </h3>
+      <p
+        class="text-[16px] leading-[24px] text-[#777]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Use your Nestlo email and password to continue. Your session stays
+        active until you logout or the token expires.
+      </p>
+
+      <form class="space-y-5 pt-2" data-login-form>
+        <div class="space-y-2">
+          <label
+            class="text-[15px] text-[#4a4a4a] font-medium"
+            style="font-family: 'Poppins', sans-serif"
+            for="login-email"
+            >Email</label
+          >
+          <input
+            id="login-email"
+            name="email"
+            type="email"
+            required
+            placeholder="you@example.com"
+            class="w-full rounded-[10px] border border-[#d6d6d6] bg-white px-4 py-3 text-[16px] leading-[22px] text-[#353535] placeholder-[#a0a0a0] focus:outline-none focus:ring-2 focus:ring-[#F44335]"
+            style="font-family: 'Poppins', sans-serif"
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label
+            class="text-[15px] text-[#4a4a4a] font-medium"
+            style="font-family: 'Poppins', sans-serif"
+            for="login-password"
+            >Password</label
+          >
+          <input
+            id="login-password"
+            name="password"
+            type="password"
+            required
+            placeholder="Enter your password"
+            class="w-full rounded-[10px] border border-[#d6d6d6] bg-white px-4 py-3 text-[16px] leading-[22px] text-[#353535] placeholder-[#a0a0a0] focus:outline-none focus:ring-2 focus:ring-[#F44335]"
+            style="font-family: 'Poppins', sans-serif"
+          />
+        </div>
+
+        <p
+          class="hidden text-[14px] text-[#F44335]"
+          style="font-family: 'Poppins', sans-serif"
+          data-login-error
+        ></p>
+
+        <button
+          type="submit"
+          data-login-submit
+          class="w-full rounded-[10px] bg-[#F44335] text-white text-[18px] font-semibold leading-[26px] py-[12px] hover:bg-[#d63a2e] transition-colors"
+          style="font-family: 'Poppins', sans-serif"
+        >
+          Login
+        </button>
+      </form>
+    </div>
+
+    <div class="hidden text-center space-y-4" data-login-success>
+      <div
+        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#2fd073] text-white"
+      >
+        <svg
+          class="h-8 w-8"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+      <h3
+        class="text-[28px] font-semibold leading-[36px] text-[#353535]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        You’re in!
+      </h3>
+      <p
+        class="text-[16px] leading-[24px] text-[#6b6b6b]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Signed in as
+        <span class="font-semibold text-[#353535]" data-login-success-name
+          >Guest</span
+        >
+        <span class="block text-[#8a8a8a]" data-login-success-email></span>
+      </p>
+      <button
+        type="button"
+        class="mx-auto w-full rounded-[10px] bg-[#F44335] text-white text-[18px] font-semibold leading-[26px] py-[12px] hover:bg-[#d63a2e] transition-colors"
+        style="font-family: 'Poppins', sans-serif"
+        data-auth-close
+      >
+        Continue
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Logout overlay -->
+<div
+  id="auth-logout-overlay"
+  class="fixed inset-0 z-[9999] hidden bg-black/70 items-center justify-center px-4"
+>
+  <div
+    class="relative w-full max-w-[420px] rounded-[14px] bg-[#fafafa] px-6 py-8 md:px-8 md:py-9 shadow-[0_12px_40px_rgba(0,0,0,0.25)]"
+  >
+    <button
+      type="button"
+      class="absolute right-4 top-4 text-[#767676] hover:text-[#111] text-3xl"
+      data-logout-close
+      aria-label="Close"
+    >
+      &times;
+    </button>
+
+    <div class="space-y-4 text-center" data-logout-panel>
+      <h3
+        class="text-[26px] font-semibold leading-[34px] text-[#353535]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Logout?
+      </h3>
+      <p
+        class="text-[16px] leading-[24px] text-[#6b6b6b]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        We’ll clear your session and return you to the public experience.
+      </p>
+      <div class="flex items-center justify-center gap-3 pt-2">
+        <button
+          type="button"
+          data-logout-close
+          class="flex-1 rounded-[10px] border border-[#d6d6d6] bg-white text-[16px] font-medium text-[#353535] py-[11px] hover:bg-[#f0f0f0] transition-colors"
+          style="font-family: 'Poppins', sans-serif"
+        >
+          Stay signed in
+        </button>
+        <button
+          type="button"
+          data-logout-confirm
+          class="flex-1 rounded-[10px] bg-[#F44335] text-white text-[16px] font-semibold py-[11px] hover:bg-[#d63a2e] transition-colors"
+          style="font-family: 'Poppins', sans-serif"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+
+    <div class="hidden text-center space-y-4" data-logout-success>
+      <div
+        class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#2fd073] text-white"
+      >
+        <svg
+          class="h-7 w-7"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </div>
+      <h3
+        class="text-[24px] font-semibold leading-[30px] text-[#353535]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Signed out
+      </h3>
+      <p
+        class="text-[15px] leading-[22px] text-[#6b6b6b]"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        You’ve been logged out. Come back anytime.
+      </p>
+      <button
+        type="button"
+        data-logout-close
+        class="mx-auto w-full rounded-[10px] bg-[#F44335] text-white text-[17px] font-semibold py-[11px] hover:bg-[#d63a2e] transition-colors"
+        style="font-family: 'Poppins', sans-serif"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Mobile menu toggle functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const menuToggle = document.getElementById('mobile-menu-toggle');
-    const menuClose = document.getElementById('mobile-menu-close');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const propertyMenus = document.querySelectorAll('[data-property-menu]');
-    const mobilePropertyToggle = document.querySelector('[data-mobile-property-toggle]');
-    const mobilePropertyPanel = document.querySelector('[data-mobile-property-panel]');
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("mobile-menu-toggle");
+    const menuClose = document.getElementById("mobile-menu-close");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const propertyMenus = document.querySelectorAll("[data-property-menu]");
+    const mobilePropertyToggle = document.querySelector(
+      "[data-mobile-property-toggle]"
+    );
+    const mobilePropertyPanel = document.querySelector(
+      "[data-mobile-property-panel]"
+    );
+
+    // Move overlays to <body> so they can sit above all content.
+    [mobileMenu, document.getElementById("auth-login-overlay"), document.getElementById("auth-logout-overlay")].forEach(
+      (el) => {
+        if (el && el.parentElement !== document.body) {
+          document.body.appendChild(el);
+        }
+      }
+    );
 
     if (menuToggle) {
-      menuToggle.addEventListener('click', function() {
-        mobileMenu.classList.remove('hidden');
+      menuToggle.addEventListener("click", function () {
+        mobileMenu.classList.remove("hidden");
       });
     }
 
     if (menuClose) {
-      menuClose.addEventListener('click', function() {
-        mobileMenu.classList.add('hidden');
+      menuClose.addEventListener("click", function () {
+        mobileMenu.classList.add("hidden");
       });
     }
 
     const normalizeType = (val) => {
-      const clean = (val || '').toString().trim().toLowerCase();
-      if (clean === 'plot') return 'land';
+      const clean = (val || "").toString().trim().toLowerCase();
+      if (clean === "plot") return "land";
       return clean;
     };
 
     propertyMenus.forEach((menu) => {
-      const trigger = menu.querySelector('[data-property-trigger]');
-      const dropdown = menu.querySelector('[data-property-dropdown]');
-      const options = dropdown ? dropdown.querySelectorAll('[data-property-option]') : [];
+      const trigger = menu.querySelector("[data-property-trigger]");
+      const dropdown = menu.querySelector("[data-property-dropdown]");
+      const options = dropdown
+        ? dropdown.querySelectorAll("[data-property-option]")
+        : [];
       const activeType = normalizeType(menu.dataset.selectedType);
       let closeTimer;
 
@@ -430,8 +753,8 @@
         options.forEach((option) => {
           const optType = normalizeType(option.dataset.type);
           if (optType === activeType) {
-            option.classList.remove('text-[#acacac]');
-            option.classList.add('text-[#f44335]', 'font-medium', 'bg-white');
+            option.classList.remove("text-[#acacac]");
+            option.classList.add("text-[#f44335]", "font-medium", "bg-white");
           }
         });
       }
@@ -439,46 +762,325 @@
       const openMenu = () => {
         if (!dropdown) return;
         clearTimeout(closeTimer);
-        dropdown.classList.remove('hidden');
-        trigger?.setAttribute('aria-expanded', 'true');
+        dropdown.classList.remove("hidden");
+        trigger?.setAttribute("aria-expanded", "true");
       };
 
       const closeMenu = () => {
         if (!dropdown) return;
-        dropdown.classList.add('hidden');
-        trigger?.setAttribute('aria-expanded', 'false');
+        dropdown.classList.add("hidden");
+        trigger?.setAttribute("aria-expanded", "false");
       };
 
-      trigger?.addEventListener('click', (event) => {
+      trigger?.addEventListener("click", (event) => {
         event.preventDefault();
-        if (dropdown.classList.contains('hidden')) {
+        if (dropdown.classList.contains("hidden")) {
           openMenu();
         } else {
           closeMenu();
         }
       });
 
-      menu.addEventListener('mouseenter', openMenu);
-      menu.addEventListener('mouseleave', () => {
+      menu.addEventListener("mouseenter", openMenu);
+      menu.addEventListener("mouseleave", () => {
         clearTimeout(closeTimer);
         closeTimer = setTimeout(closeMenu, 120);
       });
 
-      document.addEventListener('click', (event) => {
+      document.addEventListener("click", (event) => {
         if (!menu.contains(event.target)) {
           closeMenu();
         }
       });
     });
 
+    // Authentication UI + API
+    const authStorageKey = "dhakahome_auth";
+    const loginButtons = Array.from(
+      document.querySelectorAll("[data-login-trigger]")
+    );
+    const authenticatedBlocks = Array.from(
+      document.querySelectorAll("[data-authenticated]")
+    );
+    const logoutButtons = Array.from(
+      document.querySelectorAll("[data-logout-trigger]")
+    );
+    const userInitials = Array.from(
+      document.querySelectorAll("[data-user-initial]")
+    );
+    const userNames = Array.from(document.querySelectorAll("[data-user-name]"));
+
+    const loginOverlay = document.getElementById("auth-login-overlay");
+    const loginPanel = loginOverlay?.querySelector("[data-login-panel]");
+    const loginSuccess = loginOverlay?.querySelector("[data-login-success]");
+    const loginForm = loginOverlay?.querySelector("[data-login-form]");
+    const loginSubmit = loginOverlay?.querySelector("[data-login-submit]");
+    const loginError = loginOverlay?.querySelector("[data-login-error]");
+    const loginEmail = loginOverlay?.querySelector('input[name="email"]');
+    const loginPassword = loginOverlay?.querySelector('input[name="password"]');
+    const successName = loginOverlay?.querySelector(
+      "[data-login-success-name]"
+    );
+    const successEmail = loginOverlay?.querySelector(
+      "[data-login-success-email]"
+    );
+
+    const logoutOverlay = document.getElementById("auth-logout-overlay");
+    const logoutPanel = logoutOverlay?.querySelector("[data-logout-panel]");
+    const logoutSuccess = logoutOverlay?.querySelector("[data-logout-success]");
+
+    const clearAuth = () => {
+      localStorage.removeItem(authStorageKey);
+    };
+
+    const parseStoredAuth = () => {
+      const raw = localStorage.getItem(authStorageKey);
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || !parsed.token) return null;
+        if (parsed.expiresAt) {
+          const expires = new Date(parsed.expiresAt).getTime();
+          if (Number.isFinite(expires) && expires <= Date.now()) {
+            clearAuth();
+            return null;
+          }
+        }
+        return parsed;
+      } catch (err) {
+        clearAuth();
+        return null;
+      }
+    };
+
+    const saveAuth = (payload) => {
+      localStorage.setItem(authStorageKey, JSON.stringify(payload));
+    };
+
+    const updateBodyScroll = () => {
+      const loginOpen =
+        loginOverlay &&
+        loginOverlay.classList.contains("flex") &&
+        !loginOverlay.classList.contains("hidden");
+      const logoutOpen =
+        logoutOverlay &&
+        logoutOverlay.classList.contains("flex") &&
+        !logoutOverlay.classList.contains("hidden");
+      document.body.classList.toggle(
+        "overflow-hidden",
+        loginOpen || logoutOpen
+      );
+    };
+
+    const showOverlay = (overlay) => {
+      if (!overlay) return;
+      overlay.classList.add("flex");
+      overlay.classList.remove("hidden");
+      updateBodyScroll();
+    };
+
+    const hideOverlay = (overlay) => {
+      if (!overlay) return;
+      overlay.classList.add("hidden");
+      overlay.classList.remove("flex");
+      updateBodyScroll();
+    };
+
+    const resetLoginPanels = () => {
+      if (loginPanel) loginPanel.classList.remove("hidden");
+      if (loginSuccess) loginSuccess.classList.add("hidden");
+      if (loginError) {
+        loginError.textContent = "";
+        loginError.classList.add("hidden");
+      }
+      loginForm?.reset();
+      if (loginSubmit) {
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = "Login";
+      }
+    };
+
+    const closeLoginOverlay = () => {
+      hideOverlay(loginOverlay);
+      resetLoginPanels();
+    };
+
+    const closeLogoutOverlay = () => {
+      hideOverlay(logoutOverlay);
+      if (logoutPanel) logoutPanel.classList.remove("hidden");
+      if (logoutSuccess) logoutSuccess.classList.add("hidden");
+    };
+
+    const syncAuthUI = () => {
+      const auth = parseStoredAuth();
+      const hasAuth = auth && auth.token;
+
+      const displayName =
+        (auth && auth.user && (auth.user.name || auth.user.email)) || "User";
+
+      loginButtons.forEach((btn) => {
+        btn.classList.toggle("hidden", !!hasAuth);
+      });
+
+      authenticatedBlocks.forEach((block) => {
+        block.classList.toggle("hidden", !hasAuth);
+      });
+
+      if (hasAuth) {
+        userInitials.forEach((el) => {
+          el.textContent = displayName.charAt(0).toUpperCase();
+        });
+        userNames.forEach((el) => {
+          el.textContent = displayName;
+        });
+      }
+    };
+
+    if (loginOverlay) {
+      loginButtons.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          resetLoginPanels();
+          showOverlay(loginOverlay);
+          setTimeout(() => loginEmail?.focus(), 50);
+        })
+      );
+    }
+
+    loginOverlay?.querySelectorAll("[data-auth-close]").forEach((btn) => {
+      btn.addEventListener("click", closeLoginOverlay);
+    });
+
+    loginOverlay?.addEventListener("click", (event) => {
+      if (event.target === loginOverlay) closeLoginOverlay();
+    });
+
+    if (loginForm) {
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!loginEmail || !loginPassword || !loginSubmit) return;
+
+        const email = loginEmail.value.trim();
+        const password = loginPassword.value.trim();
+
+        if (loginError) {
+          loginError.textContent = "";
+          loginError.classList.add("hidden");
+        }
+
+        loginSubmit.disabled = true;
+        loginSubmit.textContent = "Signing in...";
+
+        try {
+          const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await res.json().catch(() => null);
+
+          if (!res.ok) {
+            const msg =
+              (data && (data.error || Object.values(data.errors || {})[0])) ||
+              "Invalid email or password.";
+            if (loginError) {
+              loginError.textContent = msg;
+              loginError.classList.remove("hidden");
+            }
+            return;
+          }
+
+          const expiresAt =
+            (data && data.expiresAt) ||
+            new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+          if (!data || !data.token) {
+            if (loginError) {
+              loginError.textContent =
+                "Login succeeded but no token was returned. Please try again.";
+              loginError.classList.remove("hidden");
+            }
+            return;
+          }
+
+          saveAuth({
+            token: data.token,
+            user: data.user || {},
+            expiresAt,
+          });
+          syncAuthUI();
+
+          if (successName) {
+            successName.textContent =
+              (data.user && (data.user.name || data.user.email)) || "User";
+          }
+          if (successEmail) {
+            successEmail.textContent = data.user?.email || "";
+            successEmail.style.display = successEmail.textContent
+              ? "block"
+              : "none";
+          }
+
+          if (loginPanel) loginPanel.classList.add("hidden");
+          if (loginSuccess) loginSuccess.classList.remove("hidden");
+        } catch (err) {
+          if (loginError) {
+            loginError.textContent =
+              "Unable to login right now. Please try again.";
+            loginError.classList.remove("hidden");
+          }
+        } finally {
+          if (loginSubmit) {
+            loginSubmit.disabled = false;
+            loginSubmit.textContent = "Login";
+          }
+        }
+      });
+    }
+
+    if (logoutOverlay) {
+      logoutButtons.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          if (logoutPanel) logoutPanel.classList.remove("hidden");
+          if (logoutSuccess) logoutSuccess.classList.add("hidden");
+          showOverlay(logoutOverlay);
+        })
+      );
+    }
+
+    logoutOverlay?.addEventListener("click", (event) => {
+      if (event.target === logoutOverlay) closeLogoutOverlay();
+    });
+
+    logoutOverlay
+      ?.querySelectorAll("[data-logout-close]")
+      .forEach((btn) => btn.addEventListener("click", closeLogoutOverlay));
+
+    logoutOverlay
+      ?.querySelector("[data-logout-confirm]")
+      ?.addEventListener("click", () => {
+        clearAuth();
+        syncAuthUI();
+        if (logoutPanel) logoutPanel.classList.add("hidden");
+        if (logoutSuccess) logoutSuccess.classList.remove("hidden");
+      });
+
+    syncAuthUI();
+
     if (mobilePropertyToggle && mobilePropertyPanel) {
-      mobilePropertyToggle.addEventListener('click', () => {
-        const isOpen = !mobilePropertyPanel.classList.contains('hidden');
-        mobilePropertyPanel.classList.toggle('hidden');
-        mobilePropertyToggle.setAttribute('aria-expanded', (!isOpen).toString());
-        const chevron = mobilePropertyToggle.querySelector('svg');
+      mobilePropertyToggle.addEventListener("click", () => {
+        const isOpen = !mobilePropertyPanel.classList.contains("hidden");
+        mobilePropertyPanel.classList.toggle("hidden");
+        mobilePropertyToggle.setAttribute(
+          "aria-expanded",
+          (!isOpen).toString()
+        );
+        const chevron = mobilePropertyToggle.querySelector("svg");
         if (chevron) {
-          chevron.style.transform = isOpen ? 'rotate(-90deg)' : 'rotate(0deg)';
+          chevron.style.transform = isOpen ? "rotate(-90deg)" : "rotate(0deg)";
         }
       });
     }

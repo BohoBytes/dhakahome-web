@@ -5,25 +5,38 @@
 <!-- Contact Content -->
 <section class="py-10 space-y-5">
   <div class="space-y-1">
-    <p class="text-[#F44335] text-[28px] md:text-[32px] font-medium leading-[36px]" style="font-family: 'Poppins', sans-serif;">
+    <p
+      class="text-[#F44335] text-[28px] md:text-[32px] font-medium leading-[36px]"
+      style="font-family: 'Poppins', sans-serif"
+    >
       Have Questions?
     </p>
-    <p class="text-[#656565] text-[18px] leading-[26px]" style="font-family: 'Poppins', sans-serif;">
+    <p
+      class="text-[#656565] text-[18px] leading-[26px]"
+      style="font-family: 'Poppins', sans-serif"
+    >
       We’re Just a Message Away
     </p>
   </div>
 
   <div class="grid gap-6 md:grid-cols-2 items-stretch">
-    <div class="bg-[#f2f2f2] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] overflow-hidden h-full">
+    <div
+      class="bg-[#f2f2f2] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] overflow-hidden h-full"
+    >
       <img
-        src="/assets/images/placeholders/contact-placeholder.png"
+        src="/assets/images/illustrations/contact-banner.png"
         alt="City illustration"
         class="w-full h-full max-h-[500px] object-cover"
       />
     </div>
 
-    <div class="bg-[#f6f6f6] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] p-6 md:p-8 space-y-5 h-full flex flex-col">
-      <h2 class="text-[#656565] text-[22px] leading-[30px] font-normal" style="font-family: 'Poppins', sans-serif;">
+    <div
+      class="bg-[#f6f6f6] rounded-[10px] shadow-[0_1px_8.5px_4px_rgba(0,0,0,0.25)] p-6 md:p-8 space-y-5 h-full flex flex-col"
+    >
+      <h2
+        class="text-[#656565] text-[22px] leading-[30px] font-normal"
+        style="font-family: 'Poppins', sans-serif"
+      >
         We’re Just a Message Away
       </h2>
       <form
@@ -41,7 +54,7 @@
           required
           placeholder="Name"
           class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
         />
         <p class="text-[#f44335] text-[13px] hidden" data-error-for="name"></p>
         <input
@@ -50,7 +63,7 @@
           required
           placeholder="Email"
           class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
         />
         <p class="text-[#f44335] text-[13px] hidden" data-error-for="email"></p>
         <input
@@ -58,7 +71,7 @@
           type="tel"
           placeholder="Phone"
           class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335]"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
         />
         <p class="text-[#f44335] text-[13px] hidden" data-error-for="phone"></p>
         <textarea
@@ -66,15 +79,18 @@
           rows="4"
           placeholder="Ask Your Questions Here"
           class="w-full bg-white border border-[#7c7c7c] rounded-[5px] px-4 py-[10px] text-[18px] leading-[26.4px] text-[#414141] placeholder-[#afafaf] focus:outline-none focus:ring-2 focus:ring-[#f44335] resize-none flex-1"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
         ></textarea>
-        <p class="text-[#f44335] text-[13px] hidden" data-error-for="message"></p>
+        <p
+          class="text-[#f44335] text-[13px] hidden"
+          data-error-for="message"
+        ></p>
         <p class="text-[#f44335] text-[13px] hidden" data-error-for="form"></p>
 
         <button
           type="submit"
           class="w-full bg-[#f44335] hover:bg-[#d63a2e] text-white text-[20px] font-medium leading-[30px] rounded-[5px] py-[10px] transition-colors"
-          style="font-family: 'Poppins', sans-serif;"
+          style="font-family: 'Poppins', sans-serif"
         >
           Send
         </button>
@@ -132,23 +148,23 @@
 
 <script>
   (function () {
-    const form = document.querySelector('[data-contact-page-form]');
+    const form = document.querySelector("[data-contact-page-form]");
     if (!form) return;
 
-    const contactEmail = form.dataset.contactEmail || '';
-    const overlay = document.getElementById('contact-success-overlay');
+    const contactEmail = form.dataset.contactEmail || "";
+    const overlay = document.getElementById("contact-success-overlay");
     const nameInput = form.querySelector('input[name="name"]');
     const emailInput = form.querySelector('input[name="email"]');
     const phoneInput = form.querySelector('input[name="phone"]');
     const messageField = form.querySelector('textarea[name="message"]');
 
     const clearErrors = () => {
-      form.querySelectorAll('[data-error-for]').forEach((el) => {
-        el.textContent = '';
-        el.classList.add('hidden');
+      form.querySelectorAll("[data-error-for]").forEach((el) => {
+        el.textContent = "";
+        el.classList.add("hidden");
       });
-      form.querySelectorAll('input, textarea').forEach((el) => {
-        el.classList.remove('border-[#f44335]');
+      form.querySelectorAll("input, textarea").forEach((el) => {
+        el.classList.remove("border-[#f44335]");
       });
     };
 
@@ -156,76 +172,76 @@
       const errorEl = form.querySelector(`[data-error-for="${field}"]`);
       if (errorEl) {
         errorEl.textContent = message;
-        errorEl.classList.remove('hidden');
+        errorEl.classList.remove("hidden");
       }
       const inputEl =
         form.querySelector(`[name="${field}"]`) ||
-        (field === 'message' ? messageField : null);
+        (field === "message" ? messageField : null);
       if (inputEl) {
-        inputEl.classList.add('border-[#f44335]');
+        inputEl.classList.add("border-[#f44335]");
       }
     };
 
     const normalizePhone = (phone) => {
-      let clean = (phone || '').trim();
+      let clean = (phone || "").trim();
       if (!clean) return null;
-      clean = clean.replace(/[^0-9+]/g, '');
-      if (clean.startsWith('+')) clean = clean.slice(1);
-      if (clean.startsWith('88')) clean = clean.slice(2);
-      if (!clean.startsWith('01')) return null;
+      clean = clean.replace(/[^0-9+]/g, "");
+      if (clean.startsWith("+")) clean = clean.slice(1);
+      if (clean.startsWith("88")) clean = clean.slice(2);
+      if (!clean.startsWith("01")) return null;
       if (clean.length !== 11) return null;
       const operator = clean.charAt(2);
-      if (operator < '3' || operator > '9') return null;
+      if (operator < "3" || operator > "9") return null;
       return `+880${clean.slice(1)}`;
     };
 
     const showOverlay = () => {
       if (!overlay) return;
-      overlay.classList.remove('hidden');
-      overlay.classList.add('flex');
-      document.body.classList.add('overflow-hidden');
+      overlay.classList.remove("hidden");
+      overlay.classList.add("flex");
+      document.body.classList.add("overflow-hidden");
     };
 
     const hideOverlay = () => {
       if (!overlay) return;
-      overlay.classList.add('hidden');
-      overlay.classList.remove('flex');
-      document.body.classList.remove('overflow-hidden');
+      overlay.classList.add("hidden");
+      overlay.classList.remove("flex");
+      document.body.classList.remove("overflow-hidden");
     };
 
-    overlay?.addEventListener('click', (event) => {
+    overlay?.addEventListener("click", (event) => {
       if (event.target === overlay) hideOverlay();
     });
     overlay
-      ?.querySelectorAll('[data-overlay-close]')
-      .forEach((btn) => btn.addEventListener('click', hideOverlay));
+      ?.querySelectorAll("[data-overlay-close]")
+      .forEach((btn) => btn.addEventListener("click", hideOverlay));
 
-    form.addEventListener('submit', async (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
       clearErrors();
 
-      const name = (nameInput?.value || '').trim();
-      const email = (emailInput?.value || '').trim();
-      const message = (messageField?.value || '').trim();
-      const phoneRaw = (phoneInput?.value || '').trim();
-      const phone = phoneRaw ? normalizePhone(phoneRaw) : '';
+      const name = (nameInput?.value || "").trim();
+      const email = (emailInput?.value || "").trim();
+      const message = (messageField?.value || "").trim();
+      const phoneRaw = (phoneInput?.value || "").trim();
+      const phone = phoneRaw ? normalizePhone(phoneRaw) : "";
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       let valid = true;
 
       if (name.length < 2) {
-        showError('name', 'Please enter your name.');
+        showError("name", "Please enter your name.");
         valid = false;
       }
       if (!emailPattern.test(email)) {
-        showError('email', 'Please enter a valid email.');
+        showError("email", "Please enter a valid email.");
         valid = false;
       }
       if (phoneRaw && !phone) {
-        showError('phone', 'Use a valid Bangladesh phone number.');
+        showError("phone", "Use a valid Bangladesh phone number.");
         valid = false;
       }
       if (!message) {
-        showError('message', 'Please include a message.');
+        showError("message", "Please include a message.");
         valid = false;
       }
       if (!valid) return;
@@ -235,17 +251,17 @@
         email,
         phone: phone || phoneRaw,
         message,
-        propertyId: '',
+        propertyId: "",
         contactEmail,
       };
 
       try {
-        const res = await fetch('/lead', {
-          method: 'POST',
+        const res = await fetch("/lead", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
           },
           body: JSON.stringify(payload),
         });
@@ -257,12 +273,12 @@
               showError(field, msg)
             );
           } else {
-            showError('form', 'Could not send your request. Please try again.');
+            showError("form", "Could not send your request. Please try again.");
           }
           return;
         }
       } catch (err) {
-        showError('form', 'Network issue, please retry.');
+        showError("form", "Network issue, please retry.");
         return;
       }
 
@@ -271,6 +287,5 @@
     });
   })();
 </script>
-{{end}}
-
-{{define "pages/contact-us.html"}}{{template "layouts/base.html" .}}{{end}}
+{{end}} {{define "pages/contact-us.html"}}{{template "layouts/base.html"
+.}}{{end}}

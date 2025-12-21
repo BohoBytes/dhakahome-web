@@ -654,9 +654,25 @@
       card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     };
     const mappedToggle = document.getElementById('map-mapped-toggle');
+    const mappedToggleLabel = mappedToggle ? mappedToggle.closest('label') : null;
     const resultsCountEl = document.querySelector('[data-results-count]');
     const mappedCountEl = document.querySelector('[data-mapped-count]');
     const mappedPrefKey = 'dh-prop-mappable-only';
+    const mapListings = [];
+    {{range .List.Items}}
+      {{if and (ne .Latitude 0.0) (ne .Longitude 0.0)}}
+    mapListings.push({
+      id: '{{js .ID}}',
+      title: '{{js .Title}}',
+      address: '{{js .Address}}',
+      price: '{{js (printf "%s%s" .Currency (formatPrice .Price))}}',
+      image: '{{if .Images}}{{if gt (len .Images) 0}}{{js (index .Images 0)}}{{else}}{{end}}{{else}}{{end}}',
+      lat: {{printf "%.6f" .Latitude}},
+      lng: {{printf "%.6f" .Longitude}},
+      url: '/properties/{{.ID}}',
+    });
+      {{end}}
+    {{end}}
 
     const getSavedView = () => {
       try {
@@ -726,6 +742,10 @@
       if (mappedCountEl) {
         mappedCountEl.textContent = `(${mapped} mapped)`;
         mappedCountEl.classList.remove('hidden');
+      }
+      const hideMappedToggle = mappedToggleLabel && total > 0 && mapped >= total;
+      if (mappedToggleLabel) {
+        mappedToggleLabel.style.display = hideMappedToggle ? 'none' : '';
       }
       // keep map listings in sync without touching map rendering logic
       buildMapListingsFromCards();
@@ -799,6 +819,7 @@
     });
     // initialize view from saved preference to keep selection consistent after actions like sorting
     setView(getSavedView());
+    initMappedToggle();
 
     // Mapbox integration
     const mapContainer = document.getElementById('property-map');
@@ -828,22 +849,6 @@
         setTimeout(() => mapInstance.resize(), 900);
       }
     };
-
-    const mapListings = [];
-      {{range .List.Items}}
-      {{if and (ne .Latitude 0.0) (ne .Longitude 0.0)}}
-        mapListings.push({
-          id: '{{js .ID}}',
-          title: '{{js .Title}}',
-          address: '{{js .Address}}',
-          price: '{{js (printf "%s%s" .Currency (formatPrice .Price))}}',
-          image: '{{if .Images}}{{if gt (len .Images) 0}}{{js (index .Images 0)}}{{else}}{{end}}{{else}}{{end}}',
-          lat: {{printf "%.6f" .Latitude}},
-          lng: {{printf "%.6f" .Longitude}},
-        url: '/properties/{{.ID}}',
-      });
-    {{end}}
-    {{end}}
 
     const jitterMapPoints = (items) => {
       const grouped = new Map();
