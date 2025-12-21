@@ -36,6 +36,16 @@
               {{end}}
             </select>
             <select
+              id="property-area"
+              name="area"
+              class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[160px]"
+              onchange="this.form.submit()"
+            >
+              {{range $search.AreaOptions}}
+                <option value="{{.Value}}" {{if eq $.Search.SelectedArea .Value}}selected{{end}}>{{.Label}}</option>
+              {{end}}
+            </select>
+            <select
               id="property-listing-type"
               name="listing_type"
               class="bg-[#eee] h-[40px] border border-[#dbdbdb] rounded-[6px] px-3 py-2 shadow-[0_2px_8px_rgba(0,0,0,0.1)] focus:outline-none min-w-[120px]"
@@ -199,14 +209,31 @@
 
     <div class="mt-4 grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-4 min-h-0">
       <div class="relative bg-[#f3f3f3] border border-[#dbdbdb] rounded-[18px] shadow-[0_3px_5px_rgba(0,0,0,0.15)] overflow-hidden h-[760px]">
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('{{$mapImage}}');"></div>
-        <div class="absolute left-4 top-4 bg-white/90 text-[#414141] text-xs px-3 py-1 rounded-full border border-[#dbdbdb] shadow-sm">
-          Map placeholder
+        <div id="property-map" class="absolute inset-0"></div>
+
+        <div data-map-fallback class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-white/80 via-white/50 to-transparent backdrop-blur-[2px] px-6">
+          <div class="bg-white/90 border border-[#dcdcdc] rounded-xl px-4 py-3 text-center shadow-[0_8px_20px_rgba(0,0,0,0.12)] space-y-1 max-w-[360px]">
+            <p class="text-sm font-semibold text-[#3b3b3b]" data-map-fallback-title>Loading map…</p>
+            <p class="text-xs text-[#5b5b5b]" data-map-fallback-copy>Fetching property coordinates</p>
+          </div>
         </div>
-        <div class="absolute bottom-4 right-4 flex flex-col items-center gap-3 bg-white/90 border border-[#d9d9d9] rounded-full px-2 py-3 shadow-[0_4px_6.9px_rgba(0,0,0,0.10)]">
-          <button type="button" class="w-8 h-8 rounded-full bg-[#ff5a4b] text-white text-lg leading-none flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)]">+</button>
-          <div class="w-[22px] border-t border-[#d9d9d9]"></div>
-          <button type="button" class="w-8 h-8 rounded-full bg-[#f4f4f4] text-[#616161] text-lg leading-none flex items-center justify-center shadow-[0_2px_8px_rgba(0,0,0,0.15)]">−</button>
+
+        <div class="absolute left-4 top-4 flex items-center gap-2 bg-white/90 text-[#414141] text-xs px-3 py-2 rounded-full border border-[#dbdbdb] shadow-sm">
+          <span class="inline-flex items-center gap-1">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#f44335]"></span>
+            Map view
+          </span>
+          <span class="text-[#777]" aria-live="polite" data-map-count></span>
+        </div>
+
+        <div class="absolute left-4 bottom-4 flex flex-wrap items-center gap-3 bg-white/90 border border-[#d9d9d9] rounded-full px-4 py-2 shadow-[0_6px_12px_rgba(0,0,0,0.12)]">
+          <div class="flex items-center gap-2 text-xs text-[#4a4a4a]">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#f44335]"></span>
+            Properties
+          </div>
+          <button type="button" data-map-reset class="text-xs px-3 py-1 rounded-full bg-[#f4f4f4] border border-[#d9d9d9] hover:bg-[#ededed] transition-colors">
+            Reset view
+          </button>
         </div>
       </div>
 
@@ -215,8 +242,13 @@
       <div class="bg-white border border-[#dbdbdb] rounded-[18px] shadow-[0_2px_8.1px_rgba(0,0,0,0.15)] p-3 flex flex-col h-[760px] max-w-[760px] min-h-0">
         <div class="flex items-center justify-between gap-2 flex-shrink-0">
           <div class="inline-flex items-center gap-2 bg-[#f4f4f4] border border-[#dbdbdb] rounded-[5px] px-4 py-2">
-            <span class="text-[14px] leading-[18px] text-[#616161]" style="font-family: 'Poppins', sans-serif;">{{.List.Total}} Results Found</span>
+            <span data-results-count class="text-[14px] leading-[18px] text-[#616161]" style="font-family: 'Poppins', sans-serif;">{{.List.Total}} Results Found</span>
+            <span data-mapped-count class="text-[12px] leading-[16px] text-[#9a9a9a] hidden">(mapped)</span>
           </div>
+          <label class="flex items-center gap-2 text-[13px] leading-[16px] text-[#616161]">
+            <input id="map-mapped-toggle" type="checkbox" class="w-4 h-4 rounded border-[#cfcfcf] text-[#f44335] focus:ring-[#f44335]" />
+            <span>Show only mapped</span>
+          </label>
           <div class="flex items-center gap-2">
             <button type="button" data-view-btn="grid" class="view-toggle w-9 h-9 flex items-center justify-center border rounded-[5px] transition" aria-label="Grid view" aria-pressed="true">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -249,7 +281,19 @@
             <div data-results-track class="grid grid-cols-1 md:grid-cols-2 gap-3">
               {{if and .List (gt (len .List.Items) 0)}}
                 {{range .List.Items}}
-                  <a href="/properties/{{.ID}}" data-property-card class="flex flex-col bg-[#f9f9f9] border border-[#dbdbdb] rounded-[10px] shadow-[0_0_4px_rgba(0,0,0,0.07)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200">
+                  {{ $hasCoords := and (ne .Latitude 0.0) (ne .Longitude 0.0) }}
+                  <a
+                    href="/properties/{{.ID}}"
+                    data-property-card
+                    data-property-id="{{.ID}}"
+                    data-has-coords="{{if $hasCoords}}true{{else}}false{{end}}"
+                    {{if $hasCoords}}data-lat="{{printf "%.6f" .Latitude}}" data-lng="{{printf "%.6f" .Longitude}}"{{end}}
+                    data-title="{{.Title}}"
+                    data-address="{{.Address}}"
+                    data-price="{{printf "%s%s" .Currency (formatPrice .Price)}}"
+                    {{if .Images}}{{if gt (len .Images) 0}}data-image="{{index .Images 0}}"{{end}}{{end}}
+                    class="flex flex-col bg-[#f9f9f9] border border-[#dbdbdb] rounded-[10px] shadow-[0_0_4px_rgba(0,0,0,0.07)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200"
+                  >
                     <div data-card-image class="relative w-full h-[182px] bg-white">
                       {{if .Images}}
                         <img src="{{index .Images 0}}" alt="{{.Title}}" class="absolute inset-0 w-full h-full object-cover" />
@@ -326,6 +370,73 @@
   }
   .property-price-slider::-moz-range-track {
     height: 2px;
+  }
+
+  #property-map {
+    background: radial-gradient(circle at 20% 20%, #fff6f5 0, #fff 28%);
+  }
+
+  .dh-map-popup {
+    min-width: 200px;
+    max-width: 260px;
+    display: grid;
+    gap: 4px;
+    color: #2f2f2f;
+  }
+
+  .dh-map-popup__title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .dh-map-popup__price {
+    color: #f44335;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .dh-map-popup__address {
+    font-size: 12px;
+    color: #555;
+  }
+
+  .map-active {
+    outline: 2px solid #f44335;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(244, 67, 53, 0.12);
+  }
+
+  .mapboxgl-popup-content {
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+    padding: 10px 12px;
+    border: 1px solid #f1f1f1;
+  }
+
+  .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+    margin: 14px 14px 0 0;
+  }
+  #property-map > .mapboxgl-map,
+  #property-map > .maplibregl-map {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #property-map .mapboxgl-canvas,
+  #property-map .maplibregl-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  #property-map .mapboxgl-canvas-container,
+  #property-map .maplibregl-canvas-container {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
   }
 </style>
 
@@ -527,6 +638,25 @@
     const sortBtn = document.querySelector('[data-sort-toggle]');
     const sortIcon = sortBtn ? sortBtn.querySelector('svg') : null;
     const viewPrefKey = 'dh-prop-view';
+    const cardLookup = {};
+    document.querySelectorAll('[data-property-card]').forEach((card) => {
+      const id = card.dataset.propertyId;
+      if (id) cardLookup[id] = card;
+    });
+    const highlightCard = (id) => {
+      if (!id) return;
+      const card = cardLookup[id];
+      if (!card) return;
+      document.querySelectorAll('[data-property-card].map-active').forEach((el) => {
+        el.classList.remove('map-active');
+      });
+      card.classList.add('map-active');
+      card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    };
+    const mappedToggle = document.getElementById('map-mapped-toggle');
+    const resultsCountEl = document.querySelector('[data-results-count]');
+    const mappedCountEl = document.querySelector('[data-mapped-count]');
+    const mappedPrefKey = 'dh-prop-mappable-only';
 
     const getSavedView = () => {
       try {
@@ -557,6 +687,64 @@
         const svg = inactiveBtn.querySelector('svg');
         if (svg) svg.classList.remove('text-white');
       }
+    };
+
+    const applyMappedFilter = (enabled) => {
+      Object.values(cardLookup).forEach((card) => {
+        const hasCoords = card.dataset.hasCoords === 'true';
+        card.classList.toggle('hidden', enabled && !hasCoords);
+      });
+    };
+
+    const buildMapListingsFromCards = () => {
+      mapListings.length = 0;
+      document.querySelectorAll('[data-property-card]').forEach((card) => {
+        if (card.dataset.hasCoords !== 'true') return;
+        const lat = parseFloat(card.dataset.lat || '');
+        const lng = parseFloat(card.dataset.lng || '');
+        if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+        mapListings.push({
+          id: card.dataset.propertyId || '',
+          title: card.dataset.title || '',
+          address: card.dataset.address || '',
+          price: card.dataset.price || '',
+          image: card.dataset.image || '',
+          lat,
+          lng,
+          url: card.getAttribute('href') || '',
+        });
+      });
+    };
+
+    const updateCountsUI = () => {
+      buildMapListingsFromCards();
+      const total = Object.keys(cardLookup).length;
+      const mapped = mapListings.length;
+      if (resultsCountEl) {
+        resultsCountEl.textContent = `${total} Results Found`;
+      }
+      if (mappedCountEl) {
+        mappedCountEl.textContent = `(${mapped} mapped)`;
+        mappedCountEl.classList.remove('hidden');
+      }
+      // keep map listings in sync without touching map rendering logic
+      buildMapListingsFromCards();
+    };
+
+    const initMappedToggle = () => {
+      if (!mappedToggle) return;
+      const saved = (() => {
+        try { return localStorage.getItem(mappedPrefKey); } catch (err) { return null; }
+      })();
+      const initial = saved === '1';
+      mappedToggle.checked = initial;
+      applyMappedFilter(initial);
+      updateCountsUI();
+      mappedToggle.addEventListener('change', () => {
+        const enabled = mappedToggle.checked;
+        applyMappedFilter(enabled);
+        try { localStorage.setItem(mappedPrefKey, enabled ? '1' : '0'); } catch (err) { /* ignore */ }
+      });
     };
 
     const setView = (mode) => {
@@ -611,6 +799,559 @@
     });
     // initialize view from saved preference to keep selection consistent after actions like sorting
     setView(getSavedView());
+
+    // Mapbox integration
+    const mapContainer = document.getElementById('property-map');
+    const fallbackPanel = document.querySelector('[data-map-fallback]');
+    const fallbackTitle = document.querySelector('[data-map-fallback-title]');
+    const fallbackCopy = document.querySelector('[data-map-fallback-copy]');
+    const mapCount = document.querySelector('[data-map-count]');
+    const mapReset = document.querySelector('[data-map-reset]');
+    const mapboxToken = "{{.MapboxToken}}".trim();
+    const mapboxStyle = "{{.MapboxStyle}}".trim();
+    const defaultCenter = [{{printf "%.6f" .MapDefaultLng}}, {{printf "%.6f" .MapDefaultLat}}];
+    const defaultZoom = {{printf "%.2f" .MapDefaultZoom}};
+    let mapInstance = null;
+    let mapBounds = null;
+    let appliedFallbackStyle = false;
+    let tilesPainted = false;
+    let useMapLibre = false;
+    let mapProvider = 'none';
+    let fallbackTimer = null;
+    const scheduleResizes = () => {
+      if (!mapInstance || mapProvider === 'leaflet') return;
+      if (mapInstance.resize) {
+        requestAnimationFrame(() => mapInstance.resize());
+        setTimeout(() => mapInstance.resize(), 80);
+        setTimeout(() => mapInstance.resize(), 260);
+        setTimeout(() => mapInstance.resize(), 520);
+        setTimeout(() => mapInstance.resize(), 900);
+      }
+    };
+
+    const mapListings = [];
+      {{range .List.Items}}
+      {{if and (ne .Latitude 0.0) (ne .Longitude 0.0)}}
+        mapListings.push({
+          id: '{{js .ID}}',
+          title: '{{js .Title}}',
+          address: '{{js .Address}}',
+          price: '{{js (printf "%s%s" .Currency (formatPrice .Price))}}',
+          image: '{{if .Images}}{{if gt (len .Images) 0}}{{js (index .Images 0)}}{{else}}{{end}}{{else}}{{end}}',
+          lat: {{printf "%.6f" .Latitude}},
+          lng: {{printf "%.6f" .Longitude}},
+        url: '/properties/{{.ID}}',
+      });
+    {{end}}
+    {{end}}
+
+    const jitterMapPoints = (items) => {
+      const grouped = new Map();
+      items.forEach((item) => {
+        const key = `${(item.lat || 0).toFixed(6)},${(item.lng || 0).toFixed(6)}`;
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(item);
+      });
+      const spread = 0.00035;
+      const jittered = [];
+      grouped.forEach((group) => {
+        if (group.length === 1) {
+          const single = group[0];
+          jittered.push({ ...single, displayLat: single.lat, displayLng: single.lng });
+          return;
+        }
+        group.forEach((item, index) => {
+          const angle = (index / group.length) * Math.PI * 2;
+          const radius = spread + (index % 3) * 0.00008;
+          const latOffset = Math.sin(angle) * radius;
+          const lngOffset = (Math.cos(angle) * radius) / Math.max(Math.cos((item.lat || 0) * Math.PI / 180), 0.25);
+          jittered.push({
+            ...item,
+            displayLat: item.lat + latOffset,
+            displayLng: item.lng + lngOffset,
+          });
+        });
+      });
+      return jittered;
+    };
+
+    const setFallback = (title, copy) => {
+      if (fallbackTitle) fallbackTitle.textContent = title;
+      if (fallbackCopy) fallbackCopy.textContent = copy || '';
+      if (fallbackPanel) {
+        fallbackPanel.classList.remove('hidden');
+        fallbackPanel.style.pointerEvents = 'auto';
+      }
+    };
+
+    const hideFallback = () => {
+      if (fallbackPanel) {
+        fallbackPanel.classList.add('hidden');
+        fallbackPanel.style.pointerEvents = 'none';
+      }
+    };
+
+    const setResetEnabled = (enabled) => {
+      if (!mapReset) return;
+      mapReset.disabled = !enabled;
+      mapReset.classList.toggle('opacity-60', !enabled);
+      mapReset.classList.toggle('cursor-not-allowed', !enabled);
+    };
+
+    const updateMapCount = () => {
+      if (!mapCount) return;
+      const total = mapListings.length;
+      mapCount.textContent = total ? `${total} on map` : 'No map pins yet';
+    };
+
+    const loadMapboxAssets = () => new Promise((resolve, reject) => {
+      if (window.mapboxgl) {
+        resolve();
+        return;
+      }
+      const sources = [
+        // Stable 2.x first
+        {
+          css: 'https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css',
+          js: 'https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js',
+        },
+        {
+          css: 'https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.css',
+          js: 'https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.js',
+        },
+        {
+          css: 'https://unpkg.com/mapbox-gl@2.15.0/dist/mapbox-gl.css',
+          js: 'https://unpkg.com/mapbox-gl@2.15.0/dist/mapbox-gl.js',
+        },
+        // Fallback to 3.x if 2.x is unavailable
+        {
+          css: 'https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css',
+          js: 'https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js',
+        },
+        {
+          css: 'https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/3.4.0/mapbox-gl.css',
+          js: 'https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/3.4.0/mapbox-gl.js',
+        },
+        {
+          css: 'https://unpkg.com/mapbox-gl@3.4.0/dist/mapbox-gl.css',
+          js: 'https://unpkg.com/mapbox-gl@3.4.0/dist/mapbox-gl.js',
+        },
+      ];
+      let attempt = 0;
+
+      const loadNext = () => {
+        if (window.mapboxgl) {
+          resolve();
+          return;
+        }
+        if (attempt >= sources.length) {
+          reject(new Error('Mapbox failed to load'));
+          return;
+        }
+        const src = sources[attempt];
+        attempt += 1;
+
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = src.css;
+        css.setAttribute('data-mapbox-style', `true-${attempt}`);
+        css.onerror = loadNext;
+        document.head.appendChild(css);
+
+        const script = document.createElement('script');
+        script.src = src.js;
+        script.async = true;
+        script.setAttribute('data-mapbox-script', `true-${attempt}`);
+        script.onload = () => resolve();
+        script.onerror = () => {
+          script.remove();
+          css.remove();
+          loadNext();
+        };
+        document.head.appendChild(script);
+      };
+
+      loadNext();
+    });
+
+    const loadMaplibreAssets = () => new Promise((resolve, reject) => {
+      if (window.maplibregl) {
+        resolve();
+        return;
+      }
+      const sources = [
+        {
+          css: 'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css',
+          js: 'https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js',
+        },
+        {
+          css: 'https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/3.6.2/maplibre-gl.css',
+          js: 'https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/3.6.2/maplibre-gl.js',
+        },
+      ];
+      let attempt = 0;
+      const loadNext = () => {
+        if (attempt >= sources.length) {
+          reject(new Error('MapLibre failed to load'));
+          return;
+        }
+        const src = sources[attempt];
+        attempt += 1;
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = src.css;
+        css.setAttribute('data-maplibre-style', `true-${attempt}`);
+        css.onerror = loadNext;
+        document.head.appendChild(css);
+
+        const script = document.createElement('script');
+        script.src = src.js;
+        script.async = true;
+        script.setAttribute('data-maplibre-script', `true-${attempt}`);
+        script.onload = () => resolve();
+        script.onerror = () => {
+          script.remove();
+          css.remove();
+          loadNext();
+        };
+        document.head.appendChild(script);
+      };
+      loadNext();
+    });
+
+    const loadLeafletAssets = () => new Promise((resolve, reject) => {
+      if (window.L && window.L.map) {
+        resolve();
+        return;
+      }
+      const sources = [
+        {
+          css: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+          js: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+        },
+        {
+          css: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css',
+          js: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js',
+        },
+      ];
+      let attempt = 0;
+      const loadNext = () => {
+        if (attempt >= sources.length) {
+          reject(new Error('Leaflet failed to load'));
+          return;
+        }
+        const src = sources[attempt];
+        attempt += 1;
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = src.css;
+        css.setAttribute('data-leaflet-style', `true-${attempt}`);
+        css.onerror = loadNext;
+        document.head.appendChild(css);
+
+        const script = document.createElement('script');
+        script.src = src.js;
+        script.async = true;
+        script.setAttribute('data-leaflet-script', `true-${attempt}`);
+        script.onload = () => resolve();
+        script.onerror = () => {
+          script.remove();
+          css.remove();
+          loadNext();
+        };
+        document.head.appendChild(script);
+      };
+      loadNext();
+    });
+
+    const cleanText = (val) => (val || '').replace(/^"+|"+$/g, '').replace(/^'+|'+$/g, '').trim();
+    const buildPopupContent = (item) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'dh-map-popup flex gap-3';
+
+      if (item.image) {
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'w-[90px] h-[70px] rounded-md overflow-hidden flex-shrink-0 shadow-sm border border-[#f1f1f1]';
+        const img = document.createElement('img');
+        img.src = cleanText(item.image);
+        img.alt = cleanText(item.title) || 'Property';
+        img.className = 'w-full h-full object-cover';
+        imgWrap.appendChild(img);
+        wrapper.appendChild(imgWrap);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'space-y-1 min-w-[180px]';
+      const title = document.createElement('div');
+      title.className = 'dh-map-popup__title';
+      title.textContent = cleanText(item.title);
+      const price = document.createElement('div');
+      price.className = 'dh-map-popup__price';
+      price.textContent = cleanText(item.price) || '৳0';
+      const address = document.createElement('div');
+      address.className = 'dh-map-popup__address';
+      address.textContent = cleanText(item.address) || 'Dhaka';
+      const link = document.createElement('a');
+      const cleanUrl = cleanText(item.url || '');
+      link.href = cleanUrl || '#';
+      link.target = '_self';
+      link.textContent = 'View details';
+      link.className = 'text-xs text-[#f44335] font-semibold underline underline-offset-2';
+      body.append(title, price, address, link);
+      wrapper.append(body);
+      return wrapper;
+    };
+
+    const destroyMap = () => {
+      if (mapInstance && mapInstance.remove) {
+        try { mapInstance.remove(); } catch (err) { /* ignore */ }
+      }
+      mapInstance = null;
+      mapBounds = null;
+      tilesPainted = false;
+      mapProvider = 'none';
+      if (fallbackTimer) {
+        clearTimeout(fallbackTimer);
+        fallbackTimer = null;
+      }
+    };
+
+    const renderMapbox = async () => {
+      useMapLibre = false;
+      mapProvider = 'mapbox';
+      try {
+        await loadMapboxAssets();
+      } catch (err) {
+        throw err;
+      }
+      hideFallback();
+      mapboxgl.accessToken = mapboxToken;
+      // Ensure container fills its parent before map reads dimensions
+      mapContainer.style.width = '100%';
+      mapContainer.style.height = '100%';
+      mapContainer.style.minHeight = '100%';
+      const styleURL = (() => {
+        if (!mapboxStyle) return `https://api.mapbox.com/styles/v1/mapbox/streets-v12?access_token=${mapboxToken}`;
+        if (mapboxStyle.startsWith('http')) {
+          return mapboxStyle.includes('access_token')
+            ? mapboxStyle
+            : `${mapboxStyle}${mapboxStyle.includes('?') ? '&' : '?'}access_token=${mapboxToken}`;
+        }
+        const clean = mapboxStyle.replace('mapbox://styles/', '');
+        return `https://api.mapbox.com/styles/v1/${clean}?access_token=${mapboxToken}`;
+      })();
+
+      mapInstance = new mapboxgl.Map({
+        container: mapContainer,
+        style: styleURL,
+        center: defaultCenter,
+        zoom: defaultZoom || 11.2,
+        attributionControl: true,
+      });
+      const mapPoints = jitterMapPoints(mapListings);
+      mapInstance.on('load', () => {
+        hideFallback();
+        scheduleResizes();
+      });
+      mapInstance.on('render', () => {
+        if (mapInstance && mapInstance.areTilesLoaded && mapInstance.areTilesLoaded()) {
+          tilesPainted = true;
+          hideFallback();
+        }
+      });
+      mapInstance.once('idle', () => {
+        hideFallback();
+        scheduleResizes();
+      });
+      mapInstance.on('error', (evt) => {
+        if (evt && evt.error) {
+          console.error('Mapbox error', evt.error);
+          setFallback('Map failed to render', evt.error.message || 'Check token/style scope and network access to api.mapbox.com');
+        }
+      });
+      mapInstance.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }));
+      mapBounds = new mapboxgl.LngLatBounds();
+      mapPoints.forEach((item) => {
+        if (Number.isNaN(item.displayLat) || Number.isNaN(item.displayLng)) return;
+        const marker = new mapboxgl.Marker({ color: '#f44335' })
+          .setLngLat([item.displayLng, item.displayLat])
+          .setPopup(new mapboxgl.Popup({ offset: 14, closeButton: false }).setDOMContent(buildPopupContent(item)))
+          .addTo(mapInstance);
+        marker.getElement().addEventListener('click', () => highlightCard(item.id));
+        marker.getElement().addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            highlightCard(item.id);
+          }
+        });
+        mapBounds.extend(marker.getLngLat());
+      });
+
+      if (mapBounds && !mapBounds.isEmpty()) {
+        mapInstance.fitBounds(mapBounds, { padding: 80, maxZoom: 15, duration: 0 });
+        setResetEnabled(true);
+      } else {
+        mapInstance.setCenter(defaultCenter);
+        mapInstance.setZoom(defaultZoom || 11.2);
+      }
+      scheduleResizes();
+    };
+
+    const renderMaplibreOsm = async () => {
+      useMapLibre = true;
+      mapProvider = 'maplibre';
+      await loadMaplibreAssets();
+      destroyMap();
+      mapContainer.innerHTML = '';
+      mapContainer.style.width = '100%';
+      mapContainer.style.height = '100%';
+      mapContainer.style.minHeight = '100%';
+      hideFallback();
+      mapInstance = new maplibregl.Map({
+        container: mapContainer,
+        style: {
+          version: 8,
+          sources: {
+            osm: {
+              type: 'raster',
+              tiles: [
+                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ],
+              tileSize: 256,
+              attribution: '© OpenStreetMap contributors',
+            },
+          },
+          layers: [
+            { id: 'osm-base', type: 'raster', source: 'osm' },
+          ],
+        },
+        center: defaultCenter,
+        zoom: defaultZoom || 11.2,
+      });
+      mapInstance.on('load', () => {
+        hideFallback();
+        tilesPainted = true;
+        scheduleResizes();
+        mapBounds = new maplibregl.LngLatBounds();
+        const mapPoints = jitterMapPoints(mapListings);
+        mapPoints.forEach((item) => {
+          if (Number.isNaN(item.displayLat) || Number.isNaN(item.displayLng)) return;
+          const marker = new maplibregl.Marker({ color: '#f44335' })
+            .setLngLat([item.displayLng, item.displayLat])
+            .setPopup(new maplibregl.Popup({ offset: 14, closeButton: false }).setDOMContent(buildPopupContent(item)))
+            .addTo(mapInstance);
+          marker.getElement().addEventListener('click', () => highlightCard(item.id));
+          marker.getElement().addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') highlightCard(item.id);
+          });
+          mapBounds.extend(marker.getLngLat());
+        });
+        if (mapBounds && !mapBounds.isEmpty()) {
+          mapInstance.fitBounds(mapBounds, { padding: 80, maxZoom: 15, duration: 0 });
+        }
+      });
+    };
+
+    const renderLeafletOsm = async () => {
+      mapProvider = 'leaflet';
+      await loadLeafletAssets();
+      destroyMap();
+      mapContainer.innerHTML = '';
+      mapContainer.style.width = '100%';
+      mapContainer.style.height = '100%';
+      mapContainer.style.minHeight = '100%';
+      hideFallback();
+      const L = window.L;
+      mapInstance = L.map(mapContainer, {
+        center: [defaultCenter[1], defaultCenter[0]],
+        zoom: defaultZoom || 11.2,
+        zoomControl: false,
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap',
+      }).addTo(mapInstance);
+      mapBounds = L.latLngBounds();
+      const mapPoints = jitterMapPoints(mapListings);
+      mapPoints.forEach((item) => {
+        if (Number.isNaN(item.displayLat) || Number.isNaN(item.displayLng)) return;
+        const marker = L.marker([item.displayLat, item.displayLng]).addTo(mapInstance);
+        marker.bindPopup(buildPopupContent(item));
+        marker.on('click', () => highlightCard(item.id));
+        mapBounds.extend([item.displayLat, item.displayLng]);
+      });
+      if (mapBounds.isValid()) {
+        mapInstance.fitBounds(mapBounds, { padding: [20, 20] });
+        setResetEnabled(true);
+      }
+      L.control.zoom({ position: 'topright' }).addTo(mapInstance);
+    };
+
+    const renderMap = async () => {
+      if (!mapContainer) return;
+      buildMapListingsFromCards();
+      updateMapCount();
+      setResetEnabled(false);
+      if (!mapboxToken) {
+        setFallback('Add your Mapbox token', 'Set MAPBOX_PUBLIC_TOKEN in your env file to enable the interactive map.');
+        return;
+      }
+      if (mapListings.length === 0) {
+        setFallback('No mappable properties yet', 'Add latitude and longitude to listings to see them pinned here.');
+        return;
+      }
+      setFallback('Loading map…', 'Rendering pins for current results');
+
+      try {
+        await renderMapbox();
+      } catch (err) {
+        console.error('Mapbox load failed, trying MapLibre', err);
+        setFallback('Map failed to load', 'Switching to fallback map');
+        await renderMaplibreOsm();
+        return;
+      }
+
+      fallbackTimer = setTimeout(async () => {
+        if (!mapInstance || useMapLibre || tilesPainted) return;
+        console.warn('Mapbox tiles not painting, switching to MapLibre OSM fallback');
+        await renderMaplibreOsm();
+      }, 2500);
+
+      const resetHandler = () => {
+        if (!mapInstance) return;
+        if (mapProvider === 'leaflet') {
+          if (mapBounds && mapBounds.isValid && mapBounds.isValid()) {
+            mapInstance.fitBounds(mapBounds, { padding: [20, 20] });
+          } else {
+            mapInstance.setView([defaultCenter[1], defaultCenter[0]], defaultZoom || 11.2);
+          }
+          return;
+        }
+        if (mapBounds && !mapBounds.isEmpty()) {
+          mapInstance.fitBounds(mapBounds, { padding: 80, maxZoom: 15 });
+        } else if (mapInstance.flyTo) {
+          mapInstance.flyTo({ center: defaultCenter, zoom: defaultZoom || 11.2 });
+        }
+      };
+
+      mapReset?.addEventListener('click', resetHandler);
+
+      window.addEventListener('resize', () => {
+        if (!mapInstance) return;
+        if (mapProvider === 'leaflet' && mapInstance.invalidateSize) {
+          mapInstance.invalidateSize();
+        } else if (mapInstance.resize) {
+          mapInstance.resize();
+        }
+      });
+    };
+
+    renderMap();
+
+    window.addEventListener('load', () => {
+      scheduleResizes();
+    });
   });
 </script>
 {{end}}

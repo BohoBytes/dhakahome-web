@@ -136,6 +136,8 @@ type Property struct {
 	HasImages    bool     `json:"-"`
 	ContactPhone string   `json:"contactPhone,omitempty"`
 	ContactEmail string   `json:"contactEmail,omitempty"`
+	Latitude     float64  `json:"latitude,omitempty"`
+	Longitude    float64  `json:"longitude,omitempty"`
 }
 
 type Document struct {
@@ -718,6 +720,27 @@ func mapAssetToProperty(raw map[string]any) Property {
 		prop.Title = "Property"
 	}
 
+	if lat, ok := floatFrom(location, "lat", "latitude", "Lat", "Latitude"); ok {
+		prop.Latitude = lat
+	}
+	if lng, ok := floatFrom(location, "lng", "lon", "longitude", "Longitude", "Long"); ok {
+		prop.Longitude = lng
+	}
+	if prop.Latitude == 0 && prop.Longitude == 0 {
+		if lat, lng, ok := coordsFromSlice(pickSlice(location, "coordinates", "coords")); ok {
+			prop.Latitude = lat
+			prop.Longitude = lng
+		}
+	}
+	if prop.Latitude == 0 && prop.Longitude == 0 {
+		if lat, ok := floatFrom(raw, "lat", "latitude"); ok {
+			prop.Latitude = lat
+		}
+		if lng, ok := floatFrom(raw, "lng", "lon", "longitude", "long"); ok {
+			prop.Longitude = lng
+		}
+	}
+
 	prop.Address = firstNonEmpty(
 		firstString(raw, "Address", "address"),
 		buildAddress(location),
@@ -835,6 +858,13 @@ func finalizeProperty(prop Property) Property {
 		prop.Amenities = defaultAmenities()
 	}
 
+	if prop.Latitude == 0 && prop.Longitude == 0 {
+		if lat, lng, ok := fallbackCoordinates(prop); ok {
+			prop.Latitude = lat
+			prop.Longitude = lng
+		}
+	}
+
 	return prop
 }
 
@@ -862,6 +892,34 @@ func deriveListingTypeFromBadges(badges []string) string {
 		}
 	}
 	return ""
+}
+
+var approximateAreaCoords = map[string][2]float64{
+	"uttara":      {23.874219, 90.396475},
+	"gulshan":     {23.792521, 90.414047},
+	"banani":      {23.793478, 90.404137},
+	"dhanmondi":   {23.746105, 90.374007},
+	"mirpur":      {23.804174, 90.353605},
+	"bashundhara": {23.815216, 90.423018},
+	"mohammadpur": {23.758726, 90.358072},
+	"mohakhali":   {23.780195, 90.400438},
+	"baridhara":   {23.810151, 90.422426},
+	"nikunja":     {23.826702, 90.422935},
+	"badda":       {23.780917, 90.426642},
+}
+
+func fallbackCoordinates(prop Property) (float64, float64, bool) {
+	haystack := strings.ToLower(strings.Join([]string{
+		prop.Address,
+		strings.Join(prop.Badges, " "),
+		prop.Title,
+	}, " "))
+	for key, coords := range approximateAreaCoords {
+		if strings.Contains(haystack, key) {
+			return coords[0], coords[1], true
+		}
+	}
+	return 0, 0, false
 }
 
 func parseDateTime(raw string) (time.Time, bool) {
@@ -1219,6 +1277,30 @@ func parseNumber(val any) (float64, bool) {
 		return f, true
 	default:
 		return 0, false
+	}
+}
+
+func coordsFromSlice(values []any) (float64, float64, bool) {
+	if len(values) < 2 {
+		return 0, 0, false
+	}
+	first, ok1 := parseNumber(values[0])
+	second, ok2 := parseNumber(values[1])
+	if !ok1 || !ok2 {
+		return 0, 0, false
+	}
+	switch {
+	case math.Abs(first) > 60 && math.Abs(second) <= 60:
+		// Likely [lng, lat]
+		return second, first, true
+	case math.Abs(second) > 60 && math.Abs(first) <= 60:
+		// Likely [lat, lng]
+		return first, second, true
+	case math.Abs(second) > math.Abs(first):
+		// Dhaka: lon (~90) > lat (~23)
+		return first, second, true
+	default:
+		return second, first, true
 	}
 }
 

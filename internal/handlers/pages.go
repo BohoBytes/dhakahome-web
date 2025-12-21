@@ -142,10 +142,21 @@ func PropertiesPage(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 	w.Header().Set("Content-Type", "text/html")
+	mapToken := strings.TrimSpace(os.Getenv("MAPBOX_PUBLIC_TOKEN"))
+	mapStyle := strings.TrimSpace(os.Getenv("MAPBOX_STYLE_URL"))
+	if mapStyle == "" {
+		mapStyle = "mapbox://styles/mapbox/streets-v12"
+	}
 	data := withSearchData(r, map[string]any{
-		"ActivePage": "properties",
-		"List":       list,
-		"Query":      q,
+		"ActivePage":     "properties",
+		"List":           list,
+		"Query":          q,
+		"MapEnabled":     mapToken != "",
+		"MapboxToken":    mapToken,
+		"MapboxStyle":    mapStyle,
+		"MapDefaultLat":  envFloat("MAP_DEFAULT_LAT", 23.810332),
+		"MapDefaultLng":  envFloat("MAP_DEFAULT_LNG", 90.412521),
+		"MapDefaultZoom": envFloat("MAP_DEFAULT_ZOOM", 11.2),
 	})
 	render(w, "pages/properties.html", "properties.html", data)
 }
@@ -493,4 +504,15 @@ func seq(start, end int) []int {
 		result[i] = start + i
 	}
 	return result
+}
+
+func envFloat(key string, def float64) float64 {
+	val := strings.TrimSpace(os.Getenv(key))
+	if val == "" {
+		return def
+	}
+	if parsed, err := strconv.ParseFloat(val, 64); err == nil {
+		return parsed
+	}
+	return def
 }
