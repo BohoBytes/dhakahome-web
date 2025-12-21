@@ -110,30 +110,32 @@ func deriveTokenURL(base string) string {
 }
 
 type Property struct {
-	ID           string   `json:"id"`
-	Title        string   `json:"title"`
-	Address      string   `json:"address"`
-	Description  string   `json:"description,omitempty"`
-	Price        float64  `json:"price"`
-	Currency     string   `json:"currency"`
-	Type         string   `json:"type"`
-	ListingType  string   `json:"listingType"`
-	BuildYear    int      `json:"buildYear,omitempty"`
-	Images       []string `json:"images"`
-	Badges       []string `json:"badges"`
-	Amenities    []string `json:"amenities,omitempty"`
-	ListingYear  int      `json:"listingYear,omitempty"`
-	ListingDate  string   `json:"listingDate,omitempty"`
-	Bedrooms     int      `json:"bedrooms"`
-	Bathrooms    int      `json:"bathrooms"`
-	Area         int      `json:"area"` // in square feet
-	Parking      int      `json:"parking"`
-	Gallery      []string `json:"-"`
-	HasImages    bool     `json:"-"`
-	ContactPhone string   `json:"contactPhone,omitempty"`
-	ContactEmail string   `json:"contactEmail,omitempty"`
-	Latitude     float64  `json:"latitude,omitempty"`
-	Longitude    float64  `json:"longitude,omitempty"`
+	ID            string   `json:"id"`
+	Title         string   `json:"title"`
+	Address       string   `json:"address"`
+	Description   string   `json:"description,omitempty"`
+	Price         float64  `json:"price"`
+	Currency      string   `json:"currency"`
+	Type          string   `json:"type"`
+	ListingType   string   `json:"listingType"`
+	BuildYear     int      `json:"buildYear,omitempty"`
+	Images        []string `json:"images"`
+	Badges        []string `json:"badges"`
+	Amenities     []string `json:"amenities,omitempty"`
+	ListingYear   int      `json:"listingYear,omitempty"`
+	ListingDate   string   `json:"listingDate,omitempty"`
+	Bedrooms      int      `json:"bedrooms"`
+	Bathrooms     int      `json:"bathrooms"`
+	Area          int      `json:"area"` // in square feet
+	Parking       int      `json:"parking"`
+	Gallery       []string `json:"-"`
+	HasImages     bool     `json:"-"`
+	IsShortlisted bool     `json:"is_shortlisted,omitempty"`
+	ShortlistID   string   `json:"shortlist_id,omitempty"`
+	ContactPhone  string   `json:"contactPhone,omitempty"`
+	ContactEmail  string   `json:"contactEmail,omitempty"`
+	Latitude      float64  `json:"latitude,omitempty"`
+	Longitude     float64  `json:"longitude,omitempty"`
 }
 
 type Document struct {
@@ -153,6 +155,12 @@ type PropertyList struct {
 	Page  int        `json:"page"`
 	Pages int        `json:"pages"`
 	Total int        `json:"total"`
+}
+
+type ShortlistStatus struct {
+	AssetID       string `json:"asset_id"`
+	ShortlistID   string `json:"shortlist_id,omitempty"`
+	IsShortlisted bool   `json:"is_shortlisted"`
 }
 
 type assetListResponse struct {
@@ -246,6 +254,311 @@ func (c *Client) SearchProperties(q url.Values) (PropertyList, error) {
 		Pages: pages,
 		Total: total,
 	}, nil
+}
+
+// CheckShortlist returns whether a property is shortlisted for the authenticated user.
+func (c *Client) CheckShortlist(assetID, userToken string) (ShortlistStatus, error) {
+	assetID = strings.TrimSpace(assetID)
+	if assetID == "" {
+		return ShortlistStatus{}, fmt.Errorf("asset id is required")
+	}
+
+	if c.mockEnabled {
+		return c.mockCheckShortlist(assetID, userToken), nil
+	}
+
+	req, err := http.NewRequest(http.MethodGet, c.buildURL(fmt.Sprintf("/shortlists/check/%s", assetID), nil), nil)
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	if err := c.decorateUserRequest(req, userToken); err != nil {
+		return ShortlistStatus{}, err
+	}
+
+	res, err := c.HC.Do(req)
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return ShortlistStatus{}, &APIError{StatusCode: res.StatusCode, Message: "unauthorized"}
+	}
+	if res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return ShortlistStatus{}, fmt.Errorf("shortlist check: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	var payload ShortlistStatus
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		return ShortlistStatus{}, err
+	}
+	if payload.AssetID == "" {
+		payload.AssetID = assetID
+	}
+	return payload, nil
+}
+
+// AddToShortlist adds a property to the default shortlist for the authenticated user.
+func (c *Client) AddToShortlist(assetID, userToken string) (ShortlistStatus, error) {
+	assetID = strings.TrimSpace(assetID)
+	if assetID == "" {
+		return ShortlistStatus{}, fmt.Errorf("asset id is required")
+	}
+
+	if c.mockEnabled {
+		return c.mockAddToShortlist(assetID, userToken), nil
+	}
+
+	body, _ := json.Marshal(map[string]string{"asset_id": assetID})
+	req, err := http.NewRequest(http.MethodPost, c.buildURL("/shortlists/items", nil), bytes.NewReader(body))
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	if err := c.decorateUserRequest(req, userToken); err != nil {
+		return ShortlistStatus{}, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.HC.Do(req)
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return ShortlistStatus{}, &APIError{StatusCode: res.StatusCode, Message: "unauthorized"}
+	}
+	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return ShortlistStatus{}, fmt.Errorf("shortlist add: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	var payload ShortlistStatus
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		// Fallback to minimal payload
+		payload.AssetID = assetID
+		payload.IsShortlisted = true
+		return payload, nil
+	}
+	if payload.AssetID == "" {
+		payload.AssetID = assetID
+	}
+	payload.IsShortlisted = true
+	return payload, nil
+}
+
+// RemoveFromShortlist removes a property from all shortlists for the authenticated user.
+func (c *Client) RemoveFromShortlist(assetID, userToken string) (ShortlistStatus, error) {
+	assetID = strings.TrimSpace(assetID)
+	if assetID == "" {
+		return ShortlistStatus{}, fmt.Errorf("asset id is required")
+	}
+
+	if c.mockEnabled {
+		return c.mockRemoveFromShortlist(assetID, userToken), nil
+	}
+
+	req, err := http.NewRequest(http.MethodDelete, c.buildURL(fmt.Sprintf("/shortlists/items/%s", assetID), nil), nil)
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	if err := c.decorateUserRequest(req, userToken); err != nil {
+		return ShortlistStatus{}, err
+	}
+
+	res, err := c.HC.Do(req)
+	if err != nil {
+		return ShortlistStatus{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return ShortlistStatus{}, &APIError{StatusCode: res.StatusCode, Message: "unauthorized"}
+	}
+	if res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return ShortlistStatus{}, fmt.Errorf("shortlist remove: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	status := ShortlistStatus{
+		AssetID:       assetID,
+		IsShortlisted: false,
+	}
+
+	var payload ShortlistStatus
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err == nil {
+		if payload.AssetID != "" {
+			status.AssetID = payload.AssetID
+		}
+		status.ShortlistID = payload.ShortlistID
+		status.IsShortlisted = payload.IsShortlisted
+	}
+
+	return status, nil
+}
+
+// ListShortlisted fetches the current user's shortlisted properties with pagination support.
+func (c *Client) ListShortlisted(userToken string, page, limit int) (PropertyList, error) {
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 9
+	}
+
+	if c.mockEnabled {
+		return c.mockListShortlisted(userToken, page, limit), nil
+	}
+
+	shortlistID, err := c.getDefaultShortlistID(userToken)
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "no shortlist") {
+			return PropertyList{
+				Items: []Property{},
+				Page:  1,
+				Pages: 1,
+				Total: 0,
+			}, nil
+		}
+		return PropertyList{}, err
+	}
+
+	params := url.Values{}
+	params.Set("page", strconv.Itoa(page))
+	params.Set("limit", strconv.Itoa(limit))
+
+	res, err := c.userRequest(http.MethodGet, fmt.Sprintf("/shortlists/%s", shortlistID), params, nil, userToken)
+	if err != nil {
+		return PropertyList{}, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return PropertyList{}, &APIError{StatusCode: res.StatusCode, Message: "unauthorized"}
+	}
+	if res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return PropertyList{}, fmt.Errorf("shortlist list: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	var payload map[string]any
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&payload); err != nil {
+		return PropertyList{}, err
+	}
+
+	itemsRaw := pickSlice(payload, "items")
+	props := make([]Property, 0, len(itemsRaw))
+	for _, row := range itemsRaw {
+		m, ok := row.(map[string]any)
+		if !ok {
+			continue
+		}
+		asset := pickMap(m, "asset", "Asset")
+		prop := mapAssetToProperty(asset)
+		if prop.ID == "" {
+			prop.ID = firstString(m, "asset_id", "assetId", "id")
+		}
+		prop.IsShortlisted = true
+		prop.ShortlistID = shortlistID
+		props = append(props, prop)
+	}
+
+	if v, ok := intFrom(payload, "page"); ok && v > 0 {
+		page = v
+	}
+	if v, ok := intFrom(payload, "limit"); ok && v > 0 {
+		limit = v
+	}
+
+	total := len(props)
+	if v, ok := intFrom(payload, "item_count", "total", "TotalItems"); ok && v > 0 {
+		total = v
+	}
+	pages := 1
+	if v, ok := intFrom(payload, "pages"); ok && v > 0 {
+		pages = v
+	} else if limit > 0 && total > 0 {
+		pages = int(math.Ceil(float64(total) / float64(limit)))
+	}
+
+	return PropertyList{
+		Items: props,
+		Page:  page,
+		Pages: pages,
+		Total: total,
+	}, nil
+}
+
+func (c *Client) getDefaultShortlistID(userToken string) (string, error) {
+	if c.mockEnabled {
+		return mockShortlists.defaultShortlistID(), nil
+	}
+
+	res, err := c.userRequest(http.MethodGet, "/shortlists", nil, nil, userToken)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == http.StatusUnauthorized {
+		return "", &APIError{StatusCode: res.StatusCode, Message: "unauthorized"}
+	}
+	if res.StatusCode != http.StatusOK {
+		detail, _ := io.ReadAll(io.LimitReader(res.Body, 2048))
+		return "", fmt.Errorf("shortlists: %s %s", res.Status, strings.TrimSpace(string(detail)))
+	}
+
+	var rows []map[string]any
+	dec := json.NewDecoder(res.Body)
+	dec.UseNumber()
+	if err := dec.Decode(&rows); err != nil {
+		return "", err
+	}
+
+	var fallback string
+	for _, row := range rows {
+		id := firstString(row, "id", "ID")
+		if id == "" {
+			continue
+		}
+		if fallback == "" {
+			fallback = id
+		}
+		if def, ok := boolFrom(row, "is_default", "isDefault"); ok && def {
+			return id, nil
+		}
+	}
+
+	if fallback != "" {
+		return fallback, nil
+	}
+
+	return "", fmt.Errorf("no shortlist available for user")
+}
+
+func (c *Client) mockCheckShortlist(assetID, userToken string) ShortlistStatus {
+	return mockShortlists.status(userToken, assetID)
+}
+
+func (c *Client) mockAddToShortlist(assetID, userToken string) ShortlistStatus {
+	return mockShortlists.add(userToken, assetID)
+}
+
+func (c *Client) mockRemoveFromShortlist(assetID, userToken string) ShortlistStatus {
+	return mockShortlists.remove(userToken, assetID)
+}
+
+func (c *Client) mockListShortlisted(userToken string, page, limit int) PropertyList {
+	return mockShortlists.list(userToken, page, limit)
 }
 
 func buildAssetSearchParams(q url.Values) url.Values {
@@ -566,6 +879,27 @@ func (c *Client) decorateRequest(req *http.Request) {
 		req.Header.Set("Authorization", header)
 	}
 	req.Header.Set("Accept", "application/json")
+}
+
+func (c *Client) decorateUserRequest(req *http.Request, userToken string) error {
+	token := strings.TrimSpace(userToken)
+	if token == "" {
+		return fmt.Errorf("user token is required for shortlist requests")
+	}
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Accept", "application/json")
+	return nil
+}
+
+func (c *Client) userRequest(method, path string, params url.Values, body io.Reader, userToken string) (*http.Response, error) {
+	req, err := http.NewRequest(method, c.buildURL(path, params), body)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.decorateUserRequest(req, userToken); err != nil {
+		return nil, err
+	}
+	return c.HC.Do(req)
 }
 
 func (c *Client) buildURL(path string, params url.Values) string {
@@ -943,6 +1277,149 @@ func parseDateTime(raw string) (time.Time, bool) {
 		return time.Unix(secs, 0), true
 	}
 	return time.Time{}, false
+}
+
+type mockShortlistStore struct {
+	mu        sync.Mutex
+	items     map[string]map[string]time.Time
+	defaultID string
+}
+
+var mockShortlists = newMockShortlistStore()
+
+func newMockShortlistStore() *mockShortlistStore {
+	store := &mockShortlistStore{
+		items:     make(map[string]map[string]time.Time),
+		defaultID: "mock-shortlist-favorites",
+	}
+
+	seed := []string{
+		"mock-res-uttara-01",
+		"mock-res-uttara-03",
+		"mock-com-badda-01",
+		"mock-com-mohakhali-01",
+	}
+	now := time.Now()
+	store.items["demo"] = make(map[string]time.Time)
+	for i, id := range seed {
+		store.items["demo"][id] = now.Add(-time.Duration(i) * time.Minute)
+	}
+	return store
+}
+
+func (s *mockShortlistStore) keyFor(token string) string {
+	return strings.TrimSpace(token)
+}
+
+func (s *mockShortlistStore) defaultShortlistID() string {
+	return s.defaultID
+}
+
+func (s *mockShortlistStore) ensureUser(token string) map[string]time.Time {
+	key := s.keyFor(token)
+	if key == "" {
+		key = "demo"
+	}
+	if s.items[key] == nil {
+		s.items[key] = make(map[string]time.Time)
+	}
+	return s.items[key]
+}
+
+func (s *mockShortlistStore) status(token, assetID string) ShortlistStatus {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	userItems := s.ensureUser(token)
+	_, ok := userItems[assetID]
+	return ShortlistStatus{
+		AssetID:       assetID,
+		ShortlistID:   s.defaultID,
+		IsShortlisted: ok,
+	}
+}
+
+func (s *mockShortlistStore) add(token, assetID string) ShortlistStatus {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	userItems := s.ensureUser(token)
+	userItems[assetID] = time.Now()
+	return ShortlistStatus{
+		AssetID:       assetID,
+		ShortlistID:   s.defaultID,
+		IsShortlisted: true,
+	}
+}
+
+func (s *mockShortlistStore) remove(token, assetID string) ShortlistStatus {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	userItems := s.ensureUser(token)
+	delete(userItems, assetID)
+	return ShortlistStatus{
+		AssetID:       assetID,
+		ShortlistID:   s.defaultID,
+		IsShortlisted: false,
+	}
+}
+
+func (s *mockShortlistStore) list(token string, page, limit int) PropertyList {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	userItems := s.ensureUser(token)
+
+	type record struct {
+		id   string
+		time time.Time
+	}
+	rows := make([]record, 0, len(userItems))
+	for id, added := range userItems {
+		rows = append(rows, record{id: id, time: added})
+	}
+
+	sort.SliceStable(rows, func(i, j int) bool {
+		return rows[i].time.After(rows[j].time)
+	})
+
+	if page <= 0 {
+		page = 1
+	}
+	if limit <= 0 {
+		limit = 9
+	}
+
+	total := len(rows)
+	pages := int(math.Ceil(float64(total) / float64(limit)))
+	if pages == 0 {
+		pages = 1
+	}
+	if page > pages {
+		page = pages
+	}
+
+	start := (page - 1) * limit
+	end := start + limit
+	if start > total {
+		start = total
+	}
+	if end > total {
+		end = total
+	}
+
+	items := make([]Property, 0, end-start)
+	for _, row := range rows[start:end] {
+		if prop, ok := mockPropertyByID(row.id); ok {
+			prop.IsShortlisted = true
+			prop.ShortlistID = s.defaultID
+			items = append(items, finalizeProperty(prop))
+		}
+	}
+
+	return PropertyList{
+		Items: items,
+		Page:  page,
+		Pages: pages,
+		Total: total,
+	}
 }
 
 func mockRequiredDocuments(assetType string) []Document {

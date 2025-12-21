@@ -169,6 +169,318 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      (function () {
+        const resultsContainer = document.getElementById('search-results');
+        const shortlistSection = () =>
+          (resultsContainer || document).querySelector(
+            '[data-shortlist-section]'
+          );
+        const initialSection = shortlistSection();
+        const hasShortlistUI = document.querySelector(
+          '[data-shortlist-btn], [data-shortlist-toggle]'
+        );
+        if (!resultsContainer && !hasShortlistUI && !initialSection) return;
+
+        const authStorageKey = 'dhakahome_auth';
+        const loginOverlay = document.getElementById('auth-login-overlay');
+        const state = {
+          defaultHTML: resultsContainer ? resultsContainer.innerHTML : '',
+          shortlistMode:
+            (initialSection &&
+              (initialSection.dataset.shortlistMode || '') === 'shortlisted') ||
+            false,
+          currentPage: 1,
+        };
+
+        const parseAuth = () => {
+          const raw = localStorage.getItem(authStorageKey);
+          if (!raw) return null;
+          try {
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.token) return null;
+            if (parsed.expiresAt) {
+              const exp = new Date(parsed.expiresAt).getTime();
+              if (Number.isFinite(exp) && exp <= Date.now()) {
+                localStorage.removeItem(authStorageKey);
+                return null;
+              }
+            }
+            return parsed;
+          } catch (err) {
+            localStorage.removeItem(authStorageKey);
+            return null;
+          }
+        };
+
+        const setShortlistVisibility = (hasAuth) => {
+          const shouldShow = !!hasAuth;
+          document.querySelectorAll('[data-shortlist-btn]').forEach((btn) => {
+            btn.classList.toggle('hidden', !shouldShow);
+          });
+          document
+            .querySelectorAll('[data-shortlist-toggle]')
+            .forEach((btn) => {
+              btn.classList.toggle('hidden', !shouldShow);
+              btn.setAttribute('aria-hidden', (!shouldShow).toString());
+            });
+        };
+
+        const ensureAuth = () => {
+          const auth = parseAuth();
+          if (!auth || !auth.token) {
+            openLoginOverlay();
+            return null;
+          }
+          return auth;
+        };
+
+        const openLoginOverlay = () => {
+          if (!loginOverlay) return;
+          loginOverlay.classList.add('flex');
+          loginOverlay.classList.remove('hidden');
+          document.body.classList.add('overflow-hidden');
+          const emailField = loginOverlay.querySelector('input[name="email"]');
+          if (emailField) {
+            setTimeout(() => emailField.focus(), 80);
+          }
+        };
+
+        const syncModeFromDOM = () => {
+          const section = shortlistSection();
+          const mode =
+            section && section.dataset ? section.dataset.shortlistMode : '';
+          state.shortlistMode = (mode || '').toLowerCase() === 'shortlisted';
+        };
+
+        const setHeartState = (btn, shortlisted) => {
+          if (!btn) return;
+          const icon = btn.querySelector('svg');
+          const isOn = !!shortlisted;
+          btn.dataset.shortlisted = isOn ? 'true' : 'false';
+          btn.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+          if (icon) {
+            icon.classList.toggle('text-[#f44335]', isOn);
+            icon.classList.toggle('text-[#9f9f9f]', !isOn);
+          }
+        };
+
+        const collectPropertyIDs = (scope) => {
+          return Array.from(
+            (scope || resultsContainer || document).querySelectorAll(
+              '[data-property-card][data-property-id]'
+            )
+          )
+            .map((el) => el.dataset.propertyId)
+            .filter(Boolean);
+        };
+
+        const syncStatuses = async (scope) => {
+          const auth = parseAuth();
+          if (!auth || !auth.token) return;
+          const ids = collectPropertyIDs(scope);
+          if (!ids.length) return;
+
+          try {
+            const res = await fetch('/api/shortlists/status', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: JSON.stringify({ assetIds: ids }),
+            });
+            if (res.status === 401) return;
+            const data = await res.json().catch(() => null);
+            if (!data || !Array.isArray(data.statuses)) return;
+            data.statuses.forEach((status) => {
+              const propId =
+                status.asset_id || status.assetId || status.assetID || '';
+              const btn = resultsContainer.querySelector(
+                `[data-shortlist-btn][data-property-id="${propId}"]`
+              );
+              if (btn) {
+                setHeartState(
+                  btn,
+                  status.is_shortlisted ||
+                    status.isShortlisted ||
+                    status.shortlisted
+                );
+              }
+            });
+          } catch (err) {
+            console.warn('shortlist status sync failed', err);
+          }
+        };
+
+        const handleHeartClick = async (btn, event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          const card = btn.closest('[data-property-card]');
+          const propertyId =
+            btn.dataset.propertyId || (card && card.dataset.propertyId);
+          if (!propertyId) return;
+
+          const auth = ensureAuth();
+          if (!auth) {
+            btn.removeAttribute('disabled');
+            btn.classList.remove('opacity-70');
+            return;
+          }
+
+          const currentlyShortlisted = btn.dataset.shortlisted === 'true';
+          btn.setAttribute('disabled', 'true');
+          btn.classList.add('opacity-70');
+
+          try {
+            const endpoint = currentlyShortlisted
+              ? `/api/shortlists/items/${propertyId}`
+              : '/api/shortlists/items';
+            const res = await fetch(endpoint, {
+              method: currentlyShortlisted ? 'DELETE' : 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: currentlyShortlisted
+                ? null
+                : JSON.stringify({ assetId: propertyId }),
+            });
+
+            if (res.status === 401) {
+              openLoginOverlay();
+              return;
+            }
+            if (!res.ok) {
+              console.error('shortlist toggle failed', await res.text());
+              setHeartState(btn, currentlyShortlisted);
+              return;
+            }
+
+            const payload = await res.json().catch(() => ({}));
+            const nextState =
+              payload.isShortlisted ??
+              payload.is_shortlisted ??
+              payload.shortlisted ??
+              !currentlyShortlisted;
+            setHeartState(btn, nextState);
+
+            if (state.shortlistMode && !nextState) {
+              const page = Number.isFinite(state.currentPage)
+                ? state.currentPage
+                : 1;
+              await loadShortlist(page);
+            }
+          } catch (err) {
+            console.error('shortlist toggle error', err);
+            setHeartState(btn, currentlyShortlisted);
+          } finally {
+            btn.removeAttribute('disabled');
+            btn.classList.remove('opacity-70');
+          }
+        };
+
+        const loadShortlist = async (page) => {
+          const auth = ensureAuth();
+          if (!auth) return;
+          const targetPage = page && page > 0 ? page : 1;
+          try {
+            const res = await fetch(
+              `/api/shortlists/view?page=${targetPage}`,
+              {
+                headers: {
+                  Accept: 'text/html',
+                  Authorization: `Bearer ${auth.token}`,
+                },
+              }
+            );
+
+            if (res.status === 401) {
+              openLoginOverlay();
+              return;
+            }
+            if (!res.ok) {
+              console.error('shortlist view failed', await res.text());
+              return;
+            }
+
+            const html = await res.text();
+            resultsContainer.innerHTML = html;
+            syncModeFromDOM();
+            state.currentPage = targetPage;
+            setShortlistVisibility(!!parseAuth());
+            syncStatuses(resultsContainer);
+          } catch (err) {
+            console.error('shortlist load error', err);
+          }
+        };
+
+        const restoreDefault = () => {
+          resultsContainer.innerHTML = state.defaultHTML;
+          state.currentPage = 1;
+          syncModeFromDOM();
+          setShortlistVisibility(!!parseAuth());
+          syncStatuses(resultsContainer);
+        };
+
+        const handleToggleClick = async (event) => {
+          event.preventDefault();
+          if (state.shortlistMode) {
+            restoreDefault();
+          } else {
+            await loadShortlist(1);
+          }
+          const offset = resultsContainer.getBoundingClientRect().top + window.scrollY - 24;
+          window.scrollTo({ top: offset, behavior: 'smooth' });
+        };
+
+        const handlePagination = async (btn, event) => {
+          event.preventDefault();
+          const page = parseInt(btn.dataset.shortlistPage || '1', 10);
+          if (!Number.isFinite(page) || page < 1) return;
+          await loadShortlist(page);
+          const offset = resultsContainer.getBoundingClientRect().top + window.scrollY - 24;
+          window.scrollTo({ top: offset, behavior: 'smooth' });
+        };
+
+        document.addEventListener('click', (event) => {
+          const heartBtn = event.target.closest('[data-shortlist-btn]');
+          if (heartBtn) {
+            handleHeartClick(heartBtn, event);
+            return;
+          }
+
+          const toggleBtn = event.target.closest('[data-shortlist-toggle]');
+          if (toggleBtn) {
+            handleToggleClick(event);
+            return;
+          }
+
+          const pageBtn = event.target.closest('[data-shortlist-page]');
+          if (pageBtn) {
+            handlePagination(pageBtn, event);
+          }
+        });
+
+        const initialAuth = parseAuth();
+        setShortlistVisibility(!!initialAuth);
+        syncStatuses(resultsContainer);
+
+        window.addEventListener('storage', (event) => {
+          if (event.key === authStorageKey) {
+            const auth = parseAuth();
+            setShortlistVisibility(!!auth);
+          }
+        });
+        window.addEventListener('dhaka-auth-updated', () => {
+          const auth = parseAuth();
+          setShortlistVisibility(!!auth);
+        });
+      })();
+    </script>
   </body>
 </html>
 {{end}}

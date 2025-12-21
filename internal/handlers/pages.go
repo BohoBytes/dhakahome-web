@@ -35,6 +35,7 @@ func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, dat
 		"add":         add,
 		"sub":         sub,
 		"seq":         seq,
+		"dict":        dict,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/"+pageFile,
@@ -67,9 +68,10 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Home handler called")
 	w.Header().Set("Content-Type", "text/html")
 	data := withSearchData(r, map[string]any{
-		"List":        api.PropertyList{},
-		"ShowResults": false,
-		"ActivePage":  "home",
+		"List":             api.PropertyList{},
+		"ShowResults":      false,
+		"ActivePage":       "home",
+		"ShortlistEnabled": true,
 	})
 	data = withTopAreas(data)
 	render(w, "pages/home.html", "home.html", data)
@@ -86,6 +88,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"add":         add,
 		"sub":         sub,
 		"seq":         seq,
+		"dict":        dict,
 	}).ParseFiles(
 		"internal/views/layouts/base.html",
 		"internal/views/pages/search-results.html",
@@ -106,10 +109,11 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/pagination.html",
 	))
 	data := withSearchData(r, map[string]any{
-		"List":        list,
-		"Query":       q,
-		"ActivePage":  "search",
-		"ShowResults": true,
+		"List":             list,
+		"Query":            q,
+		"ActivePage":       "search",
+		"ShowResults":      true,
+		"ShortlistEnabled": true,
 	})
 	data = withTopAreas(data)
 	if err := t.ExecuteTemplate(w, "pages/search-results.html", data); err != nil {
@@ -494,6 +498,18 @@ func formatPrice(price float64) string {
 
 func add(a, b int) int { return a + b }
 func sub(a, b int) int { return a - b }
+
+func dict(values ...any) map[string]any {
+	result := make(map[string]any, len(values)/2)
+	for i := 0; i+1 < len(values); i += 2 {
+		key, ok := values[i].(string)
+		if !ok {
+			continue
+		}
+		result[key] = values[i+1]
+	}
+	return result
+}
 
 func seq(start, end int) []int {
 	if end < start {

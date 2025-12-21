@@ -829,8 +829,13 @@
     const logoutPanel = logoutOverlay?.querySelector("[data-logout-panel]");
     const logoutSuccess = logoutOverlay?.querySelector("[data-logout-success]");
 
+    const notifyAuthUpdate = () => {
+      window.dispatchEvent(new CustomEvent("dhaka-auth-updated"));
+    };
+
     const clearAuth = () => {
       localStorage.removeItem(authStorageKey);
+      notifyAuthUpdate();
     };
 
     const parseStoredAuth = () => {
@@ -855,6 +860,7 @@
 
     const saveAuth = (payload) => {
       localStorage.setItem(authStorageKey, JSON.stringify(payload));
+      notifyAuthUpdate();
     };
 
     const updateBodyScroll = () => {

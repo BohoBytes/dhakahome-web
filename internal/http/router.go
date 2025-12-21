@@ -45,6 +45,12 @@ func NewRouter() *chi.Mux {
 	r.Get("/api/search/cities", handlers.CitiesJSON)
 	r.Get("/api/search/neighborhoods", handlers.NeighborhoodsJSON)
 
+	// shortlist
+	r.Post("/api/shortlists/status", handlers.ShortlistStatuses)
+	r.Post("/api/shortlists/items", handlers.AddShortlistItem)
+	r.Delete("/api/shortlists/items/{assetID}", handlers.RemoveShortlistItem)
+	r.Get("/api/shortlists/view", handlers.ShortlistResultsView)
+
 	// htmx partials
 	// forms
 	r.Post("/api/auth/login", handlers.Login)

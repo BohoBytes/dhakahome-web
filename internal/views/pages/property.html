@@ -512,7 +512,9 @@
 
     {{if gt (len .Similar.Items) 0}}
     <div class="space-y-5">
-      {{range .Similar.Items}} {{template "partials/property-card.html" .}}
+      {{- $page := . -}}
+      {{range .Similar.Items}}
+        {{template "partials/property-card.html" (dict "Prop" . "ShortlistEnabled" true)}}
       {{end}}
     </div>
     {{else}}

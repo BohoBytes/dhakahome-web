@@ -3,7 +3,21 @@
 {{if gt .List.Pages 1}}
 <div class="flex justify-center items-center gap-4 py-12">
   <!-- Previous Button -->
-  {{if gt .List.Page 1}}
+  {{if .ShortlistMode}}
+    {{if gt .List.Page 1}}
+    <button
+      type="button"
+      data-shortlist-page="{{sub .List.Page 1}}"
+      class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-6 py-3 flex items-center justify-center transition-colors"
+    >
+      <span class="text-[20px] font-medium text-[#3b3b3b]">Previous</span>
+    </button>
+    {{else}}
+    <div class="bg-[#e0e0e0] rounded-[10px] px-6 py-3 flex items-center justify-center opacity-50 cursor-not-allowed">
+      <span class="text-[20px] font-medium text-[#3b3b3b]">Previous</span>
+    </div>
+    {{end}}
+  {{else if gt .List.Page 1}}
   <a
     href="?{{range $key, $values := .Query}}{{if ne $key "page"}}{{range $values}}{{$key}}={{.}}&{{end}}{{end}}{{end}}page={{sub .List.Page 1}}"
     class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-6 py-3 flex items-center justify-center transition-colors"
@@ -20,24 +34,44 @@
   <div class="flex gap-2">
     {{range $i := seq 1 .List.Pages}}
     {{if eq $i $.List.Page}}
-    <!-- Current Page -->
-    <div class="bg-[#f44335] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] w-12 h-12 flex items-center justify-center">
-      <span class="text-[20px] font-medium text-white">{{$i}}</span>
-    </div>
+      <div class="bg-[#f44335] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] w-12 h-12 flex items-center justify-center">
+        <span class="text-[20px] font-medium text-white">{{$i}}</span>
+      </div>
+    {{else if $.ShortlistMode}}
+      <button
+        type="button"
+        data-shortlist-page="{{$i}}"
+        class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] w-12 h-12 flex items-center justify-center transition-colors"
+      >
+        <span class="text-[20px] font-medium text-[#3b3b3b]">{{$i}}</span>
+      </button>
     {{else}}
-    <!-- Other Pages -->
-    <a
-      href="?{{range $key, $values := $.Query}}{{if ne $key "page"}}{{range $values}}{{$key}}={{.}}&{{end}}{{end}}{{end}}page={{$i}}"
-      class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] w-12 h-12 flex items-center justify-center transition-colors"
-    >
-      <span class="text-[20px] font-medium text-[#3b3b3b]">{{$i}}</span>
-    </a>
+      <a
+        href="?{{range $key, $values := $.Query}}{{if ne $key "page"}}{{range $values}}{{$key}}={{.}}&{{end}}{{end}}{{end}}page={{$i}}"
+        class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] w-12 h-12 flex items-center justify-center transition-colors"
+      >
+        <span class="text-[20px] font-medium text-[#3b3b3b]">{{$i}}</span>
+      </a>
     {{end}}
     {{end}}
   </div>
 
   <!-- Next Button -->
-  {{if lt .List.Page .List.Pages}}
+  {{if .ShortlistMode}}
+    {{if lt .List.Page .List.Pages}}
+    <button
+      type="button"
+      data-shortlist-page="{{add .List.Page 1}}"
+      class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-6 py-3 flex items-center justify-center transition-colors"
+    >
+      <span class="text-[20px] font-medium text-[#3b3b3b]">Next</span>
+    </button>
+    {{else}}
+    <div class="bg-[#e0e0e0] rounded-[10px] px-6 py-3 flex items-center justify-center opacity-50 cursor-not-allowed">
+      <span class="text-[20px] font-medium text-[#3b3b3b]">Next</span>
+    </div>
+    {{end}}
+  {{else if lt .List.Page .List.Pages}}
   <a
     href="?{{range $key, $values := .Query}}{{if ne $key "page"}}{{range $values}}{{$key}}={{.}}&{{end}}{{end}}{{end}}page={{add .List.Page 1}}"
     class="bg-[#f3f3f3] hover:bg-[#e0e0e0] rounded-[10px] shadow-[0px_4px_6.2px_0px_rgba(0,0,0,0.15)] px-6 py-3 flex items-center justify-center transition-colors"
@@ -54,7 +88,11 @@
 <!-- Results Info -->
 <div class="text-center pb-8">
   <p class="text-[18px] text-[#797979]">
-    Showing page {{.List.Page}} of {{.List.Pages}} ({{.List.Total}} total properties)
+    {{if .ShortlistMode}}
+      Showing your shortlisted properties (page {{.List.Page}} of {{.List.Pages}})
+    {{else}}
+      Showing page {{.List.Page}} of {{.List.Pages}} ({{.List.Total}} total properties)
+    {{end}}
   </p>
 </div>
 {{end}}

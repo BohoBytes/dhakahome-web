@@ -17,6 +17,7 @@
    - [Lead Creation (Contact Form)](#0-create-a-new-lead-from-contact-form--new)
    - [Property Search](#1-search-properties-with-filters)
    - [Cities & Neighborhoods](#2-get-cities-dropdown)
+   - [Shortlist Management](#7-shortlist-management--new)
 4. [Advanced Search Implementation](#advanced-search-implementation)
 5. [Frontend Integration](#frontend-integration)
 6. [Data Structures](#data-structures)
@@ -695,7 +696,318 @@ GET /api/v1/assets/{id}
 
 ---
 
-#### 7. **Get Similar Properties**
+#### 7. **Shortlist Management** ⭐ NEW
+
+Users can save (shortlist) properties they're interested in for later review. All shortlist operations require authentication.
+
+##### 7a. Get User's Shortlists
+```
+GET /api/v1/shortlists
+```
+
+**Authentication:** Required (Bearer token - user JWT only)
+
+**Purpose:** Retrieve all shortlists for the authenticated user with item counts
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440050",
+    "name": "Favorites",
+    "description": "My favorite properties",
+    "is_default": true,
+    "item_count": 5,
+    "created_at": "2025-12-20T10:30:00Z",
+    "updated_at": "2025-12-20T14:45:00Z"
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440051",
+    "name": "Investment Properties",
+    "description": "For long-term investment",
+    "is_default": false,
+    "item_count": 3,
+    "created_at": "2025-12-19T08:15:00Z",
+    "updated_at": "2025-12-20T12:00:00Z"
+  }
+]
+```
+
+---
+
+##### 7b. Get Shortlist with Full Property Details
+```
+GET /api/v1/shortlists/{shortlist_id}
+```
+
+**Authentication:** Required (Bearer token - user JWT only)
+
+**Parameters:**
+- `shortlist_id` (path) - UUID of the shortlist
+
+**Purpose:** Retrieve a specific shortlist with all its items and complete asset details
+
+**Response (200 OK):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440050",
+  "name": "Favorites",
+  "description": "My favorite properties",
+  "is_default": true,
+  "item_count": 2,
+  "created_at": "2025-12-20T10:30:00Z",
+  "updated_at": "2025-12-20T14:45:00Z",
+  "items": [
+    {
+      "id": "660e8400-e29b-41d4-a716-446655440001",
+      "added_at": "2025-12-20T14:00:00Z",
+      "notes": "Great location with good amenities",
+      "asset": {
+        "ID": "550e8400-e29b-41d4-a716-446655440100",
+        "Name": "Spacious 3BR Apartment in Gulshan",
+        "Type": "Apartment",
+        "Status": "listed_rental",
+        "Location": {
+          "city": "Dhaka",
+          "neighborhood": "Gulshan",
+          "address": "House 12, Street 5, Gulshan 2",
+          "lat": 23.7809,
+          "lng": 90.4217
+        },
+        "Details": {
+          "bedrooms": 3,
+          "bathrooms": 2,
+          "sizeSqft": 1850,
+          "furnishingStatus": "furnished",
+          "amenities": ["Lift", "Gas Supply", "Generator Backup"],
+          "pricing": {
+            "monthly_rent": 95000,
+            "security_deposit": 190000
+          }
+        },
+        "Photos": [
+          {
+            "ViewURL": "https://cdn.nestlo.com/signed-urls/...",
+            "IsCover": true
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+---
+
+##### 7c. Add Property to Shortlist (Favorites)
+```
+POST /api/v1/shortlists/items
+```
+
+**Authentication:** Required (Bearer token - user JWT only)
+
+**Purpose:** Add a property to the user's default "Favorites" shortlist. If the property is already shortlisted, updates the notes.
+
+**Request Body:**
+```json
+{
+  "asset_id": "550e8400-e29b-41d4-a716-446655440100",
+  "notes": "Great location for long-term investment"
+}
+```
+
+**Field Details:**
+| Field | Required | Type | Description |
+|-------|----------|------|-------------|
+| `asset_id` | ✅ Yes | UUID string | ID of the property to shortlist |
+| `notes` | ❌ No | string | Optional personal notes about the property |
+
+**Response (201 Created):**
+```json
+{
+  "message": "Property added to shortlist",
+  "shortlist_id": "550e8400-e29b-41d4-a716-446655440050",
+  "item_id": "660e8400-e29b-41d4-a716-446655440001",
+  "asset_id": "550e8400-e29b-41d4-a716-446655440100"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function shortlistProperty(assetId, notes = '') {
+  const token = sessionStorage.getItem('nestlo_token');
+
+  const response = await fetch(
+    'https://api.nestlo.com/api/v1/shortlists/items',
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        asset_id: assetId,
+        notes: notes
+      })
+    }
+  );
+
+  if (response.status === 201) {
+    const result = await response.json();
+    console.log('Property shortlisted:', result.shortlist_id);
+    // Update UI - show "Remove from Favorites" button
+    showSuccessMessage('Property added to your Favorites!');
+  } else if (response.status === 404) {
+    alert('Property not found');
+  } else {
+    alert('Error adding to shortlist');
+  }
+}
+```
+
+---
+
+##### 7d. Remove Property from Shortlist
+```
+DELETE /api/v1/shortlists/items/{asset_id}
+```
+
+**Authentication:** Required (Bearer token - user JWT only)
+
+**Parameters:**
+- `asset_id` (path) - UUID of the property to remove
+
+**Purpose:** Remove a property from all of the user's shortlists
+
+**Response (200 OK):**
+```json
+{
+  "message": "Property removed from shortlist"
+}
+```
+
+**JavaScript Example:**
+```javascript
+async function removeFromShortlist(assetId) {
+  const token = sessionStorage.getItem('nestlo_token');
+
+  const response = await fetch(
+    `https://api.nestlo.com/api/v1/shortlists/items/${assetId}`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+
+  if (response.status === 200) {
+    console.log('Property removed from shortlist');
+    // Update UI - show "Add to Favorites" button
+    showSuccessMessage('Property removed from your Favorites');
+  } else {
+    alert('Error removing from shortlist');
+  }
+}
+```
+
+---
+
+##### 7e. Check if Property is Shortlisted
+```
+GET /api/v1/shortlists/check/{asset_id}
+```
+
+**Authentication:** Required (Bearer token - user JWT only)
+
+**Parameters:**
+- `asset_id` (path) - UUID of the property to check
+
+**Purpose:** Check if a property is in any of the user's shortlists (useful for showing favorite badge on property cards)
+
+**Response (200 OK):**
+```json
+{
+  "is_shortlisted": true,
+  "asset_id": "550e8400-e29b-41d4-a716-446655440100",
+  "shortlist_id": "550e8400-e29b-41d4-a716-446655440050"
+}
+```
+
+**JavaScript Example (with caching):**
+```javascript
+// Cache to avoid repeated API calls
+const shortlistCache = new Map();
+
+async function isPropertyShortlisted(assetId) {
+  // Check cache first
+  if (shortlistCache.has(assetId)) {
+    return shortlistCache.get(assetId);
+  }
+
+  const token = sessionStorage.getItem('nestlo_token');
+
+  const response = await fetch(
+    `https://api.nestlo.com/api/v1/shortlists/check/${assetId}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+
+  if (response.status === 200) {
+    const result = await response.json();
+    shortlistCache.set(assetId, result.is_shortlisted);
+    return result.is_shortlisted;
+  }
+
+  return false;
+}
+
+// Update property card UI with favorite status
+async function updatePropertyCardUI(propertyId) {
+  const isFavorited = await isPropertyShortlisted(propertyId);
+  const favoriteBtn = document.querySelector(`[data-property-id="${propertyId}"] .favorite-btn`);
+
+  if (isFavorited) {
+    favoriteBtn.textContent = '❤️ Remove from Favorites';
+    favoriteBtn.classList.add('favorited');
+    favoriteBtn.onclick = () => removeFromShortlist(propertyId);
+  } else {
+    favoriteBtn.textContent = '🤍 Add to Favorites';
+    favoriteBtn.classList.remove('favorited');
+    favoriteBtn.onclick = () => shortlistProperty(propertyId);
+  }
+}
+```
+
+---
+
+##### 7f. Toggle Favorite (Helper Function)
+```javascript
+// Convenience function to toggle favorite status
+async function togglePropertyFavorite(assetId) {
+  const isShortlisted = await isPropertyShortlisted(assetId);
+
+  if (isShortlisted) {
+    // Remove from favorites
+    await removeFromShortlist(assetId);
+    shortlistCache.set(assetId, false);
+  } else {
+    // Add to favorites
+    await shortlistProperty(assetId, '');
+    shortlistCache.set(assetId, true);
+  }
+
+  // Invalidate cache and update UI
+  await updatePropertyCardUI(assetId);
+}
+```
+
+---
+
+#### 8. **Get Similar Properties**
 ```
 GET /api/v1/assets/{id}/similar
 ```
@@ -1809,13 +2121,19 @@ For technical support and questions:
 6. ✅ **Serviced/Shared:** Only boolean true/false or omit for any
 7. ✅ **Price slider:** Calculate min/max from frontend search results
 8. ✅ **Validate environment URLs** before deploying to production
+9. ✅ **Shortlist cache:** Cache shortlist status locally to reduce API calls
+10. ✅ **Shortlist auth:** All shortlist endpoints require user JWT, NOT OAuth token
+11. ✅ **Favorite toggle:** Implement optimistic UI updates for favorite button clicks
+12. ✅ **Error handling:** Handle 404 (property not found) and 401 (auth expired) gracefully
 
 ---
 
 ## Implementation Checklist
 
+### Authentication & Search
 - [ ] OAuth credentials obtained from Nestlo
 - [ ] Token management implemented with caching
+- [ ] User login form implemented (email/password)
 - [ ] Basic search form created
 - [ ] Cities dropdown populated
 - [ ] Neighborhoods dropdown populated (city-dependent)
@@ -1827,13 +2145,27 @@ For technical support and questions:
 - [ ] Error handling for API failures
 - [ ] Rate limiting handled gracefully
 - [ ] Token refresh before expiry
+
+### Shortlist/Favorites (NEW)
+- [ ] User registration for creating accounts
+- [ ] User login and session management
+- [ ] "Add to Favorites" button on property cards
+- [ ] "Remove from Favorites" button on favorited properties
+- [ ] Favorites counter badge showing number of saved properties
+- [ ] Shortlist page to view all favorites with full details
+- [ ] Cache shortlist status to reduce API calls
+- [ ] Toggle favorite button with optimistic UI updates
+- [ ] Display personal notes on favorited properties
+- [ ] Clear favorites or batch operations (future)
+
+### General
 - [ ] Testing in staging environment
 - [ ] Production deployment
 
 ---
 
-**Last Updated:** December 19, 2024
+**Last Updated:** December 21, 2024 (Added Shortlist/Favorites Feature)
 **Status:** ✅ Production Ready
-**Version:** 3.0
+**Version:** 3.1 (Shortlist Feature Added)
 
 For questions or feedback, contact: api-support@nestlo.com

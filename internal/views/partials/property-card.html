@@ -1,124 +1,160 @@
 {{define "partials/property-card.html"}}
 <!-- Reusable Property Card Component (full-row clickable) -->
-<a
-  href="/properties/{{.ID}}"
-  data-price="{{.Price}}"
-  data-area="{{.Area}}"
-  data-listing="{{.ListingType}}"
-  data-type="{{.Type}}"
-  class="group block bg-[#f9f9f9] rounded-[20px] shadow-[0px_5px_9.9px_rgba(0,0,0,0.15)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200"
+{{- $prop := or .Prop . -}} {{- $shortlistEnabled := .ShortlistEnabled -}}
+<div
+  class="relative"
+  data-property-card
+  data-property-id="{{$prop.ID}}"
+  {{if
+  $shortlistEnabled}}data-shortlist-enabled="true"
+  {{end}}
 >
-  <div class="flex flex-col md:flex-row items-stretch">
-    <!-- Property Image -->
-    <div
-      class="w-full h-[200px] md:w-[268px] md:h-[250px] relative flex-shrink-0"
-    >
-      {{if .Images}}
-      <img
-        src="{{index .Images 0}}"
-        alt="{{.Title}}"
-        class="absolute inset-0 w-full h-full object-cover"
-        onerror="this.src='/assets/images/placeholders/property-placeholder.svg'"
-      />
-      {{else}}
-      <img
-        src="/assets/images/placeholders/property-placeholder.svg"
-        alt="{{.Title}}"
-        class="absolute inset-0 w-full h-full object-cover"
-      />
-      {{end}}
-    </div>
-
-    <!-- Property Details Section -->
-    <div class="flex-1 flex flex-col gap-4 px-5 py-5 md:px-8 md:py-6">
-      <!-- Amenities (top right) -->
+  <a
+    href="/properties/{{$prop.ID}}"
+    data-price="{{$prop.Price}}"
+    data-area="{{$prop.Area}}"
+    data-listing="{{$prop.ListingType}}"
+    data-type="{{$prop.Type}}"
+    class="group block bg-[#f9f9f9] rounded-[20px] shadow-[0px_5px_9.9px_rgba(0,0,0,0.15)] overflow-hidden hover:-translate-y-[1px] transition-transform duration-200"
+  >
+    <div class="flex flex-col md:flex-row items-stretch">
+      <!-- Property Image -->
       <div
-        class="flex flex-wrap items-center gap-4 md:gap-6 bg-[#e4e4e4] rounded-l-[4px] px-2 py-1 self-end mr-[-1rem] md:mr-[-2rem]"
+        class="w-full h-[200px] md:w-[268px] md:h-[250px] relative flex-shrink-0"
       >
-        {{if .Bedrooms}}
-        <div class="flex items-center gap-2">
-          <img
-            src="/assets/icons/bedroom.svg"
-            alt="Bedrooms"
-            class="w-[12px] h-[12px] md:w-[14px] md:h-[14px]"
-          />
-          <span
-            class="text-[12px] md:text-[14px] font-medium text-[#797979]"
-            style="font-family: 'Poppins', sans-serif"
-            >{{.Bedrooms}}</span
-          >
-        </div>
-        {{end}} {{if .Bathrooms}}
-        <div class="flex items-center gap-2">
-          <img
-            src="/assets/icons/bathroom.svg"
-            alt="Bathrooms"
-            class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
-          />
-          <span
-            class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
-            style="font-family: 'Poppins', sans-serif"
-            >{{.Bathrooms}}</span
-          >
-        </div>
-        {{end}} {{if .Area}}
-        <div class="flex items-center gap-2">
-          <img
-            src="/assets/icons/area.svg"
-            alt="Area"
-            class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
-          />
-          <span
-            class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
-            style="font-family: 'Poppins', sans-serif"
-            >{{.Area}} ft</span
-          >
-        </div>
-        {{end}} {{if .Parking}}
-        <div class="flex items-center gap-2">
-          <img
-            src="/assets/icons/parking.svg"
-            alt="Parking"
-            class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
-          />
-          <span
-            class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
-            style="font-family: 'Poppins', sans-serif"
-            >{{.Parking}}</span
-          >
-        </div>
+        {{if $prop.Images}}
+        <img
+          src="{{index $prop.Images 0}}"
+          alt="{{$prop.Title}}"
+          class="absolute inset-0 w-full h-full object-cover"
+          onerror="this.src='/assets/images/placeholders/property-placeholder.svg'"
+        />
+        {{else}}
+        <img
+          src="/assets/images/placeholders/property-placeholder.svg"
+          alt="{{$prop.Title}}"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
         {{end}}
       </div>
 
-      <!-- Badges -->
-      <div class="flex flex-wrap gap-2 md:gap-3">
-        {{range .Badges}} {{template "partials/property-badge.html" .}} {{end}}
-      </div>
+      <!-- Property Details Section -->
+      <div class="flex-1 flex flex-col gap-4 px-5 py-5 md:px-8 md:py-6">
+        <div class="flex flex-end gap-3 justify-end items-center">
+          <!-- Amenities (top right) -->
+          <div
+            class="flex flex-wrap items-center gap-4 md:gap-6 bg-[#e4e4e4] rounded-l-[4px] px-2 py-1"
+          >
+            {{if $prop.Bedrooms}}
+            <div class="flex items-center gap-2">
+              <img
+                src="/assets/icons/bedroom.svg"
+                alt="Bedrooms"
+                class="w-[12px] h-[12px] md:w-[14px] md:h-[14px]"
+              />
+              <span
+                class="text-[12px] md:text-[14px] font-medium text-[#797979]"
+                style="font-family: 'Poppins', sans-serif"
+                >{{$prop.Bedrooms}}</span
+              >
+            </div>
+            {{end}} {{if $prop.Bathrooms}}
+            <div class="flex items-center gap-2">
+              <img
+                src="/assets/icons/bathroom.svg"
+                alt="Bathrooms"
+                class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
+              />
+              <span
+                class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
+                style="font-family: 'Poppins', sans-serif"
+                >{{$prop.Bathrooms}}</span
+              >
+            </div>
+            {{end}} {{if $prop.Area}}
+            <div class="flex items-center gap-2">
+              <img
+                src="/assets/icons/area.svg"
+                alt="Area"
+                class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
+              />
+              <span
+                class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
+                style="font-family: 'Poppins', sans-serif"
+                >{{$prop.Area}} ft</span
+              >
+            </div>
+            {{end}} {{if $prop.Parking}}
+            <div class="flex items-center gap-2">
+              <img
+                src="/assets/icons/parking.svg"
+                alt="Parking"
+                class="w-[14px] h-[14px] md:w-[16px] md:h-[16px]"
+              />
+              <span
+                class="text-[12px] md:text-[14px] font-medium leading-[20px] text-[#797979]"
+                style="font-family: 'Poppins', sans-serif"
+                >{{$prop.Parking}}</span
+              >
+            </div>
+            {{end}}
+          </div>
 
-      <!-- Title and Address -->
-      <div class="space-y-3">
-        <h2
-          class="text-[18px] md:text-[24px] font-normal leading-tight text-[#414141]"
+          <!-- Shortlist button-->
+          {{if $shortlistEnabled}}
+          <button
+            type="button"
+            class="w-[35px] h-[35px] right-4 top-4 z-10 rounded-full bg-white/95 border border-[#e6e6e6] shadow-[0_6px_16px_rgba(0,0,0,0.12)] p-2 hover:shadow-[0_8px_18px_rgba(0,0,0,0.18)] transition-all hidden"
+            data-shortlist-btn
+            data-property-id="{{$prop.ID}}"
+            data-shortlisted="{{if $prop.IsShortlisted}}true{{else}}false{{end}}"
+            aria-pressed="{{if $prop.IsShortlisted}}true{{else}}false{{end}}"
+            aria-label="Toggle shortlist for {{$prop.Title}}"
+          >
+            <svg
+              class="w-5 h-5 transition-colors {{if $prop.IsShortlisted}}text-[#f44335]{{else}}text-[#9f9f9f]{{end}}"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M12 21s-6.72-3.66-9.33-8.4C.05 9.35 1.34 5.7 4.4 4.26a4.9 4.9 0 0 1 5.6.93L12 6.96l1.99-1.77a4.9 4.9 0 0 1 5.6-.93c3.06 1.44 4.35 5.09 1.73 8.34C18.72 17.34 12 21 12 21Z"
+              />
+            </svg>
+          </button>
+          {{end}}
+        </div>
+        <!-- Badges -->
+        <div class="flex flex-wrap gap-2 md:gap-3">
+          {{range $prop.Badges}} {{template "partials/property-badge.html" .}}
+          {{end}}
+        </div>
+
+        <!-- Title and Address -->
+        <div class="space-y-3">
+          <h2
+            class="text-[18px] md:text-[24px] font-normal leading-tight text-[#414141]"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            {{$prop.Title}}
+          </h2>
+          <p
+            class="text-[14px] md:text-[18px] font-normal leading-[24px] md:leading-[26.4px] text-[#7d7d7d]"
+            style="font-family: 'Poppins', sans-serif"
+          >
+            {{$prop.Address}}
+          </p>
+        </div>
+
+        <!-- Price -->
+        <div
+          class="mt-auto text-[18px] md:text-[20px] lg:text-[24px] font-medium leading-[30px] md:leading-[34px] text-[#414141] md:self-end"
           style="font-family: 'Poppins', sans-serif"
         >
-          {{.Title}}
-        </h2>
-        <p
-          class="text-[14px] md:text-[18px] font-normal leading-[24px] md:leading-[26.4px] text-[#7d7d7d]"
-          style="font-family: 'Poppins', sans-serif"
-        >
-          {{.Address}}
-        </p>
-      </div>
-
-      <!-- Price -->
-      <div
-        class="mt-auto text-[18px] md:text-[20px] lg:text-[24px] font-medium leading-[30px] md:leading-[34px] text-[#414141] md:self-end"
-        style="font-family: 'Poppins', sans-serif"
-      >
-        {{.Currency}}{{formatPrice .Price}}
+          {{$prop.Currency}}{{formatPrice $prop.Price}}
+        </div>
       </div>
     </div>
-  </div>
-</a>
+  </a>
+</div>
 {{end}}
