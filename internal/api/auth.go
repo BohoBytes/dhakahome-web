@@ -41,7 +41,7 @@ func (e *APIError) Error() string {
 // LoginUser authenticates a Nestlo user via email/password and returns the JWT + user profile.
 func (c *Client) LoginUser(email, password string) (LoginResponse, error) {
 	// Support mock mode to avoid hitting real API in local development.
-	if c.mockEnabled {
+	if c.mockEnabled && c.mockAuthEnabled {
 		now := time.Now().Unix()
 		return LoginResponse{
 			Token: fmt.Sprintf("mock-token-%d", now),

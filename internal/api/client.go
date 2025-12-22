@@ -44,7 +44,8 @@ type Client struct {
 	tokenExpiry time.Time
 
 	// Mock mode
-	mockEnabled bool
+	mockEnabled     bool
+	mockAuthEnabled bool
 
 	// Last request metrics (for debugging)
 	LastRequestURL      string
@@ -57,6 +58,10 @@ func New() *Client {
 	// Check if mock mode is enabled
 	mockEnabled := strings.ToLower(strings.TrimSpace(os.Getenv("MOCK_ENABLED")))
 	useMock := mockEnabled == "true" || mockEnabled == "1" || mockEnabled == "yes"
+	mockAuth := useMock
+	if v := strings.ToLower(strings.TrimSpace(os.Getenv("MOCK_AUTH_ENABLED"))); v != "" {
+		mockAuth = v == "true" || v == "1" || v == "yes"
+	}
 
 	base := getenv("API_BASE_URL", "http://localhost:3000/api/v1")
 	scope := strings.TrimSpace(getenv("API_TOKEN_SCOPE", "assets.read"))
@@ -80,14 +85,15 @@ func New() *Client {
 	log.Printf("  OAuth Token URL: %s", tokenURL)
 
 	return &Client{
-		Base:         base,
-		Token:        staticToken,
-		HC:           &http.Client{Timeout: 10 * time.Second},
-		tokenURL:     tokenURL,
-		clientID:     clientID,
-		clientSecret: clientSecret,
-		scope:        scope,
-		mockEnabled:  useMock,
+		Base:            base,
+		Token:           staticToken,
+		HC:              &http.Client{Timeout: 10 * time.Second},
+		tokenURL:        tokenURL,
+		clientID:        clientID,
+		clientSecret:    clientSecret,
+		scope:           scope,
+		mockEnabled:     useMock,
+		mockAuthEnabled: mockAuth,
 	}
 }
 
