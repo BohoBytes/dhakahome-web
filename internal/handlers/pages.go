@@ -29,6 +29,12 @@ type FeaturedArea struct {
 // so each page can define its own "content" without collisions.
 func render(w http.ResponseWriter, topLevelTemplate string, pageFile string, data any) {
 	log.Printf("Rendering template: %s with page: %s", topLevelTemplate, pageFile)
+	if m, ok := data.(map[string]any); ok {
+		if _, exists := m["GetStartedURL"]; !exists {
+			m["GetStartedURL"] = getStartedURL()
+		}
+		data = m
+	}
 	t := template.Must(template.New(pageFile).Funcs(template.FuncMap{
 		"eq":          func(a, b any) bool { return a == b },
 		"formatPrice": formatPrice,
@@ -73,6 +79,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		"ActivePage":       "home",
 		"ShortlistEnabled": true,
 	})
+	data["GetStartedURL"] = getStartedURL()
 	data = withTopAreas(data)
 	render(w, "pages/home.html", "home.html", data)
 }
@@ -115,6 +122,7 @@ func SearchPage(w http.ResponseWriter, r *http.Request) {
 		"ShowResults":      true,
 		"ShortlistEnabled": true,
 	})
+	data["GetStartedURL"] = getStartedURL()
 	data = withTopAreas(data)
 	if err := t.ExecuteTemplate(w, "pages/search-results.html", data); err != nil {
 		log.Printf("search page template execution error: %v", err)
@@ -162,6 +170,7 @@ func PropertiesPage(w http.ResponseWriter, r *http.Request) {
 		"MapDefaultLng":  envFloat("MAP_DEFAULT_LNG", 90.412521),
 		"MapDefaultZoom": envFloat("MAP_DEFAULT_ZOOM", 11.2),
 	})
+	data["GetStartedURL"] = getStartedURL()
 	render(w, "pages/properties.html", "properties.html", data)
 }
 
@@ -250,6 +259,7 @@ func PropertyPage(w http.ResponseWriter, r *http.Request) {
 		"ContactEmail":    contactEmail,
 		"ContactPhone":    contactPhone,
 	})
+	data["GetStartedURL"] = getStartedURL()
 	render(w, "pages/property.html", "property.html", data)
 }
 
@@ -264,7 +274,11 @@ func FAQPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/faq.html", map[string]any{"ActivePage": "faq"}); err != nil {
+	data := map[string]any{
+		"ActivePage":    "faq",
+		"GetStartedURL": getStartedURL(),
+	}
+	if err := t.ExecuteTemplate(w, "pages/faq.html", data); err != nil {
 		log.Printf("FAQ template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -281,7 +295,11 @@ func AboutUsPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/about-us.html", map[string]any{"ActivePage": "about"}); err != nil {
+	data := map[string]any{
+		"ActivePage":    "about",
+		"GetStartedURL": getStartedURL(),
+	}
+	if err := t.ExecuteTemplate(w, "pages/about-us.html", data); err != nil {
 		log.Printf("About Us template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -298,7 +316,11 @@ func HotelsPage(w http.ResponseWriter, r *http.Request) {
 		"internal/views/partials/page-header.html",
 		"internal/views/partials/header.html",
 	))
-	if err := t.ExecuteTemplate(w, "pages/hotels.html", map[string]any{"ActivePage": "hotels"}); err != nil {
+	data := map[string]any{
+		"ActivePage":    "hotels",
+		"GetStartedURL": getStartedURL(),
+	}
+	if err := t.ExecuteTemplate(w, "pages/hotels.html", data); err != nil {
 		log.Printf("Hotels template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -320,6 +342,7 @@ func ContactUsPage(w http.ResponseWriter, r *http.Request) {
 		"ActivePage":   "contact",
 		"ContactEmail": contactEmail,
 	}
+	data["GetStartedURL"] = getStartedURL()
 	if err := t.ExecuteTemplate(w, "pages/contact-us.html", data); err != nil {
 		log.Printf("Contact Us template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -520,6 +543,14 @@ func seq(start, end int) []int {
 		result[i] = start + i
 	}
 	return result
+}
+
+func getStartedURL() string {
+	val := strings.TrimSpace(os.Getenv("PORTAL_BASE_URL"))
+	if val == "" {
+		return "/"
+	}
+	return val
 }
 
 func envFloat(key string, def float64) float64 {

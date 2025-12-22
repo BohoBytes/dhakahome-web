@@ -23,6 +23,15 @@ func NewRouter() *chi.Mux {
 
 	// static assets
 	r.Handle("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.Dir("public/assets"))))
+	// root-level static files (favicon, etc.)
+	publicFS := http.FileServer(http.Dir("public"))
+	r.Handle("/favicon.ico", publicFS)
+	r.Handle("/favicon.png", publicFS)
+	r.Handle("/favicon-16x16.png", publicFS)
+	r.Handle("/favicon-32x32.png", publicFS)
+	r.Handle("/favicon.svg", publicFS)
+	r.Handle("/apple-touch-icon.png", publicFS)
+	r.Handle("/robots.txt", publicFS)
 
 	// pages
 	r.Get("/", handlers.Home)
