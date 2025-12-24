@@ -1450,6 +1450,9 @@ body {
 .list-none {
   list-style-type: none;
 }
+.list-disc {
+  list-style-type: disc;
+}
 .appearance-none {
   -webkit-appearance: none;
      -moz-appearance: none;
@@ -2359,6 +2362,9 @@ body {
 }
 .pb-3 {
   padding-bottom: 0.75rem;
+}
+.pl-5 {
+  padding-left: 1.25rem;
 }
 .text-left {
   text-align: left;

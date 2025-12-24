@@ -505,8 +505,8 @@
         class="text-[16px] leading-[24px] text-[#777]"
         style="font-family: 'Poppins', sans-serif"
       >
-        Use your Nestlo email and password to continue. Your session stays
-        active until you logout or the token expires.
+        Use your DhakaHome Portal email and password to continue. Your session
+        stays active until you logout or the token expires.
       </p>
 
       <form class="space-y-5 pt-2" data-login-form>
@@ -714,13 +714,15 @@
     );
 
     // Move overlays to <body> so they can sit above all content.
-    [mobileMenu, document.getElementById("auth-login-overlay"), document.getElementById("auth-logout-overlay")].forEach(
-      (el) => {
-        if (el && el.parentElement !== document.body) {
-          document.body.appendChild(el);
-        }
+    [
+      mobileMenu,
+      document.getElementById("auth-login-overlay"),
+      document.getElementById("auth-logout-overlay"),
+    ].forEach((el) => {
+      if (el && el.parentElement !== document.body) {
+        document.body.appendChild(el);
       }
-    );
+    });
 
     if (menuToggle) {
       menuToggle.addEventListener("click", function () {
